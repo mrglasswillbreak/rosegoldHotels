@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'HotelApp'
+    #'alerts' #would be later implemented
 ]
 
 MIDDLEWARE = [
