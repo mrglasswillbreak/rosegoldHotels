@@ -1,19 +1,22 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-# Create your models here.
-class Authorregis(models.Model):
-    Id = models.AutoField(primary_key=True)
-    Fname = models.CharField(max_length=255)
-    Lname = models.CharField(max_length=255)
-    Email = models.CharField(max_length=255,unique=True)
-    Phone_Number = models.IntegerField()
-    Password = models.CharField(max_length=255)
-    Date = models.DateField(auto_now_add=True)
-    Time = models.TimeField(auto_now_add=True)
+class Authorregis(AbstractUser):
+    Phone_Number = models.CharField(max_length=20, blank=True, null=True)
+    # Optional: override first/last name if needed
+    first_name = models.CharField(max_length=150, blank=True)
+    last_name = models.CharField(max_length=150, blank=True)
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []  # correct when email is the username
+
+    email = models.EmailField(unique=True)  # this fixes auth.E003
+
     def __str__(self):
-        return self.Fname
-    class Meta:
-        db_table = 'Authority_reg'
+        return self.email or self.username or f"User {self.id}"
+
+# All other models below (Online_Booking, Offline_Booking, etc.)
+# ...
 
 class Online_Booking(models.Model):
     Id = models.AutoField(primary_key=True)
