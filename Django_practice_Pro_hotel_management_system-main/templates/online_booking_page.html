@@ -1,48 +1,391 @@
-{% extends 'allinclude.html' %} {% block title %} Online Booking - RoseGold
-Hotel {% endblock %} {% block content %}
-<section id="slider_booking">
-  <div class="slider_book_Pic booking-bg">
-    <div class="container">
-      <div class="row justify-content-center text-center">
-        <div class="col-md-10">
-          <div class="slider_booking_text">
-            <h4>HOTEL SERVICE</h4>
-            <a href="{% url 'home' %}">Home</a>
-            <i class="fas fa-slash"></i>
-            <span>Online Booking</span>
-          </div>
+{% extends "allinclude.html" %} {% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --ink: #1c1812;
+    --gold: #b8963e;
+    --gold-light: #d4b06a;
+    --cream: #f9f5ee;
+    --cream-dark: #ede5d4;
+    --muted: #8a7d6b;
+    --success: #2d6a4f;
+    --error: #9b2226;
+  }
+
+  * { box-sizing: border-box; }
+
+  .booking-page {
+    background: var(--cream);
+    min-height: 100vh;
+    font-family: 'Jost', sans-serif;
+    padding: 0 0 80px;
+  }
+
+  .booking-hero {
+    background: var(--ink);
+    padding: 60px 40px 44px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .booking-hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .booking-hero h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--cream);
+    font-weight: 600;
+  }
+  .booking-hero h1 em { color: var(--gold-light); font-style: normal; }
+  .booking-hero p { color: var(--muted); margin-top: 8px; font-size: 0.88rem; letter-spacing: 0.1em; text-transform: uppercase; }
+
+  .booking-layout {
+    max-width: 1100px;
+    margin: 48px auto 0;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: 1fr 1.6fr;
+    gap: 32px;
+    align-items: start;
+  }
+
+  /* ROOM SUMMARY CARD */
+  .room-summary {
+    background: var(--ink);
+    border-radius: 16px;
+    overflow: hidden;
+    position: sticky;
+    top: 24px;
+  }
+  .room-summary-img {
+    height: 200px;
+    overflow: hidden;
+    background: #2c2218;
+  }
+  .room-summary-img img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    opacity: 0.85;
+  }
+  .room-summary-img .no-img {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted);
+    font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .room-summary-body { padding: 24px; }
+  .room-summary-body h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    color: var(--cream);
+    margin-bottom: 4px;
+  }
+  .room-type-tag {
+    display: inline-block;
+    background: rgba(184,150,62,0.2);
+    color: var(--gold-light);
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .room-detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    font-size: 0.87rem;
+  }
+  .room-detail-row:last-child { border-bottom: none; }
+  .room-detail-row .label { color: var(--muted); }
+  .room-detail-row .value { color: var(--cream); font-weight: 500; }
+  .room-price-big {
+    margin-top: 18px;
+    padding: 16px;
+    background: rgba(184,150,62,0.12);
+    border-radius: 10px;
+    border: 1px solid rgba(184,150,62,0.25);
+    text-align: center;
+  }
+  .room-price-big .amount {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    color: var(--gold-light);
+    font-weight: 700;
+  }
+  .room-price-big .per { color: var(--muted); font-size: 0.8rem; }
+  .total-cost {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+  .total-cost strong { color: var(--gold-light); }
+
+  /* FORM CARD */
+  .booking-form-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 36px;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.07);
+  }
+  .form-section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    color: var(--ink);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--cream-dark);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .form-section-title .num {
+    width: 28px; height: 28px;
+    background: var(--ink);
+    color: var(--gold-light);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem;
+    font-family: 'Jost', sans-serif;
+    flex-shrink: 0;
+  }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+  .form-group label {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .form-group input, .form-group select {
+    padding: 12px 14px;
+    border: 1.5px solid var(--cream-dark);
+    border-radius: 8px;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.92rem;
+    color: var(--ink);
+    background: var(--cream);
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .form-group input:focus, .form-group select:focus {
+    border-color: var(--gold);
+    background: #fff;
+  }
+
+  .guests-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  .divider { height: 1px; background: var(--cream-dark); margin: 24px 0; }
+
+  .stay-summary {
+    background: var(--cream);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 20px 0;
+    font-size: 0.87rem;
+    color: var(--muted);
+    display: none;
+  }
+  .stay-summary.visible { display: block; }
+  .stay-summary strong { color: var(--ink); }
+
+  .messages-list { margin-bottom: 16px; }
+  .msg { padding: 10px 14px; border-radius: 8px; font-size: 0.87rem; margin-bottom: 8px; }
+  .msg.error { background: #fde8e8; color: var(--error); }
+  .msg.success { background: #d4edda; color: var(--success); }
+
+  .submit-btn {
+    width: 100%;
+    padding: 15px;
+    background: var(--ink);
+    color: var(--gold-light);
+    border: none;
+    border-radius: 10px;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    margin-top: 8px;
+  }
+  .submit-btn:hover { background: var(--gold); color: var(--ink); }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.85rem;
+    margin-top: 16px;
+    transition: color 0.2s;
+  }
+  .back-link:hover { color: var(--gold); }
+
+  @media (max-width: 768px) {
+    .booking-layout { grid-template-columns: 1fr; }
+    .room-summary { position: static; }
+    .form-row, .guests-row { grid-template-columns: 1fr; }
+    .booking-form-card { padding: 24px; }
+  }
+</style>
+
+<div class="booking-page">
+  <div class="booking-hero">
+    <h1>Book <em>Room {{ room.room_number }}</em></h1>
+    <p>Complete your reservation below</p>
+  </div>
+
+  <div class="booking-layout">
+
+    <!-- ROOM SUMMARY -->
+    <div class="room-summary">
+      <div class="room-summary-img">
+        {% if room.image %}
+          <img src="{{ room.image.url }}" alt="Room {{ room.room_number }}">
+        {% else %}
+          <div class="no-img">No image available</div>
+        {% endif %}
+      </div>
+      <div class="room-summary-body">
+        <h3>Room {{ room.room_number }}</h3>
+        <span class="room-type-tag">{{ room.get_room_type_display }}</span>
+        <div class="room-detail-row">
+          <span class="label">Floor</span>
+          <span class="value">{{ room.floor }}</span>
         </div>
+        <div class="room-detail-row">
+          <span class="label">Status</span>
+          <span class="value">{{ room.get_status_display }}</span>
+        </div>
+        <div class="room-detail-row">
+          <span class="label">Facilities</span>
+          <span class="value" style="text-align:right; max-width:60%; font-size:0.82rem;">{{ room.facility }}</span>
+        </div>
+        <div class="room-price-big">
+          <div class="amount">₦{{ room.price }}</div>
+          <div class="per">per night</div>
+        </div>
+        <div class="total-cost" id="total-display"></div>
       </div>
     </div>
-  </div>
-</section>
 
-<section id="Booking_part">
-  <div class="container">
-    <div class="row">
-      <!-- Booking details sidebar -->
-      <div class="col-lg-4">
-        <!-- Booking details card -->
+    <!-- BOOKING FORM -->
+    <div class="booking-form-card">
+
+      {% if messages %}
+      <div class="messages-list">
+        {% for message in messages %}
+          <div class="msg {% if message.tags == 'error' %}error{% else %}success{% endif %}">{{ message }}</div>
+        {% endfor %}
       </div>
+      {% endif %}
 
-      <!-- Booking form -->
-      <div class="col-lg-8">
-        <div class="BOOKING_from">
-          <div class="BOOKING_from_title">
-            <h3>PERSONAL INFORMATION</h3>
-            <span>Booking form</span>
+      <form method="POST" id="booking-form">
+        {% csrf_token %}
+
+        <div class="form-section-title">
+          <span class="num">1</span> Stay Details
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Check-in Date</label>
+            <input type="date" name="check_in" id="check_in" required>
           </div>
-          <div class="BOOKING_from_info">
-            <form method="POST" enctype="multipart/form-data">
-              {% csrf_token %} {{ form.as_p }}
-              <div class="onlineBooking_btn">
-                <button type="submit">BOOKING Now</button>
-              </div>
-            </form>
+          <div class="form-group">
+            <label>Check-out Date</label>
+            <input type="date" name="check_out" id="check_out" required>
           </div>
         </div>
-      </div>
+
+        <div class="stay-summary" id="stay-summary"></div>
+
+        <div class="guests-row">
+          <div class="form-group">
+            <label>Adults</label>
+            <input type="number" name="adults" min="1" max="10" value="1" required>
+          </div>
+          <div class="form-group">
+            <label>Children</label>
+            <input type="number" name="children" min="0" max="10" value="0" required>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="form-section-title">
+          <span class="num">2</span> Personal Details
+        </div>
+
+        <div class="form-group">
+          <label>Address</label>
+          <input type="text" name="address" placeholder="e.g. 12 Marina Street" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>City</label>
+            <input type="text" name="city" placeholder="e.g. Lagos" required>
+          </div>
+          <div class="form-group">
+            <label>Country</label>
+            <input type="text" name="country" placeholder="e.g. Nigeria" required>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn">Confirm Booking</button>
+      </form>
+
+      <a href="{% url 'room_list' %}" class="back-link">
+        ← Back to rooms
+      </a>
     </div>
   </div>
-</section>
+</div>
+
+<script>
+  const pricePerNight = {{ room.price }};
+  const checkIn  = document.getElementById('check_in');
+  const checkOut = document.getElementById('check_out');
+  const summary  = document.getElementById('stay-summary');
+  const totalEl  = document.getElementById('total-display');
+
+  // Set min date to today
+  const today = new Date().toISOString().split('T')[0];
+  checkIn.min  = today;
+  checkOut.min = today;
+
+  checkIn.addEventListener('change', () => {
+    checkOut.min = checkIn.value;
+    updateSummary();
+  });
+  checkOut.addEventListener('change', updateSummary);
+
+  function updateSummary() {
+    if (!checkIn.value || !checkOut.value) return;
+    const d1    = new Date(checkIn.value);
+    const d2    = new Date(checkOut.value);
+    const nights = Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
+    if (nights <= 0) { summary.classList.remove('visible'); totalEl.innerHTML = ''; return; }
+    const total = (pricePerNight * nights).toLocaleString();
+    summary.innerHTML = `<strong>${nights} night${nights > 1 ? 's' : ''}</strong> &nbsp;·&nbsp; ${checkIn.value} → ${checkOut.value}`;
+    summary.classList.add('visible');
+    totalEl.innerHTML = `Total: <strong>₦${total}</strong>`;
+  }
+</script>
+
 {% endblock %}

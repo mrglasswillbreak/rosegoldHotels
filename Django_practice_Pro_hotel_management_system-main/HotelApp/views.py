@@ -4,6 +4,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.http import HttpResponse
 from .models import Room, OnlineBooking
+from django.shortcuts import get_object_or_404, redirect
+from datetime import datetime
 
 from .models import (
     OnlineBooking,
@@ -110,10 +112,146 @@ def author_logout(request):
     logout(request)
     return redirect("home")
 
+# =========================
+# USER PROFILE
+# =========================
+@login_required
+def user_profile(request):
+    if request.method == "POST":
+        action = request.POST.get("action")
+
+        if action == "update_profile":
+            request.user.first_name   = request.POST.get("first_name", "")
+            request.user.last_name    = request.POST.get("last_name", "")
+            request.user.phone_number = request.POST.get("phone_number", "")
+            request.user.save()
+            messages.success(request, "Profile updated successfully.")
+            return redirect("user_profile")
+
+        elif action == "change_password":
+            current  = request.POST.get("current_password")
+            new_pw1  = request.POST.get("new_password1")
+            new_pw2  = request.POST.get("new_password2")
+
+            if not request.user.check_password(current):
+                messages.error(request, "Current password is incorrect.")
+                return redirect("user_profile")
+
+            if new_pw1 != new_pw2:
+                messages.error(request, "New passwords do not match.")
+                return redirect("user_profile")
+
+            if len(new_pw1) < 8:
+                messages.error(request, "Password must be at least 8 characters.")
+                return redirect("user_profile")
+
+            request.user.set_password(new_pw1)
+            request.user.save()
+            # Keep user logged in after password change
+            from django.contrib.auth import update_session_auth_hash
+            update_session_auth_hash(request, request.user)
+            messages.success(request, "Password changed successfully.")
+            return redirect("user_profile")
+
+    return render(request, "user_profile.html")
 
 # =========================
 # ONLINE BOOKING
 # =========================
+@login_required
+def my_bookings(request):
+    if request.method == "POST":
+        action     = request.POST.get("action")
+        booking_id = request.POST.get("booking_id")
+        booking    = get_object_or_404(OnlineBooking, id=booking_id, user=request.user)
+
+        if action == "cancel":
+            booking.delete()
+            messages.success(request, "Booking cancelled successfully.")
+            return redirect("my_bookings")
+
+        elif action == "modify":
+            check_in  = request.POST.get("check_in")
+            check_out = request.POST.get("check_out")
+            check_in  = datetime.strptime(check_in, "%Y-%m-%d").date()
+            check_out = datetime.strptime(check_out, "%Y-%m-%d").date()
+
+            if check_in >= check_out:
+                messages.error(request, "Check-out must be after check-in.")
+                return redirect("my_bookings")
+
+            # Check overlap excluding this booking
+            overlapping = OnlineBooking.objects.filter(
+                room=booking.room,
+                check_in__lt=check_out,
+                check_out__gt=check_in
+            ).exclude(id=booking.id).exists()
+
+            if overlapping:
+                messages.error(request, "Room is not available for the new dates.")
+                return redirect("my_bookings")
+
+            booking.check_in  = check_in
+            booking.check_out = check_out
+            booking.save()
+            messages.success(request, "Booking updated successfully.")
+            return redirect("my_bookings")
+
+    bookings = OnlineBooking.objects.filter(user=request.user).order_by("-created_at")
+    return render(request, "my_bookings.html", {"bookings": bookings})
+
+
+@login_required
+def book_room(request, room_id):
+    room = get_object_or_404(Room, id=room_id)
+
+    if request.method == "POST":
+        check_in  = request.POST.get("check_in")
+        check_out = request.POST.get("check_out")
+        adults    = request.POST.get("adults", 1)
+        children  = request.POST.get("children", 0)
+        city      = request.POST.get("city", "")
+        country   = request.POST.get("country", "")
+        address   = request.POST.get("address", "")
+
+        check_in  = datetime.strptime(check_in, "%Y-%m-%d").date()
+        check_out = datetime.strptime(check_out, "%Y-%m-%d").date()
+
+        if check_in >= check_out:
+            messages.error(request, "Check-out must be after check-in.")
+            return redirect("book_room", room_id=room.id)
+
+        # Check for overlapping bookings
+        overlapping = OnlineBooking.objects.filter(
+            room=room,
+            check_in__lt=check_out,
+            check_out__gt=check_in
+        ).exists()
+
+        if overlapping:
+            messages.error(request, "Room is not available for the selected dates.")
+            return redirect("book_room", room_id=room.id)
+
+        OnlineBooking.objects.create(
+            user=request.user,
+            room=room,
+            check_in=check_in,
+            check_out=check_out,
+            adults=int(adults),
+            children=int(children),
+            city=city,
+            country=country,
+            address=address,
+        )
+
+        messages.success(request, f"Room {room.room_number} booked successfully!")
+        return redirect("my_bookings")
+
+    return render(request, "book_room.html", {"room": room})
+
+
+# ----------------------------
+# MY BOOKINGS — with cancel & modify
 
 def online_booking(request):
     if request.method == "POST":
@@ -199,8 +337,8 @@ def delete_employee(request, id):
 
 # ROOM LIST PAGE
 def room_list(request):
-    rooms = Room.objects.all().order_by('room_number')
-    return render(request, "rooms.html", {"rooms": rooms})
+    rooms = Room.objects.filter(status='available')
+    return render(request, "rooms_list.html", {"rooms": rooms})
 
 def add_room(request):
     if request.method == "POST":

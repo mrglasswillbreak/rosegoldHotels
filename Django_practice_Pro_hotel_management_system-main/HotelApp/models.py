@@ -45,6 +45,8 @@ class Authorregis(AbstractUser):
 # ROOM MODEL
 # =========================
 
+from django.db import models
+
 class Room(models.Model):
     ROOM_STATUS = [
         ('available', 'Available'),
@@ -52,19 +54,23 @@ class Room(models.Model):
         ('maintenance', 'Maintenance'),
     ]
 
+    ROOM_TYPES = [
+        ('single', 'Single'),
+        ('double', 'Double'),
+        ('suite', 'Suite'),
+    ]
+
     room_number = models.CharField(max_length=50, unique=True)
-    room_type = models.CharField(max_length=100)
+    room_type = models.CharField(max_length=20, choices=ROOM_TYPES)
     floor = models.IntegerField()
     facility = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    image = models.ImageField(upload_to='rooms/')
+    image = models.ImageField(upload_to='rooms/', blank=True, null=True)
     status = models.CharField(max_length=20, choices=ROOM_STATUS, default='available')
-
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.room_number
-
+        return f"Room {self.room_number} ({self.room_type})"
 
 # =========================
 # ONLINE BOOKING

@@ -385,3 +385,25 @@ section:not(:last-child) {
     background: var(--accent);   /* rose-gold on hover */
     transform: translateY(-3px);
 }
+
+header {
+  position: relative;
+  z-index: 1000;
+}
+
+.modern-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1050;
+}
+
+.user-dropdown-menu {
+  z-index: 1100;
+}
+
+.hero-section {
+  position: relative;
+  z-index: 1;
+}

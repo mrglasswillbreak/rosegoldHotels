@@ -1,0 +1,571 @@
+{% extends "allinclude.html" %} {% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #e8c97a;
+    --dark: #1a1410;
+    --dark-mid: #2c2218;
+    --cream: #f7f2ea;
+    --cream-dark: #ede4d3;
+    --text-muted: #8a7a65;
+    --card-bg: #ffffff;
+    --shadow: 0 8px 40px rgba(0,0,0,0.10);
+    --shadow-hover: 0 20px 60px rgba(0,0,0,0.18);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .rooms-page {
+    background: var(--cream);
+    min-height: 100vh;
+    font-family: 'DM Sans', sans-serif;
+    padding-bottom: 80px;
+  }
+
+  /* HERO HEADER */
+  .rooms-hero {
+    background: var(--dark);
+    padding: 70px 40px 50px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .rooms-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 60% 0%, rgba(201,168,76,0.18) 0%, transparent 70%);
+  }
+  .rooms-hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    color: var(--cream);
+    letter-spacing: 0.02em;
+    position: relative;
+  }
+  .rooms-hero h1 span {
+    color: var(--gold);
+  }
+  .rooms-hero p {
+    color: var(--text-muted);
+    margin-top: 12px;
+    font-size: 1rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    position: relative;
+  }
+  .gold-line {
+    width: 60px;
+    height: 2px;
+    background: var(--gold);
+    margin: 18px auto 0;
+    position: relative;
+  }
+
+  /* FILTER BAR */
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 40px 10px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .filter-bar input,
+  .filter-bar select {
+    padding: 11px 18px;
+    border: 1.5px solid var(--cream-dark);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.92rem;
+    background: #fff;
+    color: var(--dark);
+    outline: none;
+    transition: border-color 0.2s;
+    min-width: 160px;
+  }
+  .filter-bar input:focus,
+  .filter-bar select:focus {
+    border-color: var(--gold);
+  }
+  .filter-bar label {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-right: -6px;
+  }
+  .filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .filter-reset {
+    padding: 11px 20px;
+    background: transparent;
+    border: 1.5px solid var(--gold);
+    color: var(--gold);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+  }
+  .filter-reset:hover {
+    background: var(--gold);
+    color: #fff;
+  }
+
+  /* RESULTS COUNT */
+  .results-meta {
+    max-width: 1200px;
+    margin: 18px auto 0;
+    padding: 0 40px;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+  }
+  .results-meta span {
+    color: var(--gold);
+    font-weight: 600;
+  }
+
+  /* GRID */
+  .rooms-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 32px;
+    max-width: 1200px;
+    margin: 28px auto 0;
+    padding: 0 40px;
+  }
+
+  /* CARD */
+  .room-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    animation: fadeUp 0.5s ease both;
+  }
+  .room-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-hover);
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* IMAGE GALLERY */
+  .card-image {
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+    background: var(--cream-dark);
+    cursor: pointer;
+  }
+  .card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+  .room-card:hover .card-image img {
+    transform: scale(1.06);
+  }
+  .card-image .no-image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: var(--text-muted);
+    background: linear-gradient(135deg, #ede4d3 0%, #d9cdb8 100%);
+  }
+  .card-image .no-image svg {
+    opacity: 0.4;
+  }
+  .status-badge {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .status-available  { background: #d4f5e2; color: #1a7a45; }
+  .status-occupied   { background: #fde8e8; color: #b91c1c; }
+  .status-maintenance{ background: #fef3c7; color: #92400e; }
+
+  .type-tag {
+    position: absolute;
+    bottom: 14px;
+    left: 14px;
+    background: rgba(26,20,16,0.75);
+    color: var(--gold-light);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    backdrop-filter: blur(4px);
+  }
+
+  /* EXPAND OVERLAY */
+  .img-expand-btn {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    width: 32px;
+    height: 32px;
+    background: rgba(255,255,255,0.85);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .room-card:hover .img-expand-btn {
+    opacity: 1;
+  }
+
+  /* CARD BODY */
+  .card-body {
+    padding: 22px 24px 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .card-header-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+  .room-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    color: var(--dark);
+    font-weight: 600;
+  }
+  .room-price {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--gold);
+    white-space: nowrap;
+  }
+  .room-price span {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--text-muted);
+  }
+
+  .room-meta {
+    display: flex;
+    gap: 16px;
+    font-size: 0.83rem;
+    color: var(--text-muted);
+  }
+  .room-meta i {
+    margin-right: 4px;
+  }
+
+  .room-facility {
+    font-size: 0.87rem;
+    color: #6b5c48;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card-footer {
+    padding: 0 24px 22px;
+  }
+  .book-btn {
+    display: block;
+    width: 100%;
+    padding: 13px;
+    background: var(--dark);
+    color: var(--gold-light);
+    text-align: center;
+    text-decoration: none;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    transition: background 0.2s, color 0.2s;
+    border: 1.5px solid transparent;
+  }
+  .book-btn:hover {
+    background: var(--gold);
+    color: var(--dark);
+  }
+  .book-btn.disabled {
+    background: var(--cream-dark);
+    color: var(--text-muted);
+    pointer-events: none;
+    border-color: var(--cream-dark);
+  }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--text-muted);
+    grid-column: 1/-1;
+  }
+  .empty-state svg { opacity: 0.25; margin-bottom: 16px; }
+  .empty-state h3 { font-family: 'Playfair Display', serif; color: var(--dark); margin-bottom: 8px; }
+
+  /* LIGHTBOX */
+  .lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .lightbox.open { display: flex; }
+  .lightbox img {
+    max-width: 90vw;
+    max-height: 85vh;
+    border-radius: 12px;
+    object-fit: contain;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+  }
+  .lightbox-close {
+    position: absolute;
+    top: 24px;
+    right: 30px;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 2rem;
+    cursor: pointer;
+    line-height: 1;
+    opacity: 0.8;
+  }
+  .lightbox-close:hover { opacity: 1; }
+  .lightbox-caption {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ccc;
+    font-size: 0.9rem;
+    font-family: 'DM Sans', sans-serif;
+    letter-spacing: 0.05em;
+  }
+
+  @media (max-width: 700px) {
+    .rooms-hero { padding: 50px 20px 36px; }
+    .filter-bar { padding: 24px 20px 8px; }
+    .rooms-grid { padding: 0 20px; gap: 20px; }
+    .results-meta { padding: 0 20px; }
+  }
+</style>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+  <button class="lightbox-close" onclick="document.getElementById('lightbox').classList.remove('open')">&times;</button>
+  <img id="lightbox-img" src="" alt="">
+  <div class="lightbox-caption" id="lightbox-caption"></div>
+</div>
+
+<div class="rooms-page">
+
+  <!-- HERO -->
+  <div class="rooms-hero">
+    <h1>Our <span>Rooms</span> & Suites</h1>
+    <p>Find your perfect stay</p>
+    <div class="gold-line"></div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filter-bar">
+    <div class="filter-group">
+      <label>Type</label>
+      <select id="filter-type" onchange="applyFilters()">
+        <option value="">All Types</option>
+        <option value="single">Single</option>
+        <option value="double">Double</option>
+        <option value="suite">Suite</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Max Price</label>
+      <input type="number" id="filter-price" placeholder="e.g. 50000" min="0" oninput="applyFilters()">
+    </div>
+    <div class="filter-group">
+      <label>Status</label>
+      <select id="filter-status" onchange="applyFilters()">
+        <option value="">All</option>
+        <option value="available">Available</option>
+        <option value="occupied">Occupied</option>
+        <option value="maintenance">Maintenance</option>
+      </select>
+    </div>
+    <button class="filter-reset" onclick="resetFilters()">Reset</button>
+  </div>
+
+  <div class="results-meta">
+    Showing <span id="results-count">0</span> room(s)
+  </div>
+
+  <!-- GRID -->
+  <div class="rooms-grid" id="rooms-grid">
+
+    {% for room in rooms %}
+    <div class="room-card"
+         data-type="{{ room.room_type }}"
+         data-price="{{ room.price }}"
+         data-status="{{ room.status }}">
+
+      <!-- IMAGE -->
+      <div class="card-image" onclick="openLightbox('{% if room.image %}{{ room.image.url }}{% endif %}', 'Room {{ room.room_number }}')">
+        {% if room.image %}
+          <img src="{{ room.image.url }}" alt="Room {{ room.room_number }}">
+          <button class="img-expand-btn" title="View full image">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+          </button>
+        {% else %}
+          <div class="no-image">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            <span style="font-size:0.8rem;">No image available</span>
+          </div>
+        {% endif %}
+        <span class="status-badge status-{{ room.status }}">{{ room.get_status_display }}</span>
+        <span class="type-tag">{{ room.get_room_type_display }}</span>
+      </div>
+
+      <!-- BODY -->
+      <div class="card-body">
+        <div class="card-header-row">
+          <div class="room-number">Room {{ room.room_number }}</div>
+          <div class="room-price">₦{{ room.price }}<span>/night</span></div>
+        </div>
+        <div class="room-meta">
+          <span>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:3px"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+            Floor {{ room.floor }}
+          </span>
+          <span>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:3px"><rect x="1" y="3" width="15" height="13"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            {{ room.get_room_type_display }}
+          </span>
+        </div>
+        <p class="room-facility">{{ room.facility }}</p>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="card-footer">
+        {% if room.status == 'available' %}
+          <a href="{% url 'book_room' room.id %}" class="book-btn">Book This Room</a>
+        {% else %}
+          <span class="book-btn disabled">Not Available</span>
+        {% endif %}
+      </div>
+
+    </div>
+    {% empty %}
+    <div class="empty-state">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+      <h3>No Rooms Found</h3>
+      <p>Check back later or adjust your filters.</p>
+    </div>
+    {% endfor %}
+
+  </div>
+</div>
+
+<script>
+  const cards = document.querySelectorAll('.room-card');
+  const countEl = document.getElementById('results-count');
+
+  function applyFilters() {
+    const type   = document.getElementById('filter-type').value;
+    const price  = parseFloat(document.getElementById('filter-price').value) || Infinity;
+    const status = document.getElementById('filter-status').value;
+    let visible  = 0;
+
+    cards.forEach((card, i) => {
+      const matchType   = !type   || card.dataset.type   === type;
+      const matchPrice  = parseFloat(card.dataset.price) <= price;
+      const matchStatus = !status || card.dataset.status === status;
+      const show = matchType && matchPrice && matchStatus;
+
+      card.style.display = show ? '' : 'none';
+      if (show) {
+        card.style.animationDelay = (visible * 0.06) + 's';
+        visible++;
+      }
+    });
+
+    countEl.textContent = visible;
+
+    // Show empty state if no results
+    let empty = document.querySelector('.empty-state');
+    if (!empty && visible === 0) {
+      const grid = document.getElementById('rooms-grid');
+      const div = document.createElement('div');
+      div.className = 'empty-state filter-empty';
+      div.innerHTML = `<h3>No rooms match your filters</h3><p>Try adjusting your search criteria.</p>`;
+      grid.appendChild(div);
+    } else if (empty && empty.classList.contains('filter-empty') && visible > 0) {
+      empty.remove();
+    }
+  }
+
+  function resetFilters() {
+    document.getElementById('filter-type').value   = '';
+    document.getElementById('filter-price').value  = '';
+    document.getElementById('filter-status').value = '';
+    applyFilters();
+  }
+
+  function openLightbox(url, caption) {
+    if (!url) return;
+    document.getElementById('lightbox-img').src     = url;
+    document.getElementById('lightbox-caption').textContent = caption;
+    document.getElementById('lightbox').classList.add('open');
+  }
+
+  function closeLightbox(e) {
+    if (e.target.id === 'lightbox') {
+      document.getElementById('lightbox').classList.remove('open');
+    }
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') document.getElementById('lightbox').classList.remove('open');
+  });
+
+  // Init count
+  applyFilters();
+</script>
+
+{% endblock %}
