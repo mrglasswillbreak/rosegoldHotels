@@ -1,0 +1,487 @@
+{% extends "allinclude.html" %} {% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --ink: #1c1812;
+    --gold: #b8963e;
+    --gold-light: #d4b06a;
+    --cream: #f9f5ee;
+    --cream-dark: #ede5d4;
+    --muted: #8a7d6b;
+    --card-bg: #ffffff;
+  }
+
+  * { box-sizing: border-box; }
+
+  .bookings-page {
+    background: var(--cream);
+    min-height: 100vh;
+    font-family: 'Jost', sans-serif;
+    padding-bottom: 80px;
+  }
+
+  .bookings-hero {
+    background: var(--ink);
+    padding: 60px 40px 44px;
+    text-align: center;
+    position: relative;
+  }
+  .bookings-hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .bookings-hero h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--cream);
+  }
+  .bookings-hero h1 em { color: var(--gold-light); font-style: normal; }
+  .bookings-hero p { color: var(--muted); margin-top: 8px; font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; }
+
+  .bookings-container {
+    max-width: 900px;
+    margin: 48px auto 0;
+    padding: 0 24px;
+  }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 36px;
+  }
+  .stat-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 20px 24px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+    text-align: center;
+  }
+  .stat-card .num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.2rem;
+    color: var(--gold);
+    font-weight: 700;
+    line-height: 1;
+  }
+  .stat-card .label { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    color: var(--ink);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--cream-dark);
+  }
+
+  .booking-card {
+    background: var(--card-bg);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.07);
+    margin-bottom: 20px;
+    display: grid;
+    grid-template-columns: 180px 1fr auto;
+    animation: fadeUp 0.4s ease both;
+    transition: box-shadow 0.2s;
+  }
+  .booking-card:hover { box-shadow: 0 8px 40px rgba(0,0,0,0.13); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .booking-img {
+    height: 100%;
+    min-height: 160px;
+    overflow: hidden;
+    background: var(--cream-dark);
+  }
+  .booking-img img { width: 100%; height: 100%; object-fit: cover; }
+  .booking-img .no-img {
+    width: 100%; height: 100%; min-height: 160px;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #ede4d3, #d9cdb8);
+    color: var(--muted); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+
+  .booking-body { padding: 20px 24px; }
+  .booking-room-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .booking-type-tag {
+    display: inline-block;
+    background: var(--cream-dark);
+    color: var(--muted);
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .booking-dates {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.87rem;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+  .date-box {
+    background: var(--cream);
+    border-radius: 8px;
+    padding: 8px 14px;
+    text-align: center;
+  }
+  .date-box .d-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; }
+  .date-box .d-value { font-size: 0.9rem; font-weight: 500; color: var(--ink); margin-top: 2px; }
+  .date-arrow { color: var(--muted); font-size: 1rem; }
+
+  .booking-meta {
+    display: flex;
+    gap: 16px;
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+
+  .booking-actions {
+    padding: 20px 20px 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+    min-width: 120px;
+  }
+  .btn-modify {
+    padding: 9px 18px;
+    background: var(--ink);
+    color: var(--gold-light);
+    border: none;
+    border-radius: 8px;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.82rem;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    transition: background 0.2s;
+  }
+  .btn-modify:hover { background: var(--gold); color: var(--ink); }
+  .btn-cancel {
+    padding: 9px 18px;
+    background: transparent;
+    color: #b91c1c;
+    border: 1.5px solid #fca5a5;
+    border-radius: 8px;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.82rem;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .btn-cancel:hover { background: #fde8e8; }
+
+  .empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--muted);
+  }
+  .empty-state h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; color: var(--ink); margin: 16px 0 8px; }
+  .empty-state a {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 28px;
+    background: var(--ink);
+    color: var(--gold-light);
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.88rem;
+    letter-spacing: 0.06em;
+  }
+
+  /* MODIFY MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #fff;
+    border-radius: 16px;
+    padding: 36px;
+    width: 100%;
+    max-width: 460px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+    animation: popIn 0.25s ease;
+  }
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  .modal h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    color: var(--ink);
+    margin-bottom: 20px;
+  }
+  .modal .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+  .modal .form-group label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+  .modal .form-group input {
+    padding: 11px 14px;
+    border: 1.5px solid var(--cream-dark);
+    border-radius: 8px;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.92rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .modal .form-group input:focus { border-color: var(--gold); }
+  .modal-actions { display: flex; gap: 10px; margin-top: 8px; }
+  .modal-actions .btn-confirm {
+    flex: 1;
+    padding: 12px;
+    background: var(--ink);
+    color: var(--gold-light);
+    border: none;
+    border-radius: 8px;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .modal-actions .btn-confirm:hover { background: var(--gold); color: var(--ink); }
+  .modal-actions .btn-close-modal {
+    padding: 12px 18px;
+    background: transparent;
+    border: 1.5px solid var(--cream-dark);
+    border-radius: 8px;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.88rem;
+    cursor: pointer;
+    color: var(--muted);
+  }
+
+  /* CANCEL CONFIRM */
+  .cancel-modal .warning {
+    color: #b91c1c;
+    font-size: 0.88rem;
+    background: #fde8e8;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 20px;
+  }
+
+  .messages-list { margin-bottom: 20px; }
+  .msg { padding: 10px 14px; border-radius: 8px; font-size: 0.87rem; margin-bottom: 8px; }
+  .msg.error { background: #fde8e8; color: #b91c1c; }
+  .msg.success { background: #d4edda; color: #2d6a4f; }
+
+  @media (max-width: 680px) {
+    .booking-card { grid-template-columns: 1fr; }
+    .booking-img { min-height: 180px; }
+    .booking-actions { flex-direction: row; padding: 0 20px 20px; }
+    .stats-row { grid-template-columns: 1fr; }
+  }
+</style>
+
+<!-- MODIFY MODAL -->
+<div class="modal-overlay" id="modify-modal">
+  <div class="modal">
+    <h3>Modify Booking</h3>
+    <form method="POST" id="modify-form">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="modify">
+      <input type="hidden" name="booking_id" id="modify-booking-id">
+      <div class="form-group">
+        <label>New Check-in Date</label>
+        <input type="date" name="check_in" id="modify-checkin" required>
+      </div>
+      <div class="form-group">
+        <label>New Check-out Date</label>
+        <input type="date" name="check_out" id="modify-checkout" required>
+      </div>
+      <div class="modal-actions">
+        <button type="submit" class="btn-confirm">Save Changes</button>
+        <button type="button" class="btn-close-modal" onclick="closeModal('modify-modal')">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- CANCEL MODAL -->
+<div class="modal-overlay cancel-modal" id="cancel-modal">
+  <div class="modal">
+    <h3>Cancel Booking</h3>
+    <form method="POST" id="cancel-form">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="cancel">
+      <input type="hidden" name="booking_id" id="cancel-booking-id">
+      <div class="warning">This will permanently cancel your booking. This action cannot be undone.</div>
+      <div class="modal-actions">
+        <button type="submit" class="btn-confirm" style="background:#9b2226;">Yes, Cancel It</button>
+        <button type="button" class="btn-close-modal" onclick="closeModal('cancel-modal')">Keep Booking</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="bookings-page">
+  <div class="bookings-hero">
+    <h1>My <em>Bookings</em></h1>
+    <p>Manage your reservations</p>
+  </div>
+
+  <div class="bookings-container">
+
+    {% if messages %}
+    <div class="messages-list">
+      {% for message in messages %}
+        <div class="msg {% if message.tags == 'error' %}error{% else %}success{% endif %}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if bookings %}
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="num">{{ bookings.count }}</div>
+        <div class="label">Total Bookings</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">{{ bookings.count }}</div>
+        <div class="label">Active</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">—</div>
+        <div class="label">Nights Booked</div>
+      </div>
+    </div>
+
+    <div class="section-title">Your Reservations</div>
+
+    {% for booking in bookings %}
+    <div class="booking-card" style="animation-delay: {{ forloop.counter0 }}00ms">
+
+      <div class="booking-img">
+        {% if booking.room.image %}
+          <img src="{{ booking.room.image.url }}" alt="Room {{ booking.room.room_number }}">
+        {% else %}
+          <div class="no-img">No image</div>
+        {% endif %}
+      </div>
+
+      <div class="booking-body">
+        <div class="booking-room-name">Room {{ booking.room.room_number }}</div>
+        <span class="booking-type-tag">{{ booking.room.get_room_type_display }}</span>
+
+        <div class="booking-dates">
+          <div class="date-box">
+            <div class="d-label">Check-in</div>
+            <div class="d-value">{{ booking.check_in }}</div>
+          </div>
+          <span class="date-arrow">→</span>
+          <div class="date-box">
+            <div class="d-label">Check-out</div>
+            <div class="d-value">{{ booking.check_out }}</div>
+          </div>
+        </div>
+
+        <div class="booking-meta">
+          <span>👤 {{ booking.adults }} adult{{ booking.adults|pluralize }}</span>
+          {% if booking.children > 0 %}
+          <span>👧 {{ booking.children }} child{{ booking.children|pluralize:"ren" }}</span>
+          {% endif %}
+          <span>📍 {{ booking.city }}, {{ booking.country }}</span>
+          <span>₦{{ booking.room.price }}/night</span>
+        </div>
+      </div>
+
+      <div class="booking-actions">
+        <button class="btn-modify"
+          onclick="openModify({{ booking.id }}, '{{ booking.check_in }}', '{{ booking.check_out }}')">
+          Modify
+        </button>
+        <button class="btn-cancel"
+          onclick="openCancel({{ booking.id }})">
+          Cancel
+        </button>
+      </div>
+
+    </div>
+    {% endfor %}
+
+    {% else %}
+    <div class="empty-state">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity="0.25"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      <h3>No Bookings Yet</h3>
+      <p>You haven't made any reservations.</p>
+      <a href="{% url 'room_list' %}">Browse Rooms</a>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+
+<script>
+  const today = new Date().toISOString().split('T')[0];
+
+  function openModify(id, checkIn, checkOut) {
+    document.getElementById('modify-booking-id').value = id;
+    document.getElementById('modify-checkin').value  = checkIn;
+    document.getElementById('modify-checkout').value = checkOut;
+    document.getElementById('modify-checkin').min    = today;
+    document.getElementById('modify-checkout').min   = today;
+    document.getElementById('modify-modal').classList.add('open');
+  }
+
+  function openCancel(id) {
+    document.getElementById('cancel-booking-id').value = id;
+    document.getElementById('cancel-modal').classList.add('open');
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      closeModal('modify-modal');
+      closeModal('cancel-modal');
+    }
+  });
+
+  // Close on backdrop click
+  ['modify-modal', 'cancel-modal'].forEach(id => {
+    document.getElementById(id).addEventListener('click', function(e) {
+      if (e.target === this) closeModal(id);
+    });
+  });
+</script>
+
+{% endblock %}

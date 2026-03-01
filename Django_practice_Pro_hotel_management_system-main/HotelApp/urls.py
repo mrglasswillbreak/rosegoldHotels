@@ -7,6 +7,9 @@ urlpatterns = [
     path('rooms/', views.room_list, name='room_list'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('home/', views.user_home, name='user_home'),
+    path('book/<int:room_id>/', views.book_room, name='book_room'),
+    path('my-bookings/', views.my_bookings, name='my_bookings'),
+    path('profile/', views.user_profile, name='user_profile'),
 
     # AUTH SYSTEM
     path('login/', views.author_login, name='author_login'),

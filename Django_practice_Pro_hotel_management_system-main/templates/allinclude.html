@@ -15,49 +15,26 @@
       crossorigin="anonymous"
     />
 
-    <!-- Google Fonts (Montserrat + Open Sans) -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Open+Sans:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
-
-    <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&family=Poppins:wght@300;400;500;600&display=swap"
-      rel="stylesheet"
-    />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 
     <!-- Font Awesome 6 -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 
-    <!-- Your plugins (keep if used, remove if not) -->
-     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
     <link rel="stylesheet" href="{% static 'css/user_home.css' %}" />
-    <!-- user HOME PAGE CSS-->
     <link rel="stylesheet" href="{% static 'Allfiles/css/animate.css' %}" />
     <link rel="stylesheet" href="{% static 'Allfiles/css/slick.css' %}" />
-    <link
-      rel="stylesheet"
-      href="{% static 'Allfiles/css/jquery.datetimepicker.min.css' %}"
-    />
-    <link
-      rel="stylesheet"
-      href="{% static 'Allfiles/css/modal-video.min.css' %}"
-    />
-    <link
-      rel="stylesheet"
-      href="{% static 'Allfiles/css/magnific-popup.css' %}"
-    />
-
-    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'Allfiles/css/jquery.datetimepicker.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'Allfiles/css/modal-video.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'Allfiles/css/magnific-popup.css' %}"/>
     <link rel="stylesheet" href="{% static 'Allfiles/css/style.css' %}" />
 
     <style>
       :root {
-        --primary: #1a1a2e; /* deep navy for elegance */
-        --accent: #d4af37; /* gold - RoseGold theme */
+        --primary: #1a1a2e;
+        --accent: #d4af37;
         --light: #f8f9fa;
         --dark: #111;
         --gray: #6c757d;
@@ -67,15 +44,10 @@
         font-family: "Open Sans", sans-serif;
         color: #333;
         background-color: var(--light);
-        padding-top: 100px; /* space for fixed navbar */
+        padding-top: 100px;
       }
 
-      h1,
-      h2,
-      h3,
-      h4,
-      h5,
-      h6 {
+      h1, h2, h3, h4, h5, h6 {
         font-family: "Montserrat", sans-serif;
         font-weight: 700;
       }
@@ -88,7 +60,6 @@
         font-weight: 600;
         transition: all 0.3s ease;
       }
-
       .btn-primary:hover {
         background: #b8972e;
         transform: translateY(-3px);
@@ -97,32 +68,184 @@
 
       /* Modern Navbar */
       .modern-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1050;
+}
+
+.user-dropdown {
+  position: relative;
+  z-index: 1051;
+}
+
+.user-dropdown-menu {
+  z-index: 1200;
+}
+      .modern-navbar {
         background: rgba(26, 26, 46, 0.92) !important;
         backdrop-filter: blur(10px);
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
       }
-
       .navbar-brand {
         color: white !important;
         font-size: 1.6rem;
         font-weight: 700;
       }
-
       .nav-link {
         color: white !important;
         font-weight: 500;
         margin: 0 12px;
       }
-
-      .nav-link:hover,
-      .nav-link.active {
+      .nav-link:hover, .nav-link.active {
         color: var(--accent) !important;
+      }
+
+      /* ── USER AVATAR BUTTON ── */
+      .user-avatar-btn {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        background: rgba(255,255,255,0.08);
+        border: 1.5px solid rgba(212,175,55,0.35);
+        border-radius: 50px;
+        padding: 5px 14px 5px 6px;
+        color: #fff;
+        text-decoration: none;
+        font-family: 'Open Sans', sans-serif;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s, border-color 0.2s;
+        position: relative;
+      }
+      .user-avatar-btn:hover {
+        background: rgba(212,175,55,0.15);
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .user-avatar-btn:hover .avatar-circle {
+        background: var(--accent);
+        color: #1a1a2e;
+      }
+
+      .avatar-circle {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--accent), #a07820);
+        color: #1a1a2e;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 700;
+        font-family: 'Montserrat', sans-serif;
+        flex-shrink: 0;
+        transition: background 0.2s, color 0.2s;
+        letter-spacing: 0.03em;
+      }
+
+      .avatar-name {
+        max-width: 110px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .avatar-chevron {
+        font-size: 0.65rem;
+        opacity: 0.7;
+        margin-left: 2px;
+        transition: transform 0.2s;
+      }
+
+      /* DROPDOWN */
+      .user-dropdown {
+        position: relative;
+      }
+      .user-dropdown-menu {
+        display: none;
+        position: absolute;
+        top: calc(100% + 10px);
+        right: 0;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+        min-width: 200px;
+        z-index: 9999;
+        overflow: hidden;
+        animation: dropIn 0.18s ease;
+      }
+      @keyframes dropIn {
+        from { opacity: 0; transform: translateY(-8px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      .user-dropdown-menu.open { display: block; }
+
+      .dropdown-user-info {
+        padding: 14px 16px 10px;
+        border-bottom: 1px solid #f0e9da;
+      }
+      .dropdown-user-info .d-name {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #1a1a2e;
+      }
+      .dropdown-user-info .d-email {
+        font-size: 0.75rem;
+        color: #8a7d6b;
+        margin-top: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 170px;
+      }
+
+      .dropdown-item-custom {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 11px 16px;
+        color: #333;
+        text-decoration: none;
+        font-size: 0.86rem;
+        font-family: 'Open Sans', sans-serif;
+        transition: background 0.15s;
+      }
+      .dropdown-item-custom:hover {
+        background: #fdf8ee;
+        color: #1a1a2e;
+      }
+      .dropdown-item-custom .d-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: #f5efe0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        color: var(--accent);
+        flex-shrink: 0;
+      }
+      .dropdown-item-custom.logout {
+        border-top: 1px solid #f0e9da;
+        color: #9b2226;
+      }
+      .dropdown-item-custom.logout .d-icon {
+        background: #fde8e8;
+        color: #9b2226;
+      }
+      .dropdown-item-custom.logout:hover {
+        background: #fde8e8;
       }
 
       /* Hero Section */
       .hero-section {
-        background: url("{% static 'Allfiles/Photo/slider-1jpg.jpg' %}")
-          center/cover no-repeat fixed;
+        background: url("{% static 'Allfiles/Photo/slider-1jpg.jpg' %}") center/cover no-repeat fixed;
         min-height: 100vh;
         position: relative;
         display: flex;
@@ -130,29 +253,15 @@
         text-align: center;
         color: white;
       }
-
       .hero-section::before {
         content: "";
         position: absolute;
         inset: 0;
         background: rgba(0, 0, 0, 0.55);
       }
-
-      .hero-content {
-        position: relative;
-        z-index: 2;
-      }
-
-      .hero-content h1 {
-        font-size: 4.5rem;
-        text-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
-      }
-
-      .hero-content p {
-        font-size: 1.5rem;
-        margin: 1.5rem 0 2rem;
-        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
-      }
+      .hero-content { position: relative; z-index: 2; }
+      .hero-content h1 { font-size: 4.5rem; text-shadow: 0 4px 12px rgba(0,0,0,0.7); }
+      .hero-content p { font-size: 1.5rem; margin: 1.5rem 0 2rem; text-shadow: 0 2px 8px rgba(0,0,0,0.6); }
 
       /* Room Cards */
       .room-card {
@@ -160,26 +269,15 @@
         border-radius: 16px;
         overflow: hidden;
         transition: all 0.4s ease;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
       }
-
       .room-card:hover {
         transform: translateY(-12px);
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.2);
       }
+      .room-card img { height: 260px; object-fit: cover; }
+      .room-price { color: var(--accent); font-size: 1.4rem; font-weight: 700; }
 
-      .room-card img {
-        height: 260px;
-        object-fit: cover;
-      }
-
-      .room-price {
-        color: var(--accent);
-        font-size: 1.4rem;
-        font-weight: 700;
-      }
-
-      /* CTA */
       .cta-section {
         background: linear-gradient(135deg, var(--primary), #2a2a4a);
         color: white;
@@ -192,41 +290,23 @@
       <div class="container">
         <div class="row py-2 align-items-center">
           <div class="col-lg-7 d-flex gap-3">
-            <span
-              ><i class="fas fa-map-marker-alt"></i>24,Gbagada
-              Cresent,Lagos</span
-            >
-            <span><i class="fas fa-phone-alt"></i>08125063942</span>
-            <span><i class="far fa-envelope"></i>enioladavid33@gmail.com</span>
+            <span><i class="fas fa-map-marker-alt"></i> 24, Gbagada Cresent, Lagos</span>
+            <span><i class="fas fa-phone-alt"></i> 08125063942</span>
+            <span><i class="far fa-envelope"></i> enioladavid33@gmail.com</span>
           </div>
           <div class="col-lg-5 text-end">
-            <a href="https://www.facebook.com/" class="text-dark me-2"
-              ><i class="fab fa-facebook-f"></i
-            ></a>
-            <a href="https://twitter.com/" class="text-dark me-2"
-              ><i class="fab fa-twitter"></i
-            ></a>
-            <a href="https://plus.google.com/" class="text-dark me-2"
-              ><i class="fab fa-google-plus-g"></i
-            ></a>
-            <a href="https://www.instagram.com/" class="text-dark me-2"
-              ><i class="fab fa-instagram"></i
-            ></a>
+            <a href="https://www.facebook.com/" class="text-dark me-2"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://twitter.com/" class="text-dark me-2"><i class="fab fa-twitter"></i></a>
+            <a href="https://plus.google.com/" class="text-dark me-2"><i class="fab fa-google-plus-g"></i></a>
+            <a href="https://www.instagram.com/" class="text-dark me-2"><i class="fab fa-instagram"></i></a>
           </div>
         </div>
       </div>
 
       <nav class="navbar navbar-expand-lg modern-navbar">
         <div class="container">
-          <a class="navbar-brand fw-bold text-white" href="{% url 'home' %}"
-            >RoseGold Hotel</a
-          >
-          <button
-            class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarNav"
-          >
+          <a class="navbar-brand fw-bold text-white" href="{% url 'home' %}">RoseGold Hotel</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarNav">
@@ -235,37 +315,54 @@
                 <a class="nav-link active" href="{% url 'home' %}">Home</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#rooms">Rooms</a>
+                <a class="nav-link" href="{% url 'room_list' %}">Rooms</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'online_booking' %}"
-                  >Booking</a
-                >
+                <a class="nav-link" href="{% url 'online_booking' %}">Booking</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="#">Contact</a>
               </li>
+
               <li class="nav-item ms-3">
                 {% if user.is_authenticated %}
-                <a
-                  href="{% url 'auth_logout' %}"
-                  class="btn btn-outline-light btn-sm"
-                  >Logout</a
-                >
+                <!-- USER AVATAR DROPDOWN -->
+                <div class="user-dropdown">
+                  <button class="user-avatar-btn" onclick="toggleUserMenu(event)">
+                    <div class="avatar-circle">
+                      {{ user.first_name|slice:":1"|upper }}{{ user.last_name|slice:":1"|upper }}
+                    </div>
+                    <span class="avatar-name">{{ user.first_name|default:user.email }}</span>
+                    <i class="fas fa-chevron-down avatar-chevron" id="avatar-chevron"></i>
+                  </button>
+
+                  <div class="user-dropdown-menu" id="user-dropdown-menu">
+                    <div class="dropdown-user-info">
+                      <div class="d-name">{{ user.first_name }} {{ user.last_name }}</div>
+                      <div class="d-email">{{ user.email }}</div>
+                    </div>
+                    <a href="{% url 'user_profile' %}" class="dropdown-item-custom">
+                      <span class="d-icon"><i class="fas fa-user"></i></span>
+                      My Profile
+                    </a>
+                    <a href="{% url 'my_bookings' %}" class="dropdown-item-custom">
+                      <span class="d-icon"><i class="fas fa-calendar-check"></i></span>
+                      My Bookings
+                    </a>
+                    <a href="{% url 'auth_logout' %}" class="dropdown-item-custom logout">
+                      <span class="d-icon"><i class="fas fa-sign-out-alt"></i></span>
+                      Log Out
+                    </a>
+                  </div>
+                </div>
+
                 {% else %}
-                <a
-                  href="{% url 'author_login' %}"
-                  class="btn btn-outline-light btn-sm"
-                  >Login</a
-                >
+                <a href="{% url 'author_login' %}" class="btn btn-outline-light btn-sm">Login</a>
                 {% endif %}
               </li>
+
               <li class="nav-item ms-3">
-                <a
-                  href="{% url 'online_booking' %}"
-                  class="btn btn-primary btn-md px-4 py-2 fw-bold"
-                  >Book Now</a
-                >
+                <a href="{% url 'online_booking' %}" class="btn btn-primary btn-md px-4 py-2 fw-bold">Book Now</a>
               </li>
             </ul>
           </div>
@@ -275,19 +372,12 @@
 
     {% block content %}
     <!-- Hero Section -->
-
     <section class="hero-section d-flex align-items-center text-center">
       <div class="container position-relative z-2 py-5">
         <h1 class="display-3 fw-bold mb-4">Experience Luxury Redefined</h1>
-        <p class="lead mb-5">
-          Premium Comfort. Exceptional Service at RoseGold Hotel.
-        </p>
-
-        <!-- Optional subtle scroll hint -->
+        <p class="lead mb-5">Premium Comfort. Exceptional Service at RoseGold Hotel.</p>
         <div class="mt-5">
-          <i
-            class="fas fa-chevron-down fa-2x text-white opacity-50 animate__animated animate__infinite animate__pulse"
-          ></i>
+          <i class="fas fa-chevron-down fa-2x text-white opacity-50 animate__animated animate__infinite animate__pulse"></i>
         </div>
       </div>
     </section>
@@ -297,71 +387,36 @@
       <div class="container">
         <h2 class="text-center mb-5 fw-bold">Our Rooms</h2>
         <div class="row g-4">
-          <!-- Room Card Example -->
           <div class="col-lg-4 col-md-6">
             <div class="room-card card h-100">
-              <img
-                src="{% static 'Allfiles/Photo/room-1.jpg' %}"
-                class="card-img-top"
-                alt="Deluxe Room"
-              />
+              <img src="{% static 'Allfiles/Photo/room-1.jpg' %}" class="card-img-top" alt="Deluxe Room"/>
               <div class="card-body text-center">
                 <h5 class="card-title fw-bold">Deluxe Room</h5>
                 <p class="room-price">₦45,000 / night</p>
-
-                <p class="card-text text-muted">
-                  Spacious king-size bed, modern amenities, city view.
-                </p>
-                <a
-                  href="{% url 'online_booking' %}"
-                  class="btn btn-primary mt-3"
-                  >Book Now</a
-                >
+                <p class="card-text text-muted">Spacious king-size bed, modern amenities, city view.</p>
+                <a href="{% url 'online_booking' %}" class="btn btn-primary mt-3">Book Now</a>
               </div>
             </div>
           </div>
-
           <div class="col-lg-4 col-md-6">
             <div class="room-card card h-100">
-              <img
-                src="{% static 'Allfiles/Photo/room-2.jpg' %}"
-                class="card-img-top"
-                alt="Executive Room"
-              />
+              <img src="{% static 'Allfiles/Photo/room-2.jpg' %}" class="card-img-top" alt="Executive Room"/>
               <div class="card-body text-center">
                 <h5 class="card-title fw-bold">Executive Room</h5>
                 <p class="room-price">₦75,000 / night</p>
-
-                <p class="card-text text-muted">
-                  Comfortable room with modern amenities and workspace.
-                </p>
-                <a
-                  href="{% url 'online_booking' %}"
-                  class="btn btn-primary mt-3"
-                  >Book Now</a
-                >
+                <p class="card-text text-muted">Comfortable room with modern amenities and workspace.</p>
+                <a href="{% url 'online_booking' %}" class="btn btn-primary mt-3">Book Now</a>
               </div>
             </div>
           </div>
-
           <div class="col-lg-4 col-md-6">
             <div class="room-card card h-100">
-              <img
-                src="{% static 'Allfiles/Photo/room-3.jpg' %}"
-                class="card-img-top"
-                alt="Luxury Suite"
-              />
+              <img src="{% static 'Allfiles/Photo/room-3.jpg' %}" class="card-img-top" alt="Luxury Suite"/>
               <div class="card-body text-center">
                 <h5 class="card-title fw-bold">Luxury Suite</h5>
                 <p class="room-price">₦150,000 / night</p>
-
-                <p class="card-text">
-                  Premium suite with private lounge, kitchenette, and ocean
-                  view.
-                </p>
-                <a href="{% url 'online_booking' %}" class="btn btn-primary"
-                  >Book Now</a
-                >
+                <p class="card-text">Premium suite with private lounge, kitchenette, and ocean view.</p>
+                <a href="{% url 'online_booking' %}" class="btn btn-primary">Book Now</a>
               </div>
             </div>
           </div>
@@ -369,54 +424,34 @@
       </div>
     </section>
 
-    <!-- Call to Action Section -->
+    <!-- CTA Section -->
     <section class="cta-section text-white text-center py-5">
       <div class="container">
         <h2 class="mb-4">Plan Your Stay With Us</h2>
-        <p class="lead mb-4">
-          Book your perfect room now and enjoy a luxury experience.
-        </p>
-        <a href="{% url 'room_list' %}" class="btn btn-light btn-lg"
-          >Explore Rooms</a
-        >
+        <p class="lead mb-4">Book your perfect room now and enjoy a luxury experience.</p>
+        <a href="{% url 'room_list' %}" class="btn btn-light btn-lg">Explore Rooms</a>
       </div>
     </section>
-    {% block extra_js %}
-    <script
-      src="https://code.jquery.com/jquery-3.6.0.min.js"
-      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-      crossorigin="anonymous"
-    ></script>
 
+    {% block extra_js %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script>
       $(document).ready(function () {
-        console.log("jQuery is working — Services tab script loaded");
-
-        // Hide all images except first
         $(".Service_img").hide();
         $("#swim").show();
-
-        // Click handler
         $(".Service_menu .tabs li").on("click", function (e) {
           e.preventDefault();
-
           $(".Service_menu .tabs li").removeClass("active");
           $(this).addClass("active");
-
           var target = $(this).attr("rel");
           $(".Service_img").fadeOut(200);
           $(target).fadeIn(400);
-
-          console.log("Clicked: " + target); // check console
         });
-
-        // Activate first tab
-        $(".Service_menu .tabs li:first-child")
-          .addClass("active")
-          .trigger("click");
+        $(".Service_menu .tabs li:first-child").addClass("active").trigger("click");
       });
     </script>
-    {% endblock %} {% endblock content %}
+    {% endblock %}
+    {% endblock content %}
 
     <!-- Footer -->
     <footer id="footer">
@@ -436,6 +471,26 @@
     <script src="{% static 'Allfiles/js/jquery.magnific-popup.min.js' %}"></script>
     <script src="{% static 'Allfiles/js/jquery.counterup.min.js' %}"></script>
     <script src="{% static 'Allfiles/js/Script.js' %}"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+      function toggleUserMenu(e) {
+        e.stopPropagation();
+        const menu    = document.getElementById('user-dropdown-menu');
+        const chevron = document.getElementById('avatar-chevron');
+        const isOpen  = menu.classList.contains('open');
+        menu.classList.toggle('open');
+        chevron.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+      }
+
+      // Close dropdown when clicking anywhere else
+      document.addEventListener('click', function () {
+        const menu    = document.getElementById('user-dropdown-menu');
+        const chevron = document.getElementById('avatar-chevron');
+        if (menu) {
+          menu.classList.remove('open');
+          chevron.style.transform = 'rotate(0deg)';
+        }
+      });
+    </script>
   </body>
 </html>
