@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.http import HttpResponse
 from .models import Room, OnlineBooking
 from django.shortcuts import get_object_or_404, redirect
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from .models import (
     OnlineBooking,
@@ -206,22 +206,18 @@ def book_room(request, room_id):
     room = get_object_or_404(Room, id=room_id)
 
     if request.method == "POST":
-        check_in  = request.POST.get("check_in")
-        check_out = request.POST.get("check_out")
-        adults    = request.POST.get("adults", 1)
-        children  = request.POST.get("children", 0)
-        city      = request.POST.get("city", "")
-        country   = request.POST.get("country", "")
-        address   = request.POST.get("address", "")
+        check_in_raw = request.POST.get("check_in")
+        stay_duration = int(request.POST.get("stay_duration", 1))
+        adults = int(request.POST.get("adults", 1))
+        children = int(request.POST.get("children", 0))
 
-        check_in  = datetime.strptime(check_in, "%Y-%m-%d").date()
-        check_out = datetime.strptime(check_out, "%Y-%m-%d").date()
+        check_in = datetime.strptime(check_in_raw, "%Y-%m-%d").date()
+        check_out = check_in + timedelta(days=stay_duration)
 
-        if check_in >= check_out:
-            messages.error(request, "Check-out must be after check-in.")
+        if stay_duration <= 0:
+            messages.error(request, "Stay duration must be at least one night.")
             return redirect("book_room", room_id=room.id)
 
-        # Check for overlapping bookings
         overlapping = OnlineBooking.objects.filter(
             room=room,
             check_in__lt=check_out,
@@ -237,11 +233,11 @@ def book_room(request, room_id):
             room=room,
             check_in=check_in,
             check_out=check_out,
-            adults=int(adults),
-            children=int(children),
-            city=city,
-            country=country,
-            address=address,
+            adults=adults,
+            children=children,
+            city="N/A",
+            country="N/A",
+            address="N/A",
         )
 
         messages.success(request, f"Room {room.room_number} booked successfully!")

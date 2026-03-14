@@ -1,0 +1,79 @@
+{% extends "allinclude.html" %} {% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+          <h2 class="h4 mb-3">Book Room {{ room.room_number }}</h2>
+          <p class="text-muted mb-4">
+            {{ room.room_type }} • ${{ room.price }} per night
+          </p>
+
+          {% if room.image %}
+          <img
+            src="{{ room.image.url }}"
+            alt="Room {{ room.room_number }}"
+            class="img-fluid rounded mb-4"
+          />
+          {% endif %}
+
+          <form method="post">
+            {% csrf_token %}
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Check-in</label>
+                <input
+                  type="date"
+                  name="check_in"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Stay duration (nights)</label>
+                <input
+                  type="number"
+                  name="stay_duration"
+                  class="form-control"
+                  min="1"
+                  value="1"
+                  required
+                />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Adults</label>
+                <input
+                  type="number"
+                  name="adults"
+                  class="form-control"
+                  min="1"
+                  value="1"
+                  required
+                />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Children</label>
+                <input
+                  type="number"
+                  name="children"
+                  class="form-control"
+                  min="0"
+                  value="0"
+                />
+              </div>
+            </div>
+            <div class="d-flex gap-2 mt-4">
+              <button type="submit" class="btn btn-primary">
+                Confirm Booking
+              </button>
+              <a href="{% url 'room_list' %}" class="btn btn-outline-secondary"
+                >Back to rooms</a
+              >
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
