@@ -378,7 +378,7 @@
         <div class="label">Active</div>
       </div>
       <div class="stat-card">
-        <div class="num">—</div>
+        <div class="num">{{ total_nights }}</div>
         <div class="label">Nights Booked</div>
       </div>
     </div>
@@ -417,17 +417,17 @@
           {% if booking.children > 0 %}
           <span>👧 {{ booking.children }} child{{ booking.children|pluralize:"ren" }}</span>
           {% endif %}
-          <span>📍 {{ booking.city }}, {{ booking.country }}</span>
+          <span>🌙 {{ booking.nights }} night{{ booking.nights|pluralize }}</span>
           <span>₦{{ booking.room.price }}/night</span>
         </div>
       </div>
 
       <div class="booking-actions">
-        <button class="btn-modify"
+        <button type="button" class="btn-modify"
           onclick="openModify({{ booking.id }}, '{{ booking.check_in }}', '{{ booking.check_out }}')">
           Modify
         </button>
-        <button class="btn-cancel"
+        <button type="button" class="btn-cancel"
           onclick="openCancel({{ booking.id }})">
           Cancel
         </button>

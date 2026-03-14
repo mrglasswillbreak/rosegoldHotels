@@ -197,8 +197,15 @@ def my_bookings(request):
             messages.success(request, "Booking updated successfully.")
             return redirect("my_bookings")
 
-    bookings = OnlineBooking.objects.filter(user=request.user).order_by("-created_at")
-    return render(request, "my_bookings.html", {"bookings": bookings})
+    bookings = list(OnlineBooking.objects.filter(user=request.user).order_by("-created_at"))
+    for b in bookings:
+        b.nights = (b.check_out - b.check_in).days
+    total_nights = sum(b.nights for b in bookings)
+
+    return render(request, "my_bookings.html", {
+        "bookings": bookings,
+        "total_nights": total_nights
+    })
 
 
 @login_required
