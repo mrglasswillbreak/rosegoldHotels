@@ -584,29 +584,29 @@ Hotel & Resort
 
 <!--================Slider Start=================-->
 <!--================Slider Start=================-->
-<section id="slider" style="position:relative; z-index:1;">
+<section id="slider" class="hero-slider-shell">
 
   <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="4000">
 
     <!-- Indicators -->
     <div class="carousel-indicators">
-      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"></button>
-      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
-      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
-      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="3"></button>
-      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="4"></button>
+      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" title="Go to slide 1" aria-label="Go to slide 1"></button>
+      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" title="Go to slide 2" aria-label="Go to slide 2"></button>
+      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" title="Go to slide 3" aria-label="Go to slide 3"></button>
+      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="3" title="Go to slide 4" aria-label="Go to slide 4"></button>
+      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="4" title="Go to slide 5" aria-label="Go to slide 5"></button>
     </div>
 
     <!-- Slides -->
     <div class="carousel-inner">
       {% with slides="slider-1.jpg,slider-2.jpg,slider-3.jpg,slider-4.jpg,slider-5.jpg" %}
       <div class="carousel-item active">
-        <div class="hero-slide" style="background-image: url('{% static 'Allfiles/Photo/slider-1.jpg' %}');">
+        <div class="hero-slide hero-slide-1">
           <div class="hero-overlay"></div>
           <div class="hero-content-wrap container">
             <h1 class="display-4 fw-bold text-white mb-4">
               Welcome {{ request.user.first_name|default:request.user.username }},
-              <span style="color:#d4af37;">to RoseGold Hotel & Suites</span>
+              <span class="gold-accent">to RoseGold Hotel & Suites</span>
             </h1>
             <p class="lead text-white mb-5 opacity-90">Your one-stop solution for hassle-free hotel reservations.</p>
             <a href="{% url 'online_booking' %}" class="hero-cta-btn">Book Now</a>
@@ -614,40 +614,40 @@ Hotel & Resort
         </div>
       </div>
       <div class="carousel-item">
-        <div class="hero-slide" style="background-image: url('{% static 'Allfiles/Photo/slider-2.jpg' %}');">
+        <div class="hero-slide hero-slide-2">
           <div class="hero-overlay"></div>
           <div class="hero-content-wrap container">
-            <h1 class="display-4 fw-bold text-white mb-4">Luxury <span style="color:#d4af37;">Redefined</span></h1>
+            <h1 class="display-4 fw-bold text-white mb-4">Luxury <span class="gold-accent">Redefined</span></h1>
             <p class="lead text-white mb-5">Experience premium comfort and exceptional service.</p>
             <a href="{% url 'room_list' %}" class="hero-cta-btn">Explore Rooms</a>
           </div>
         </div>
       </div>
       <div class="carousel-item">
-        <div class="hero-slide" style="background-image: url('{% static 'Allfiles/Photo/slider-3.jpg' %}');">
+        <div class="hero-slide hero-slide-3">
           <div class="hero-overlay"></div>
           <div class="hero-content-wrap container">
-            <h1 class="display-4 fw-bold text-white mb-4">World-Class <span style="color:#d4af37;">Amenities</span></h1>
+            <h1 class="display-4 fw-bold text-white mb-4">World-Class <span class="gold-accent">Amenities</span></h1>
             <p class="lead text-white mb-5">Spa, pool, restaurant and more — all under one roof.</p>
             <a href="{% url 'online_booking' %}" class="hero-cta-btn">Book Now</a>
           </div>
         </div>
       </div>
       <div class="carousel-item">
-        <div class="hero-slide" style="background-image: url('{% static 'Allfiles/Photo/slider-4.jpg' %}');">
+        <div class="hero-slide hero-slide-4">
           <div class="hero-overlay"></div>
           <div class="hero-content-wrap container">
-            <h1 class="display-4 fw-bold text-white mb-4">Your <span style="color:#d4af37;">Perfect Stay</span> Awaits</h1>
+            <h1 class="display-4 fw-bold text-white mb-4">Your <span class="gold-accent">Perfect Stay</span> Awaits</h1>
             <p class="lead text-white mb-5">Unwind in rooms designed for relaxation and elegance.</p>
             <a href="{% url 'room_list' %}" class="hero-cta-btn">View Rooms</a>
           </div>
         </div>
       </div>
       <div class="carousel-item">
-        <div class="hero-slide" style="background-image: url('{% static 'Allfiles/Photo/slider-5.jpg' %}');">
+        <div class="hero-slide hero-slide-5">
           <div class="hero-overlay"></div>
           <div class="hero-content-wrap container">
-            <h1 class="display-4 fw-bold text-white mb-4">Make <span style="color:#d4af37;">Memories</span> Here</h1>
+            <h1 class="display-4 fw-bold text-white mb-4">Make <span class="gold-accent">Memories</span> Here</h1>
             <p class="lead text-white mb-5">RoseGold Hotel — where every moment is unforgettable.</p>
             <a href="{% url 'online_booking' %}" class="hero-cta-btn">Book Now</a>
           </div>
@@ -657,10 +657,10 @@ Hotel & Resort
     </div>
 
     <!-- Controls -->
-    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev" title="Previous slide" aria-label="Previous slide">
       <span class="carousel-control-prev-icon"></span>
     </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next" title="Next slide" aria-label="Next slide">
       <span class="carousel-control-next-icon"></span>
     </button>
   </div>
@@ -677,6 +677,16 @@ Hotel & Resort
     align-items: center;
     position: relative;
   }
+  .hero-slider-shell {
+    position: relative;
+    z-index: 1;
+  }
+  .hero-slide-1 { background-image: url('{% static 'Allfiles/Photo/slider-1.jpg' %}'); }
+  .hero-slide-2 { background-image: url('{% static 'Allfiles/Photo/slider-2.jpg' %}'); }
+  .hero-slide-3 { background-image: url('{% static 'Allfiles/Photo/slider-3.jpg' %}'); }
+  .hero-slide-4 { background-image: url('{% static 'Allfiles/Photo/slider-4.jpg' %}'); }
+  .hero-slide-5 { background-image: url('{% static 'Allfiles/Photo/slider-5.jpg' %}'); }
+  .gold-accent { color: #d4af37; }
   .hero-overlay {
     position: absolute;
     inset: 0;
@@ -726,16 +736,16 @@ Hotel & Resort
   <div class="container">
     <form method="GET" class="modern-booking d-flex flex-wrap justify-content-center align-items-end gap-4">
       <div>
-        <label>Check-in</label>
-        <input type="date" name="check_in" class="form-control" required>
+        <label for="check_in_date">Check-in</label>
+        <input id="check_in_date" type="date" name="check_in" class="form-control" title="Check-in date" required>
       </div>
       <div>
-        <label>Check-out</label>
-        <input type="date" name="check_out" class="form-control" required>
+        <label for="check_out_date">Check-out</label>
+        <input id="check_out_date" type="date" name="check_out" class="form-control" title="Check-out date" required>
       </div>
       <div>
-        <label>Adults</label>
-        <select name="adults" class="form-select">
+        <label for="adults_count">Adults</label>
+        <select id="adults_count" name="adults" class="form-select" title="Number of adults">
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="3">3</option>
@@ -743,8 +753,8 @@ Hotel & Resort
         </select>
       </div>
       <div>
-        <label>Children</label>
-        <select name="children" class="form-select">
+        <label for="children_count">Children</label>
+        <select id="children_count" name="children" class="form-select" title="Number of children">
           <option value="0">0</option>
           <option value="1">1</option>
           <option value="2">2</option>
@@ -1062,10 +1072,10 @@ Hotel & Resort
                          </div>
                          <div class="Staff_part2 text-center">
                             <ul>
-                                <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
-                                <li><a href="#"><i class="fab fa-twitter"></i></a></i></a></li>
-                                <li><a href="#"><i class="fab fa-google-plus-g"></i></a></li>
-                                <li><a href="#"><i class="fab fa-instagram"></i></a></li>
+                                <li><a href="#" title="Facebook profile" aria-label="Facebook profile"><i class="fab fa-facebook-f"></i></a></li>
+                                <li><a href="#" title="Twitter profile" aria-label="Twitter profile"><i class="fab fa-twitter"></i></a></li>
+                                <li><a href="#" title="Google profile" aria-label="Google profile"><i class="fab fa-google-plus-g"></i></a></li>
+                                <li><a href="#" title="Instagram profile" aria-label="Instagram profile"><i class="fab fa-instagram"></i></a></li>
                             </ul>
                          </div>
                      </div>
@@ -1081,10 +1091,10 @@ Hotel & Resort
                          </div>
                          <div class="Staff_part2 text-center">
                             <ul>
-                                <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
-                                <li><a href="#"><i class="fab fa-twitter"></i></a></i></a></li>
-                                <li><a href="#"><i class="fab fa-google-plus-g"></i></a></li>
-                                <li><a href="#"><i class="fab fa-instagram"></i></a></li>
+                                <li><a href="#" title="Facebook profile" aria-label="Facebook profile"><i class="fab fa-facebook-f"></i></a></li>
+                                <li><a href="#" title="Twitter profile" aria-label="Twitter profile"><i class="fab fa-twitter"></i></a></li>
+                                <li><a href="#" title="Google profile" aria-label="Google profile"><i class="fab fa-google-plus-g"></i></a></li>
+                                <li><a href="#" title="Instagram profile" aria-label="Instagram profile"><i class="fab fa-instagram"></i></a></li>
                             </ul>
                          </div>
                      </div>
@@ -1100,10 +1110,10 @@ Hotel & Resort
                          </div>
                          <div class="Staff_part2 text-center">
                             <ul>
-                                <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
-                                <li><a href="#"><i class="fab fa-twitter"></i></a></i></a></li>
-                                <li><a href="#"><i class="fab fa-google-plus-g"></i></a></li>
-                                <li><a href="#"><i class="fab fa-instagram"></i></a></li>
+                                <li><a href="#" title="Facebook profile" aria-label="Facebook profile"><i class="fab fa-facebook-f"></i></a></li>
+                                <li><a href="#" title="Twitter profile" aria-label="Twitter profile"><i class="fab fa-twitter"></i></a></li>
+                                <li><a href="#" title="Google profile" aria-label="Google profile"><i class="fab fa-google-plus-g"></i></a></li>
+                                <li><a href="#" title="Instagram profile" aria-label="Instagram profile"><i class="fab fa-instagram"></i></a></li>
                             </ul>
                          </div>
                      </div>
@@ -1119,10 +1129,10 @@ Hotel & Resort
                          </div>
                          <div class="Staff_part2 text-center">
                             <ul>
-                                <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
-                                <li><a href="#"><i class="fab fa-twitter"></i></a></i></a></li>
-                                <li><a href="#"><i class="fab fa-google-plus-g"></i></a></li>
-                                <li><a href="#"><i class="fab fa-instagram"></i></a></li>
+                                <li><a href="#" title="Facebook profile" aria-label="Facebook profile"><i class="fab fa-facebook-f"></i></a></li>
+                                <li><a href="#" title="Twitter profile" aria-label="Twitter profile"><i class="fab fa-twitter"></i></a></li>
+                                <li><a href="#" title="Google profile" aria-label="Google profile"><i class="fab fa-google-plus-g"></i></a></li>
+                                <li><a href="#" title="Instagram profile" aria-label="Instagram profile"><i class="fab fa-instagram"></i></a></li>
                             </ul>
                          </div>
                      </div>
