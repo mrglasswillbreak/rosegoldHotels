@@ -369,7 +369,7 @@
     <p>Manage your reservations</p>
   </div>
 
-  <div class="bookings-container">
+    <div class="bookings-container">
 
     {% if messages %}
     <div class="messages-list">
@@ -383,17 +383,23 @@
     <!-- STATS -->
     <div class="stats-row">
       <div class="stat-card">
-        <div class="num">{{ bookings.count }}</div>
+        <div class="num">{{ total_bookings }}</div>
         <div class="label">Total Bookings</div>
       </div>
       <div class="stat-card">
-        <div class="num">{{ bookings.count }}</div>
+        <div class="num">{{ active_bookings }}</div>
         <div class="label">Active</div>
       </div>
       <div class="stat-card">
         <div class="num">{{ total_nights }}</div>
         <div class="label">Nights Booked</div>
       </div>
+    </div>
+
+    <div class="d-flex justify-content-end mb-3">
+      <a href="{% url 'online_booking' %}?new=1" class="btn btn-dark">
+        New Reservation
+      </a>
     </div>
 
     <div class="section-title">Your Reservations</div>

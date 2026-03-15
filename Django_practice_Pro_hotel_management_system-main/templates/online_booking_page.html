@@ -1,6 +1,6 @@
 {% extends "allinclude.html" %} {% block content %}
 
-{% if user.is_authenticated %}
+{% if not show_form %}
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
@@ -157,7 +157,7 @@
   <div class="bookings-container">
     <div class="actions-row">
       <div class="title">Active Bookings</div>
-      <a href="{% url 'author_login' %}" class="new-booking-btn">New Booking</a>
+      <a href="{% url 'online_booking' %}?new=1" class="new-booking-btn">New Booking</a>
     </div>
 
     {% if bookings %}
@@ -186,7 +186,7 @@
     <div class="empty-state">
       <h3>No Active Bookings</h3>
       <p>There are currently no bookings to show.</p>
-      <a href="{% url 'author_login' %}" class="new-booking-btn" style="margin-top: 14px; display: inline-block;">Create a Booking</a>
+      <a href="{% url 'online_booking' %}?new=1" class="new-booking-btn" style="margin-top: 14px; display: inline-block;">Create a Booking</a>
     </div>
     {% endif %}
   </div>
@@ -260,12 +260,29 @@
     height: 200px;
     overflow: hidden;
     background: #2c2218;
+    position: relative;
   }
   .room-summary-img img {
     width: 100%; height: 100%;
     object-fit: cover;
     opacity: 0.85;
   }
+  .preview-expand-btn {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,0.92);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+  }
+  .preview-expand-btn svg { width: 16px; height: 16px; }
   .room-summary-img .no-img {
     width: 100%; height: 100%;
     display: flex; align-items: center; justify-content: center;
@@ -427,6 +444,49 @@
   }
   .back-link:hover { color: var(--gold); }
 
+  /* LIGHTBOX */
+  .lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .lightbox.open { display: flex; }
+  .lightbox img {
+    max-width: 90vw;
+    max-height: 85vh;
+    border-radius: 12px;
+    object-fit: contain;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+  }
+  .lightbox-close {
+    position: absolute;
+    top: 24px;
+    right: 30px;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 2rem;
+    cursor: pointer;
+    line-height: 1;
+    opacity: 0.8;
+  }
+  .lightbox-close:hover { opacity: 1; }
+  .lightbox-caption {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ccc;
+    font-size: 0.9rem;
+    font-family: 'DM Sans', sans-serif;
+    letter-spacing: 0.05em;
+  }
+
   @media (max-width: 768px) {
     .booking-layout { grid-template-columns: 1fr; }
     .room-summary { position: static; }
@@ -434,6 +494,12 @@
     .booking-form-card { padding: 24px; }
   }
 </style>
+
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+  <button class="lightbox-close" onclick="document.getElementById('lightbox').classList.remove('open')">&times;</button>
+  <img id="lightbox-img" src="" alt="">
+  <div class="lightbox-caption" id="lightbox-caption"></div>
+</div>
 
 <div class="booking-page">
   <div class="booking-hero">
@@ -445,6 +511,9 @@
     <div class="room-summary">
       <div class="room-summary-img">
         <img id="room-preview-img" src="{% if room and room.image %}{{ room.image.url }}{% endif %}" alt="" style="{% if not room or not room.image %}display:none;{% endif %}">
+        <button type="button" id="preview-expand" class="preview-expand-btn" aria-label="View full image">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#1a1410" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+        </button>
         <div id="room-preview-empty" class="no-img" {% if room and room.image %}style="display:none;"{% endif %}>
           {% if room %}No image available{% else %}Select a room to preview{% endif %}
         </div>
@@ -583,6 +652,7 @@
   const roomPrice = document.getElementById('room-preview-price');
   const roomImg = document.getElementById('room-preview-img');
   const roomEmpty = document.getElementById('room-preview-empty');
+  const previewExpand = document.getElementById('preview-expand');
   const checkIn  = document.getElementById('check_in');
   const checkOut = document.getElementById('check_out');
   const summary  = document.getElementById('stay-summary');
@@ -644,14 +714,39 @@
       roomImg.alt = `Room ${data.number}`;
       roomImg.style.display = 'block';
       roomEmpty.style.display = 'none';
+      previewExpand.style.display = 'flex';
     } else {
       roomImg.style.display = 'none';
       roomImg.removeAttribute('src');
       roomEmpty.textContent = 'No image available';
       roomEmpty.style.display = 'flex';
+      previewExpand.style.display = 'none';
     }
     updateSummary();
   }
+
+  function openLightbox(url, caption) {
+    if (!url) return;
+    document.getElementById('lightbox-img').src = url;
+    document.getElementById('lightbox-caption').textContent = caption;
+    document.getElementById('lightbox').classList.add('open');
+  }
+
+  function closeLightbox(e) {
+    if (e.target.id === 'lightbox') {
+      document.getElementById('lightbox').classList.remove('open');
+    }
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') document.getElementById('lightbox').classList.remove('open');
+  });
+
+  previewExpand?.addEventListener('click', () => {
+    if (roomImg?.src) {
+      openLightbox(roomImg.src, roomTitle.textContent);
+    }
+  });
 
   roomSelect?.addEventListener('change', updatePreview);
   updatePreview();

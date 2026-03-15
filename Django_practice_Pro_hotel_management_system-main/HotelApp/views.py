@@ -202,13 +202,18 @@ def my_bookings(request):
             return redirect("my_bookings")
 
     bookings = list(OnlineBooking.objects.filter(user=request.user).order_by("-created_at"))
+    today = datetime.now().date()
     for b in bookings:
         b.nights = (b.check_out - b.check_in).days
     total_nights = sum(b.nights for b in bookings)
+    total_bookings = len(bookings)
+    active_bookings = sum(1 for b in bookings if b.check_out >= today)
 
     return render(request, "my_bookings.html", {
         "bookings": bookings,
-        "total_nights": total_nights
+        "total_nights": total_nights,
+        "total_bookings": total_bookings,
+        "active_bookings": active_bookings,
     })
 
 
@@ -273,25 +278,86 @@ def book_room(request, room_id):
 # MY BOOKINGS — with cancel & modify
 
 def online_booking(request):
-    if request.user.is_authenticated:
-        today = datetime.now().date()
-        bookings = list(
-            OnlineBooking.objects.select_related("room", "user")
-            .filter(check_out__gte=today)
-            .order_by("-created_at")
-        )
-        for b in bookings:
-            b.nights = (b.check_out - b.check_in).days
-
-        return render(request, "online_booking_page.html", {
-            "bookings": bookings,
-        })
+    show_form = (not request.user.is_authenticated) or request.GET.get("new") == "1"
 
     if request.method == "POST":
-        messages.error(request, "Please log in to complete a booking.")
-        return redirect("author_login")
+        if not request.user.is_authenticated:
+            messages.error(request, "Please log in to complete a booking.")
+            return redirect("author_login")
 
-    rooms = Room.objects.all().order_by("room_number")
+        form_data = {
+            "room_id": request.POST.get("room_id", "").strip(),
+            "check_in": request.POST.get("check_in", "").strip(),
+            "check_out": request.POST.get("check_out", "").strip(),
+            "adults": request.POST.get("adults", "1").strip(),
+            "children": request.POST.get("children", "0").strip(),
+            "city": request.POST.get("city", "").strip(),
+            "country": request.POST.get("country", "").strip(),
+            "address": request.POST.get("address", "").strip(),
+        }
+
+        selected_room = None
+        if not form_data["room_id"]:
+            messages.error(request, "Please select a room.")
+        else:
+            selected_room = get_object_or_404(Room, id=form_data["room_id"])
+
+        try:
+            check_in = datetime.strptime(form_data["check_in"], "%Y-%m-%d").date()
+            check_out = datetime.strptime(form_data["check_out"], "%Y-%m-%d").date()
+        except (TypeError, ValueError):
+            check_in = check_out = None
+            messages.error(request, "Please enter valid dates.")
+
+        try:
+            adults = int(form_data["adults"])
+            children = int(form_data["children"])
+        except (TypeError, ValueError):
+            adults = children = None
+            messages.error(request, "Please enter valid guest counts.")
+
+        if check_in and check_out and check_in >= check_out:
+            messages.error(request, "Check-out must be after check-in.")
+
+        if adults is not None and (adults <= 0 or children < 0):
+            messages.error(request, "Please enter valid guest counts.")
+
+        if selected_room and check_in and check_out and adults is not None:
+            overlapping = OnlineBooking.objects.filter(
+                room=selected_room,
+                check_in__lt=check_out,
+                check_out__gt=check_in
+            ).exists()
+
+            if overlapping:
+                messages.error(request, "Room is not available for the selected dates.")
+            else:
+                OnlineBooking.objects.create(
+                    user=request.user,
+                    room=selected_room,
+                    check_in=check_in,
+                    check_out=check_out,
+                    adults=adults,
+                    children=children,
+                    city=form_data["city"],
+                    country=form_data["country"],
+                    address=form_data["address"],
+                )
+                messages.success(request, "Booking successful!")
+                return redirect("my_bookings")
+
+        rooms = Room.objects.filter(status='available').order_by("room_number")
+        return render(request, "online_booking_page.html", {
+            "rooms": rooms,
+            "room": selected_room,
+            "form_data": form_data,
+            "show_form": True,
+        })
+
+    if not show_form and request.user.is_authenticated:
+        return redirect("my_bookings")
+
+    rooms = Room.objects.filter(status='available').order_by("room_number")
     selected_room = None
     form_data = {}
 
@@ -305,6 +371,7 @@ def online_booking(request):
         "rooms": rooms,
         "room": selected_room,
         "form_data": form_data,
+        "show_form": True,
     })
 
 
