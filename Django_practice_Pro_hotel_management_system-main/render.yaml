@@ -1,0 +1,26 @@
+databases:
+  - name: hotel-management-db
+    plan: free
+    databaseName: hotel_management
+    ipAllowList: []
+
+services:
+  - type: web
+    name: hotel-management-system
+    runtime: python
+    plan: free
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn HotelManagementSystem.wsgi:application"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: hotel-management-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PYTHON_VERSION
+        value: 3.11.6
+      - key: NODE_VERSION
+        value: 20.11.0
+      - key: WEB_CONCURRENCY
+        value: 4
