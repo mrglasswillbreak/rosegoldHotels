@@ -1,5 +1,10 @@
 {% extends 'allinclude.html' %}
 {% load static %}
+{% block title %}
+Hotel & Resort
+{% endblock %}
+
+{% block content %}
 <style>
   #slider,
   #slider .slider_pic {
@@ -16,12 +21,103 @@
     position: relative;
     z-index: 1;
   }
-</style>
-{% block title %}
-Hotel & Resort
-{% endblock %}
 
-{% block content %}
+  #OUR_ROOMS .ROOMS_info {
+    margin-top: 14px;
+  }
+
+  #OUR_ROOMS .room_slide {
+    row-gap: 26px;
+  }
+
+  #OUR_ROOMS .room_slide > [class*="col-"] {
+    margin-bottom: 8px;
+  }
+
+  #OUR_ROOMS .rooms-view {
+    height: 100%;
+    margin: 0 8px;
+  }
+
+  #GALLERY .GALLERY_info,
+  #Staff .Staff_info,
+  #Service .Service_img {
+    margin: 0 8px;
+  }
+
+  #Staff .Staff_title {
+    margin-bottom: 10px;
+  }
+
+  #Staff .Staff_view {
+    margin-top: 8px;
+  }
+
+  #Staff .Staff_slider {
+    row-gap: 14px;
+  }
+
+  #Staff .Staff_slider:not(.slick-initialized) {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    column-gap: 16px;
+    row-gap: 14px;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  #Staff .Staff_slider:not(.slick-initialized) .Staff_info {
+    width: auto;
+    max-width: none;
+    margin: 0;
+  }
+
+  #OUR_ROOMS .room_slide.slick-slider .slick-list {
+    margin: 0 -10px;
+  }
+
+  #GALLERY .GALLERY_slider.slick-slider .slick-list,
+  #Staff .Staff_slider.slick-slider .slick-list {
+    margin: 0 -10px;
+  }
+
+  #OUR_ROOMS .room_slide.slick-slider .slick-slide {
+    padding: 0 10px;
+  }
+
+  #GALLERY .GALLERY_slider.slick-slider .slick-slide,
+  #Staff .Staff_slider.slick-slider .slick-slide {
+    padding: 0 10px;
+  }
+
+  @media (max-width: 768px) {
+    #OUR_ROOMS .room_slide {
+      row-gap: 18px;
+    }
+
+    #OUR_ROOMS .rooms-view {
+      margin: 0;
+    }
+
+    #GALLERY .GALLERY_info,
+    #Staff .Staff_info,
+    #Service .Service_img {
+      margin: 0;
+    }
+
+    #Staff .Staff_slider:not(.slick-initialized) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 12px;
+      row-gap: 12px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    #Staff .Staff_slider:not(.slick-initialized) {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
 
 <!--================Slider Start=================-->
 <!--================Slider Start=================-->
@@ -480,8 +576,8 @@ Hotel & Resort
        <div class="row text-center justify-content-center">
           <div class="col-lg-8">
               <div class="Staff_title">
-                <h2>OUR SPECIAL STAFF</h2>
-                <p>This is your one-stop solution for hassle-free hotel reservations.Quickly find the perfect hotel for your next stay. Use our search tool to browse and book hotels in the area.</p>
+                <h2>OUR HOSPITALITY TEAM</h2>
+                <p>Meet the people behind your comfort. From reception to housekeeping and chef services, our dedicated staff is here to make every stay smooth and memorable.</p>
                </div>
           </div>
        </div>
