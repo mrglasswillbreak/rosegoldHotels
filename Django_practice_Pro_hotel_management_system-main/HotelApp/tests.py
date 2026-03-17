@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 from django.test import TestCase
 from django.urls import reverse
-from django.db.utils import OperationalError
+from django.db.utils import OperationalError, ProgrammingError
 
 from .models import Room
 
@@ -23,6 +23,13 @@ class HomeViewTests(TestCase):
 
     def test_home_page_renders_when_room_query_fails(self):
         with patch("HotelApp.views.Room.objects.all", side_effect=OperationalError("db unavailable")):
+            response = self.client.get(reverse("home"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["rooms"], [])
+
+    def test_home_page_renders_when_room_schema_is_unavailable(self):
+        with patch("HotelApp.views.Room.objects.all", side_effect=ProgrammingError("relation does not exist")):
             response = self.client.get(reverse("home"))
 
         self.assertEqual(response.status_code, 200)
