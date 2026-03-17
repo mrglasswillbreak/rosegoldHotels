@@ -31,8 +31,7 @@ from .forms import (
 
 
 def home(request):
-    rooms = Room.objects.all().order_by('-id')[:6]  # Show latest 6 rooms
-    return render(request, "Home.html", {"rooms": rooms})
+    return render(request, "Home.html")
 
 
 
