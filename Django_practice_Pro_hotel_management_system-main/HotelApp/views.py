@@ -7,6 +7,7 @@ from django.views.decorators.http import require_POST, require_http_methods
 from django.db.utils import OperationalError, ProgrammingError
 from datetime import datetime, timedelta
 import json
+import logging
 
 from .models import (
     OnlineBooking,
@@ -25,6 +26,8 @@ from .forms import (
     SalaryForm
 )
 
+logger = logging.getLogger(__name__)
+
 
 # =========================
 # BASIC PAGES
@@ -35,6 +38,7 @@ def home(request):
     try:
         rooms = Room.objects.all().order_by('-id')[:6]
     except (OperationalError, ProgrammingError):
+        logger.exception("Failed to load latest rooms for home page")
         rooms = []
     return render(request, "Home.html", {"rooms": rooms})
 
