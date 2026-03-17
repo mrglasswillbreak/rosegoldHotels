@@ -22,15 +22,19 @@ class HomeViewTests(TestCase):
         self.assertEqual(len(response.context["rooms"]), 1)
 
     def test_home_page_renders_when_room_query_fails(self):
-        with patch("HotelApp.views.Room.objects.all", side_effect=OperationalError("db unavailable")):
+        with patch("HotelApp.views.Room.objects") as mocked_manager:
+            mocked_manager.all.side_effect = OperationalError("db unavailable")
             response = self.client.get(reverse("home"))
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["rooms"], [])
+        mocked_manager.all.assert_called_once()
 
     def test_home_page_renders_when_room_schema_is_unavailable(self):
-        with patch("HotelApp.views.Room.objects.all", side_effect=ProgrammingError("relation does not exist")):
+        with patch("HotelApp.views.Room.objects") as mocked_manager:
+            mocked_manager.all.side_effect = ProgrammingError("relation does not exist")
             response = self.client.get(reverse("home"))
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["rooms"], [])
+        mocked_manager.all.assert_called_once()
