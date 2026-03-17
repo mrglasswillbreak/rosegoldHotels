@@ -38,7 +38,7 @@ def home(request):
     try:
         rooms = Room.objects.all().order_by('-id')[:6]
     except (OperationalError, ProgrammingError):
-        logger.exception("Failed to load latest rooms for home page; continuing with empty rooms list")
+        logger.exception("Failed to load latest rooms for home page. Continuing with empty rooms list.")
         rooms = []
     return render(request, "Home.html", {"rooms": rooms})
 
