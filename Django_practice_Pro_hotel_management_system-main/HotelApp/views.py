@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.http import require_POST, require_http_methods
+from django.db.utils import OperationalError, ProgrammingError
 from datetime import datetime, timedelta
 import json
 
@@ -31,7 +32,11 @@ from .forms import (
 
 
 def home(request):
-    return render(request, "Home.html", {"rooms": []})
+    try:
+        rooms = Room.objects.all().order_by('-id')[:6]
+    except (OperationalError, ProgrammingError):
+        rooms = []
+    return render(request, "Home.html", {"rooms": rooms})
 
 
 
