@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.http import require_POST, require_http_methods
 from django.db.utils import OperationalError, ProgrammingError
+from django.utils import timezone
 from datetime import datetime, timedelta
 import json
 import logging
@@ -35,6 +36,8 @@ logger = logging.getLogger(__name__)
 
 
 def home(request):
+    if request.user.is_authenticated:
+        return redirect("user_home")
     try:
         rooms = Room.objects.all().order_by('-id')[:6]
     except (OperationalError, ProgrammingError):
@@ -350,7 +353,7 @@ def online_booking(request):
                     address=form_data["address"],
                 )
                 messages.success(request, "Booking successful!")
-                return redirect("my_bookings")
+                return redirect("online_booking")
 
         rooms = Room.objects.all().order_by("room_number")
         return render(request, "online_booking_page.html", {
@@ -361,7 +364,18 @@ def online_booking(request):
         })
 
     if not show_form and request.user.is_authenticated:
-        return redirect("my_bookings")
+        today = timezone.now().date()
+        bookings = list(
+            OnlineBooking.objects.filter(user=request.user, check_out__gte=today)
+            .select_related('room', 'user')
+            .order_by("-created_at")
+        )
+        for b in bookings:
+            b.nights = (b.check_out - b.check_in).days
+        return render(request, "online_booking_page.html", {
+            "bookings": bookings,
+            "show_form": False,
+        })
 
     rooms = Room.objects.all().order_by("room_number")
     selected_room = None

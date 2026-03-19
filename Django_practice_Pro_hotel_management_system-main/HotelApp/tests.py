@@ -7,7 +7,7 @@ from django.db.utils import OperationalError, ProgrammingError
 from django.contrib.auth import get_user_model
 from django.conf import settings
 
-from .models import Room
+from .models import Room, OnlineBooking
 from .room_seed import seed_missing_rooms
 
 
@@ -27,6 +27,15 @@ class HomeViewTests(TestCase):
         response = self.client.get(reverse("home"))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["rooms"]), 1)
+
+    def test_home_redirects_authenticated_user_to_user_home(self):
+        user = get_user_model().objects.create_user(
+            email="loggedin@example.com",
+            password="StrongPass123!",
+        )
+        self.client.force_login(user)
+        response = self.client.get(reverse("home"))
+        self.assertRedirects(response, reverse("user_home"))
 
     def test_home_page_renders_when_room_query_fails(self):
         with patch("HotelApp.views.Room.objects") as mocked_manager:
@@ -131,6 +140,56 @@ class RoomAvailabilityViewTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertCountEqual(response.context["rooms"], [available_room, occupied_room])
+
+    def test_online_booking_shows_bookings_list_for_authenticated_user(self):
+        user = get_user_model().objects.create_user(
+            email="booker@example.com",
+            password="StrongPass123!",
+        )
+        self.client.force_login(user)
+
+        room = Room.objects.create(
+            room_number="D404",
+            room_type="suite",
+            floor=4,
+            facility="WiFi, TV",
+            price="500.00",
+            status="available",
+        )
+        from datetime import date
+        today = date.today()
+        # Active booking (check_out in future)
+        OnlineBooking.objects.create(
+            user=user,
+            room=room,
+            check_in=date(2026, 6, 1),
+            check_out=date(2026, 6, 5),
+            adults=2,
+            children=0,
+            city="Lagos",
+            country="Nigeria",
+            address="123 Main St",
+        )
+        # Past booking (check_out already passed)
+        OnlineBooking.objects.create(
+            user=user,
+            room=room,
+            check_in=date(2025, 1, 1),
+            check_out=date(2025, 1, 3),
+            adults=1,
+            children=0,
+            city="Lagos",
+            country="Nigeria",
+            address="123 Main St",
+        )
+
+        response = self.client.get(reverse("online_booking"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.context["show_form"])
+        # Only the active booking should appear
+        self.assertEqual(len(response.context["bookings"]), 1)
+        self.assertEqual(response.context["bookings"][0].nights, 4)
 
 
 class SeedInitialRoomsTests(TestCase):
