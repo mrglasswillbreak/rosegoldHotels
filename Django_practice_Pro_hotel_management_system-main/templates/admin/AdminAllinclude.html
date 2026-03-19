@@ -40,7 +40,7 @@
         <div class="col-md-3 left_col">
           <div class="left_col scroll-view">
             <div class="navbar nav_title" style="border: 0;">
-              <a href="{% url 'Home' %}" class="site_title"><i class="fa fa-paw"></i> <span>Lucia Hotel</span></a>
+              <a href="{% url 'home' %}" class="site_title"><i class="fa fa-paw"></i> <span>Lucia Hotel</span></a>
             </div>
 
             <div class="clearfix"></div>
@@ -67,33 +67,33 @@
                 <ul class="nav side-menu">
                   <li><a><i class="fa fa-home"></i> Home <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
-                      <li><a href="{% url 'Adminpage' %}">Dashboard</a></li>
+                      <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
                     </ul>
                   </li>
                   <li><a><i class="fa fa-edit"></i> Customers Booking <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
-                      <li><a href="{% url 'AllCustomer' %}">All Customers</a></li>
-                      <li><a href="{% url 'AddCustomer' %}">Add Customers</a></li>
+                      <li><a href="{% url 'add_customer' %}">All Customers</a></li>
+                      <li><a href="{% url 'add_customer' %}">Add Customers</a></li>
                     </ul>
                   </li>
-                   <li><a href="{% url 'online_Booking_info' %}"><i class="fa fa-edit"></i> Online Booking <span class="fa fa-chevron-down"></span></a>
+                   <li><a href="{% url 'online_booking_list' %}"><i class="fa fa-edit"></i> Online Booking <span class="fa fa-chevron-down"></span></a>
 
                   </li>
                   <li><a><i class="fa fa-desktop"></i> Rooms <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
-                      <li><a href="{% url 'All_Room' %}">All Rooms</a></li>
-                      <li><a href="{% url 'Add_room' %}">Add Rooms</a></li>
+                      <li><a href="{% url 'add_room' %}">All Rooms</a></li>
+                      <li><a href="{% url 'add_room' %}">Add Rooms</a></li>
                     </ul>
                   </li>
                    <li><a><i class="fa fa-edit"></i> Employees <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
-                      <li><a href="{% url 'Allemployee' %}">All Employees</a></li>
-                      <li><a href="{% url 'Addemployee' %}">Add Employees</a></li>
+                      <li><a href="{% url 'add_employee' %}">All Employees</a></li>
+                      <li><a href="{% url 'add_employee' %}">Add Employees</a></li>
                     </ul>
                   </li>
                    <li><a><i class="fa fa-edit"></i>Employee Salary <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
-                      <li><a href="{% url 'AddEmployeeSalary' %}">Add Employer Salary </a></li>
+                      <li><a href="{% url 'add_salary' %}">Add Employer Salary </a></li>
                     </ul>
                   </li>
 

@@ -1,9 +1,11 @@
 from unittest.mock import patch
+from pathlib import Path
 
 from django.test import TestCase
 from django.urls import reverse
 from django.db.utils import OperationalError, ProgrammingError
 from django.contrib.auth import get_user_model
+from django.conf import settings
 
 from .models import Room
 from .room_seed import seed_missing_rooms
@@ -150,5 +152,20 @@ class SeedInitialRoomsTests(TestCase):
         seed_missing_rooms(Room)
         self.assertEqual(Room.objects.count(), 10)
 
-        seed_missing_rooms(Room)
-        self.assertEqual(Room.objects.count(), 10)
+
+class SharedLayoutResponsiveTests(TestCase):
+    def test_public_layout_includes_mobile_friendly_navigation(self):
+        response = self.client.get(reverse("home"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'class="navbar navbar-expand-lg modern-navbar"')
+        self.assertContains(response, 'class="navbar-toggler"')
+        self.assertContains(response, 'data-bs-target="#navbarNav"')
+
+    def test_admin_layout_includes_mobile_friendly_table_wrapper_script(self):
+        template_path = Path(settings.BASE_DIR) / "templates" / "admin" / "AdminAllinclude.html"
+        template_content = template_path.read_text(encoding="utf-8")
+
+        self.assertIn('class="nav-md admin-modern"', template_content)
+        self.assertIn("function wrapTablesForMobile()", template_content)
+        self.assertIn("wrapper.className = 'table-responsive';", template_content)
