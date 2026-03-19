@@ -487,7 +487,7 @@ def set_theme(request):
 
 # ROOM LIST PAGE
 def room_list(request):
-    rooms = Room.objects.all()
+    rooms = Room.objects.all().order_by("room_number")
     return render(request, "rooms_list.html", {"rooms": rooms})
 
 def add_room(request):

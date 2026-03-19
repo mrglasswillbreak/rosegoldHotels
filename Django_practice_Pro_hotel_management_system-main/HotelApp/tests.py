@@ -3,6 +3,7 @@ from unittest.mock import patch
 from django.test import TestCase
 from django.urls import reverse
 from django.db.utils import OperationalError, ProgrammingError
+from django.contrib.auth import get_user_model
 
 from .models import Room
 
@@ -92,3 +93,32 @@ class RoomAvailabilityViewTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertCountEqual(response.context["rooms"], [available_room, maintenance_room])
+
+    def test_online_booking_post_error_keeps_rooms_across_statuses(self):
+        user = get_user_model().objects.create_user(
+            email="guest@example.com",
+            password="StrongPass123!",
+        )
+        self.client.force_login(user)
+
+        available_room = Room.objects.create(
+            room_number="A104",
+            room_type="single",
+            floor=1,
+            facility="WiFi",
+            price="100.00",
+            status="available",
+        )
+        occupied_room = Room.objects.create(
+            room_number="B203",
+            room_type="double",
+            floor=2,
+            facility="TV",
+            price="200.00",
+            status="occupied",
+        )
+
+        response = self.client.post(reverse("online_booking"), data={})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertCountEqual(response.context["rooms"], [available_room, occupied_room])
