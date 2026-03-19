@@ -9,6 +9,9 @@ from .models import Room
 
 
 class HomeViewTests(TestCase):
+    def setUp(self):
+        Room.objects.all().delete()
+
     def test_home_page_loads_latest_rooms_when_database_is_available(self):
         Room.objects.create(
             room_number="A101",
@@ -48,6 +51,9 @@ class HomeViewTests(TestCase):
 
 
 class RoomAvailabilityViewTests(TestCase):
+    def setUp(self):
+        Room.objects.all().delete()
+
     def test_room_list_shows_rooms_regardless_of_status(self):
         available_room = Room.objects.create(
             room_number="A101",
@@ -122,3 +128,12 @@ class RoomAvailabilityViewTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertCountEqual(response.context["rooms"], [available_room, occupied_room])
+
+
+class SeedInitialRoomsTests(TestCase):
+    def test_default_rooms_are_seeded(self):
+        room_numbers = list(Room.objects.order_by("room_number").values_list("room_number", flat=True))
+        self.assertEqual(
+            room_numbers,
+            ["101", "102", "103", "104", "201", "202", "203", "301", "302", "303"],
+        )
