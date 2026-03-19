@@ -1,5 +1,3 @@
-from django.db import migrations
-
 DEFAULT_ROOMS = [
     {
         "room_number": "101",
@@ -83,26 +81,15 @@ DEFAULT_ROOMS = [
     },
 ]
 
-def seed_initial_rooms(apps, schema_editor):
-    """Backfill the original room inventory without duplicating existing rooms."""
-    Room = apps.get_model("HotelApp", "Room")
+
+def seed_missing_rooms(RoomModel):
     existing_room_numbers = set(
-        Room.objects.values_list("room_number", flat=True)
+        RoomModel.objects.values_list("room_number", flat=True)
     )
     missing_rooms = [
-        Room(**room_data)
+        RoomModel(**room_data)
         for room_data in DEFAULT_ROOMS
         if room_data["room_number"] not in existing_room_numbers
     ]
     if missing_rooms:
-        Room.objects.bulk_create(missing_rooms)
-
-
-class Migration(migrations.Migration):
-    dependencies = [
-        ("HotelApp", "0006_alter_offlinebooking_check_in_and_more"),
-    ]
-
-    operations = [
-        migrations.RunPython(seed_initial_rooms, migrations.RunPython.noop),
-    ]
+        RoomModel.objects.bulk_create(missing_rooms)

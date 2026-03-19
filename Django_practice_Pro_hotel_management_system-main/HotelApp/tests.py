@@ -6,6 +6,7 @@ from django.db.utils import OperationalError, ProgrammingError
 from django.contrib.auth import get_user_model
 
 from .models import Room
+from .room_seed import seed_missing_rooms
 
 
 class HomeViewTests(TestCase):
@@ -131,9 +132,23 @@ class RoomAvailabilityViewTests(TestCase):
 
 
 class SeedInitialRoomsTests(TestCase):
+    def setUp(self):
+        Room.objects.all().delete()
+        seed_missing_rooms(Room)
+
     def test_default_rooms_are_seeded(self):
         room_numbers = list(Room.objects.order_by("room_number").values_list("room_number", flat=True))
         self.assertEqual(
             room_numbers,
             ["101", "102", "103", "104", "201", "202", "203", "301", "302", "303"],
         )
+
+    def test_seed_function_restores_missing_rooms_without_duplicates(self):
+        Room.objects.filter(room_number__in=["101", "201", "303"]).delete()
+        self.assertEqual(Room.objects.count(), 7)
+
+        seed_missing_rooms(Room)
+        self.assertEqual(Room.objects.count(), 10)
+
+        seed_missing_rooms(Room)
+        self.assertEqual(Room.objects.count(), 10)
