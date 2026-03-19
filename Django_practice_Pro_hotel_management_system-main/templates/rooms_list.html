@@ -1,4 +1,4 @@
-{% extends "allinclude.html" %} {% block content %}
+{% extends "allinclude.html" %} {% load static %} {% block content %}
 
 <link
   href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap"
@@ -514,21 +514,13 @@
           </svg>
         </button>
         {% else %}
-        <div class="no-image">
-          <svg
-            width="48"
-            height="48"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-          >
-            <rect x="3" y="3" width="18" height="18" rx="2" />
-            <circle cx="8.5" cy="8.5" r="1.5" />
-            <path d="M21 15l-5-5L5 21" />
-          </svg>
-          <span style="font-size: 0.8rem">No image available</span>
-        </div>
+        {% if room.room_type == "single" %}
+        <img src="{% static 'Allfiles/Photo/room-3.jpg' %}" alt="Single Room" />
+        {% elif room.room_type == "double" %}
+        <img src="{% static 'Allfiles/Photo/room-4.jpg' %}" alt="Double Room" />
+        {% else %}
+        <img src="{% static 'Allfiles/Photo/room-2.jpg' %}" alt="Suite Room" />
+        {% endif %}
         {% endif %}
         <span class="status-badge status-{{ room.status }}"
           >{{ room.get_status_display }}</span
