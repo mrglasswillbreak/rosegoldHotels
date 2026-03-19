@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.http import require_POST, require_http_methods
 from django.db.utils import OperationalError, ProgrammingError
+from django.utils import timezone
 from datetime import datetime, timedelta
 import json
 import logging
@@ -363,9 +364,10 @@ def online_booking(request):
         })
 
     if not show_form and request.user.is_authenticated:
+        today = timezone.now().date()
         bookings = list(
-            OnlineBooking.objects.filter(user=request.user)
-            .select_related('room')
+            OnlineBooking.objects.filter(user=request.user, check_out__gte=today)
+            .select_related('room', 'user')
             .order_by("-created_at")
         )
         for b in bookings:

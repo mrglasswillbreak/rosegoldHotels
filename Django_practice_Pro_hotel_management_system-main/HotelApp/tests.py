@@ -157,6 +157,8 @@ class RoomAvailabilityViewTests(TestCase):
             status="available",
         )
         from datetime import date
+        today = date.today()
+        # Active booking (check_out in future)
         OnlineBooking.objects.create(
             user=user,
             room=room,
@@ -168,11 +170,24 @@ class RoomAvailabilityViewTests(TestCase):
             country="Nigeria",
             address="123 Main St",
         )
+        # Past booking (check_out already passed)
+        OnlineBooking.objects.create(
+            user=user,
+            room=room,
+            check_in=date(2025, 1, 1),
+            check_out=date(2025, 1, 3),
+            adults=1,
+            children=0,
+            city="Lagos",
+            country="Nigeria",
+            address="123 Main St",
+        )
 
         response = self.client.get(reverse("online_booking"))
 
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.context["show_form"])
+        # Only the active booking should appear
         self.assertEqual(len(response.context["bookings"]), 1)
         self.assertEqual(response.context["bookings"][0].nights, 4)
 
