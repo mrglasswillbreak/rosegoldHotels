@@ -1,14 +1,20 @@
 from unittest.mock import patch
+from pathlib import Path
 
 from django.test import TestCase
 from django.urls import reverse
 from django.db.utils import OperationalError, ProgrammingError
 from django.contrib.auth import get_user_model
+from django.conf import settings
 
 from .models import Room
+from .room_seed import seed_missing_rooms
 
 
 class HomeViewTests(TestCase):
+    def setUp(self):
+        Room.objects.all().delete()
+
     def test_home_page_loads_latest_rooms_when_database_is_available(self):
         Room.objects.create(
             room_number="A101",
@@ -48,6 +54,9 @@ class HomeViewTests(TestCase):
 
 
 class RoomAvailabilityViewTests(TestCase):
+    def setUp(self):
+        Room.objects.all().delete()
+
     def test_room_list_shows_rooms_regardless_of_status(self):
         available_room = Room.objects.create(
             room_number="A101",
@@ -122,3 +131,41 @@ class RoomAvailabilityViewTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertCountEqual(response.context["rooms"], [available_room, occupied_room])
+
+
+class SeedInitialRoomsTests(TestCase):
+    def setUp(self):
+        Room.objects.all().delete()
+        seed_missing_rooms(Room)
+
+    def test_default_rooms_are_seeded(self):
+        room_numbers = list(Room.objects.order_by("room_number").values_list("room_number", flat=True))
+        self.assertEqual(
+            room_numbers,
+            ["101", "102", "103", "104", "201", "202", "203", "301", "302", "303"],
+        )
+
+    def test_seed_function_restores_missing_rooms_without_duplicates(self):
+        Room.objects.filter(room_number__in=["101", "201", "303"]).delete()
+        self.assertEqual(Room.objects.count(), 7)
+
+        seed_missing_rooms(Room)
+        self.assertEqual(Room.objects.count(), 10)
+
+
+class SharedLayoutResponsiveTests(TestCase):
+    def test_public_layout_includes_mobile_friendly_navigation(self):
+        response = self.client.get(reverse("home"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'class="navbar navbar-expand-lg modern-navbar"')
+        self.assertContains(response, 'class="navbar-toggler"')
+        self.assertContains(response, 'data-bs-target="#navbarNav"')
+
+    def test_admin_layout_includes_mobile_friendly_table_wrapper_script(self):
+        template_path = Path(settings.BASE_DIR) / "templates" / "admin" / "AdminAllinclude.html"
+        template_content = template_path.read_text(encoding="utf-8")
+
+        self.assertIn('class="nav-md admin-modern"', template_content)
+        self.assertIn("function wrapTablesForMobile()", template_content)
+        self.assertIn("wrapper.className = 'table-responsive';", template_content)

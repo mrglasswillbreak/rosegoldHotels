@@ -1050,6 +1050,77 @@ body .container.body .right_col {
   .item {
     display: block; } }
 
+body.admin-modern {
+  background: #f4f7fb;
+}
+
+body.admin-modern .right_col {
+  background: transparent;
+  min-height: calc(100vh - 58px);
+}
+
+body.admin-modern .x_panel,
+body.admin-modern .tile_count .tile_stats_count {
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  border: 1px solid #e5e9f2;
+  background: #fff;
+}
+
+body.admin-modern .top_nav .nav_menu {
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.08);
+}
+
+body.admin-modern .left_col {
+  box-shadow: 4px 0 18px rgba(15, 23, 42, 0.14);
+}
+
+body.admin-modern .table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+body.admin-modern table {
+  width: 100%;
+  min-width: 680px;
+}
+
+body.admin-modern .admin-page-wrap .right_col [class*="col-"] {
+  margin-bottom: 12px;
+}
+
+@media (max-width: 767px) {
+  body.admin-modern .right_col {
+    padding: 10px !important;
+  }
+
+  body.admin-modern .top_nav .nav_menu {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+
+  body.admin-modern .nav.toggle {
+    width: auto;
+    min-width: 44px;
+  }
+
+  body.admin-modern .top_nav .navbar-right {
+    width: auto;
+    float: right;
+  }
+
+  body.admin-modern .tile_count .tile_stats_count {
+    width: 100%;
+    margin-bottom: 12px;
+  }
+
+  body.admin-modern .table-responsive table {
+    min-width: 620px;
+  }
+}
+
 @media (max-width: 1200px) {
   .x_title h2 {
     width: 62%;

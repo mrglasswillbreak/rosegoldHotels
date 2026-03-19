@@ -551,6 +551,20 @@
           padding-top: 86px;
         }
 
+        #header .container .row.py-2 {
+          font-size: 0.85rem;
+          row-gap: 6px;
+        }
+
+        #header .top-contact {
+          justify-content: center;
+        }
+
+        .modern-navbar .container {
+          padding-left: 14px;
+          padding-right: 14px;
+        }
+
         .hero-content h1 {
           font-size: clamp(2.1rem, 7vw, 3.2rem);
         }
@@ -563,9 +577,40 @@
           gap: 6px;
           align-items: stretch !important;
         }
+
+        .navbar-collapse {
+          margin-top: 10px;
+          background: rgba(14, 18, 28, 0.95);
+          border-radius: 12px;
+          padding: 10px 14px;
+          border: 1px solid rgba(212, 175, 55, 0.22);
+          box-shadow: 0 16px 34px rgba(0, 0, 0, 0.28);
+        }
+
+        .nav-link {
+          margin: 0;
+          padding: 10px 0;
+        }
+
+        .navbar-nav .nav-item.ms-3 {
+          margin-left: 0 !important;
+          margin-top: 8px;
+        }
       }
 
       @media (max-width: 576px) {
+        #header > .container {
+          display: none;
+        }
+
+        body {
+          padding-top: 74px;
+        }
+
+        .navbar-brand {
+          font-size: 1.35rem;
+        }
+
         .btn,
         .book-btn,
         .new-booking-btn,
@@ -832,9 +877,9 @@
   <body data-authenticated="{{ user.is_authenticated|yesno:'true,false' }}">
     <!-- Header -->
     <header id="header">
-      <div class="container">
+        <div class="container">
         <div class="row py-2 align-items-center">
-          <div class="col-lg-7 d-flex gap-3">
+          <div class="col-lg-7 d-flex flex-wrap gap-2 top-contact">
             <span
               ><i class="fas fa-map-marker-alt"></i> 24, Gbagada Cresent,
               Lagos</span
@@ -842,7 +887,7 @@
             <span><i class="fas fa-phone-alt"></i> 08125063942</span>
             <span><i class="far fa-envelope"></i> enioladavid33@gmail.com</span>
           </div>
-          <div class="col-lg-5 text-end top-social">
+          <div class="col-lg-5 text-end top-social d-none d-lg-block">
             <a
               href="https://www.facebook.com/"
               class="text-dark me-2"
