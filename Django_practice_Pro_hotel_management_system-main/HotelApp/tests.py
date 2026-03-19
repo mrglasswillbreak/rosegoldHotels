@@ -33,6 +33,18 @@ class HomeViewTests(TestCase):
         mocked_manager.all.return_value.order_by.assert_called_once_with("-id")
         mocked_queryset.__getitem__.assert_called_once_with(slice(None, 6, None))
 
+    def test_home_page_renders_when_room_schema_is_unavailable(self):
+        with patch("HotelApp.views.Room.objects") as mocked_manager:
+            mocked_queryset = mocked_manager.all.return_value.order_by.return_value
+            mocked_queryset.__getitem__.side_effect = ProgrammingError("relation does not exist")
+            response = self.client.get(reverse("home"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["rooms"], [])
+        mocked_manager.all.assert_called_once()
+        mocked_manager.all.return_value.order_by.assert_called_once_with("-id")
+        mocked_queryset.__getitem__.assert_called_once_with(slice(None, 6, None))
+
 
 class RoomAvailabilityViewTests(TestCase):
     def test_room_list_shows_rooms_regardless_of_status(self):
@@ -80,15 +92,3 @@ class RoomAvailabilityViewTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertCountEqual(response.context["rooms"], [available_room, maintenance_room])
-
-    def test_home_page_renders_when_room_schema_is_unavailable(self):
-        with patch("HotelApp.views.Room.objects") as mocked_manager:
-            mocked_queryset = mocked_manager.all.return_value.order_by.return_value
-            mocked_queryset.__getitem__.side_effect = ProgrammingError("relation does not exist")
-            response = self.client.get(reverse("home"))
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context["rooms"], [])
-        mocked_manager.all.assert_called_once()
-        mocked_manager.all.return_value.order_by.assert_called_once_with("-id")
-        mocked_queryset.__getitem__.assert_called_once_with(slice(None, 6, None))
