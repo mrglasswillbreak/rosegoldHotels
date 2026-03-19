@@ -24,6 +24,21 @@
       min-height: 78vh;
       display: flex;
       align-items: center;
+      background-image: url("{% static 'Allfiles/Photo/slider-1.jpg' %}");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      position: relative;
+   }
+   #slider .slider_pic::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+   }
+   #slider .slider_pic .container {
+      position: relative;
+      z-index: 1;
    }
 
    #slider .slide_text {
@@ -581,7 +596,7 @@
                         <h1>welcome <span class="late">to RoseGold Hotel and suites</span></h1>
                         <p>Welcome to Hotel rose Booking Management, your one-stop solution for hassle-free hotel reservations. Quickly find the perfect hotel for your next stay. Use our search tool to browse and book hotels in the area.</p>
                         <div class="slider-btn">
-                            <a class="default-btn" href="#">explore</a>
+                            <a class="default-btn" href="#OUR_ROOMS">explore</a>
                         </div>
                     </div>
                 </div>
@@ -642,7 +657,7 @@
                        <img src="{%static 'Allfiles/Photo/room-1.jpg'%}" alt="img">
                        <div class="btn ">
                           <div class="room_btn">
-                            <a href="#">Booking Now</a>
+                            <a href="{% url 'online_booking' %}">Book Now</a>
                           </div>
                        </div>
                      </div>
@@ -657,10 +672,10 @@
                 <div class="col-lg-4">
                    <div class="rooms-view">
                      <div class="ROOMS_pic">
-                       <img src=" {%static 'Allfiles/Photo/room-2.jpg'%}" alt="img">
+                       <img src="{% static 'Allfiles/Photo/room-2.jpg' %}" alt="img">
                        <div class="btn ">
                           <div class="room_btn">
-                            <a href="#">Booking Now</a>
+                            <a href="{% url 'online_booking' %}">Book Now</a>
                           </div>
                        </div>
                      </div>
@@ -678,7 +693,7 @@
                        <img src="{%static 'Allfiles/Photo/room-3.jpg'%}" alt="img">
                        <div class="btn ">
                           <div class="room_btn">
-                            <a href="#">Booking Now</a>
+                            <a href="{% url 'online_booking' %}">Book Now</a>
                           </div>
                        </div>
                      </div>
@@ -696,7 +711,7 @@
                        <img src="{%static 'Allfiles/Photo/room-4.jpg'%}" alt="img">
                        <div class="btn ">
                           <div class="room_btn">
-                            <a href="#">Booking Now</a>
+                            <a href="{% url 'online_booking' %}">Book Now</a>
                           </div>
                        </div>
                      </div>
@@ -714,7 +729,7 @@
                        <img src="{%static 'Allfiles/Photo/room-5.jpg'%}" alt="img">
                        <div class="btn ">
                           <div class="room_btn">
-                            <a href="#">Booking Now</a>
+                            <a href="{% url 'online_booking' %}">Book Now</a>
                           </div>
                        </div>
                      </div>
@@ -732,7 +747,7 @@
                        <img src="{%static 'Allfiles/Photo/room-6.jpg'%}" alt="img">
                        <div class="btn ">
                           <div class="room_btn">
-                            <a href="#">Booking Now</a>
+                            <a href="{% url 'online_booking' %}">Book Now</a>
                           </div>
                        </div>
                      </div>
