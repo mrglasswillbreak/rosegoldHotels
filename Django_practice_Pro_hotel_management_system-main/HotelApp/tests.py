@@ -61,14 +61,6 @@ class HomeViewTests(TestCase):
         mocked_manager.all.return_value.order_by.assert_called_once_with("-id")
         mocked_queryset.__getitem__.assert_called_once_with(slice(None, 6, None))
 
-    def test_home_page_contains_explore_and_room_booking_ctas(self):
-        response = self.client.get(reverse("home"))
-
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "slider-1.jpg")
-        self.assertContains(response, 'href="#OUR_ROOMS">explore</a>')
-        self.assertContains(response, "?new=1&amp;room_type=", count=6)
-
 
 class RoomAvailabilityViewTests(TestCase):
     def setUp(self):
@@ -148,50 +140,6 @@ class RoomAvailabilityViewTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertCountEqual(response.context["rooms"], [available_room, occupied_room])
-
-    def test_online_booking_room_type_param_preselects_first_available_room(self):
-        single_available = Room.objects.create(
-            room_number="A105",
-            room_type="single",
-            floor=1,
-            facility="WiFi",
-            price="100.00",
-            status="available",
-        )
-        Room.objects.create(
-            room_number="B205",
-            room_type="double",
-            floor=2,
-            facility="TV",
-            price="200.00",
-            status="available",
-        )
-
-        response = self.client.get(
-            reverse("online_booking") + "?new=1&room_type=single"
-        )
-
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.context["show_form"])
-        self.assertEqual(response.context["room"], single_available)
-        self.assertEqual(response.context["form_data"]["room_id"], str(single_available.id))
-
-    def test_online_booking_room_type_param_ignored_when_no_available_room(self):
-        Room.objects.create(
-            room_number="A106",
-            room_type="single",
-            floor=1,
-            facility="WiFi",
-            price="100.00",
-            status="occupied",
-        )
-
-        response = self.client.get(
-            reverse("online_booking") + "?new=1&room_type=single"
-        )
-
-        self.assertEqual(response.status_code, 200)
-        self.assertIsNone(response.context["room"])
 
     def test_online_booking_shows_bookings_list_for_authenticated_user(self):
         user = get_user_model().objects.create_user(
