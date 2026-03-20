@@ -20,33 +20,27 @@
       --lux-border: rgba(161, 130, 86, 0.22);
    }
 
+   #slider {
+      margin-top: -100px;
+   }
+
    #slider .slider_pic {
-      min-height: 78vh;
+      min-height: 100vh;
       display: flex;
       align-items: center;
+      position: relative;
       background:
          linear-gradient(120deg, rgba(20, 14, 9, 0.72), rgba(20, 14, 9, 0.5)),
          url('{% static "Allfiles/Photo/slider-1.jpg" %}') center/cover no-repeat;
    }
 
-   #slider .slide_text h1 {
-      animation: fadeInUp 0.9s ease both;
+   #slider .slider_pic .container {
+      position: relative;
+      z-index: 1;
    }
 
    #slider .slide_text h1 .late {
       display: inline-block;
-      animation: fadeInUp 1.2s ease both;
-   }
-
-   @keyframes fadeInUp {
-      from {
-         opacity: 0;
-         transform: translateY(18px);
-      }
-      to {
-         opacity: 1;
-         transform: translateY(0);
-      }
    }
 
    #slider .slide_text {
@@ -467,6 +461,14 @@
    }
 
    @media (max-width: 768px) {
+      #slider {
+         margin-top: -88px;
+      }
+
+      #slider .slider_pic {
+         min-height: 92vh;
+      }
+
       #about,
       #OUR_ROOMS,
       #Service,
