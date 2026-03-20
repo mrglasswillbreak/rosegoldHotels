@@ -67,7 +67,7 @@ class HomeViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "slider-1.jpg")
         self.assertContains(response, 'href="#OUR_ROOMS">explore</a>')
-        self.assertContains(response, "?new=1&room_type=", count=6)
+        self.assertContains(response, "?new=1&amp;room_type=", count=6)
 
 
 class RoomAvailabilityViewTests(TestCase):

@@ -390,7 +390,7 @@ def online_booking(request):
     if not selected_room:
         room_type = request.GET.get("room_type")
         if room_type:
-            selected_room = Room.objects.filter(
+            selected_room = rooms.filter(
                 room_type=room_type, status="available"
             ).order_by("room_number").first()
             if selected_room:
