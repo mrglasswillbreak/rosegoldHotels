@@ -387,6 +387,15 @@ def online_booking(request):
         if selected_room:
             form_data["room_id"] = str(selected_room.id)
 
+    if not selected_room:
+        room_type = request.GET.get("room_type")
+        if room_type:
+            selected_room = Room.objects.filter(
+                room_type=room_type, status="available"
+            ).order_by("room_number").first()
+            if selected_room:
+                form_data["room_id"] = str(selected_room.id)
+
     return render(request, "online_booking_page.html", {
         "rooms": rooms,
         "room": selected_room,
