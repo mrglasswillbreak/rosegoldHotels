@@ -35,6 +35,16 @@ logger = logging.getLogger(__name__)
 # =========================
 
 
+STATIC_CARD_IMAGES = [
+    "Allfiles/Photo/room-1.jpg",
+    "Allfiles/Photo/room-2.jpg",
+    "Allfiles/Photo/room-3.jpg",
+    "Allfiles/Photo/room-4.jpg",
+    "Allfiles/Photo/room-5.jpg",
+    "Allfiles/Photo/room-6.jpg",
+]
+
+
 def home(request):
     if request.user.is_authenticated:
         return redirect("user_home")
@@ -47,9 +57,15 @@ def home(request):
     card_room_ids = [str(room.id) for room in rooms[:6]]
     card_room_ids.extend([""] * max(0, 6 - len(card_room_ids)))
 
+    room_cards = [
+        {"room": room, "fallback_img": STATIC_CARD_IMAGES[i]}
+        for i, room in enumerate(rooms[:6])
+    ]
+
     return render(request, "Home.html", {
         "rooms": rooms,
         "card_room_ids": card_room_ids,
+        "room_cards": room_cards,
     })
 
 

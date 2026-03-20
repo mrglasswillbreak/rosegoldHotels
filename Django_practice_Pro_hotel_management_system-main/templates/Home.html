@@ -35,10 +35,10 @@
 
    #slider .slide_text h1 .late {
       display: inline-block;
-      animation: fadeInUp 1.2s ease both;
+      animation: homeHeroFadeInUp 1.2s ease both;
    }
 
-   @keyframes fadeInUp {
+   @keyframes homeHeroFadeInUp {
       from {
          opacity: 0;
          transform: translateY(18px);
@@ -658,115 +658,34 @@
           </div>
           <div class="ROOMS_info">
            <div class="row room_slide">
+                {% for card in room_cards %}
                 <div class="col-lg-4">
                    <div class="rooms-view">
                      <div class="ROOMS_pic">
-
-                       <img src="{%static 'Allfiles/Photo/room-1.jpg'%}" alt="img">
+                       {% if card.room.image %}
+                       <img src="{{ card.room.image.url }}" alt="Room {{ card.room.room_number }}">
+                       {% else %}
+                       <img src="{% static card.fallback_img %}" alt="Room {{ card.room.room_number }}">
+                       {% endif %}
                        <div class="btn ">
                           <div class="room_btn">
-                            <a href="{% if card_room_ids.0 %}{% url 'online_booking' %}?new=1&room={{ card_room_ids.0 }}{% else %}{% url 'online_booking' %}?new=1{% endif %}">Book Now</a>
+                            <a href="{% url 'online_booking' %}?new=1&room={{ card.room.id }}">Book Now</a>
                           </div>
                        </div>
                      </div>
                      <div class="ROOMS_text text-center justify-content-center">
-                         <h3> Couple Room </h3>
-                         <span><i class="fas fa-naira-sign"></i>300</span>
-                         <p>Best room to consider for newly weds. Feels like a luxorious suite. Ratings: 4.6/5</p>
+                         <h3>Room {{ card.room.room_number }} &ndash; {{ card.room.room_type|title }}</h3>
+                         <span><i class="fas fa-dollar-sign"></i>{{ card.room.price }}</span>
+                         <p>{{ card.room.facility }}</p>
                           <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
                      </div>
                   </div>
                 </div>
-                <div class="col-lg-4">
-                   <div class="rooms-view">
-                     <div class="ROOMS_pic">
-                       <img src=" {%static 'Allfiles/Photo/room-2.jpg'%}" alt="img">
-                       <div class="btn ">
-                          <div class="room_btn">
-                            <a href="{% if card_room_ids.1 %}{% url 'online_booking' %}?new=1&room={{ card_room_ids.1 }}{% else %}{% url 'online_booking' %}?new=1{% endif %}">Book Now</a>
-                          </div>
-                       </div>
-                     </div>
-                     <div class="ROOMS_text text-center justify-content-center">
-                         <h3> Single Room </h3>
-                         <span><i class="fas fa-dollar-sign"></i>250</span>
-                         <p>One of the best rooms that provide valuable alone time, also comes with a lot of features. Ratings: 4.5/5</p>
-                          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                     </div>
-                  </div>
+                {% empty %}
+                <div class="col-12 text-center">
+                   <p>Room information is currently unavailable. Please check back soon.</p>
                 </div>
-                <div class="col-lg-4">
-                   <div class="rooms-view">
-                     <div class="ROOMS_pic">
-                       <img src="{%static 'Allfiles/Photo/room-3.jpg'%}" alt="img">
-                       <div class="btn ">
-                          <div class="room_btn">
-                            <a href="{% if card_room_ids.2 %}{% url 'online_booking' %}?new=1&room={{ card_room_ids.2 }}{% else %}{% url 'online_booking' %}?new=1{% endif %}">Book Now</a>
-                          </div>
-                       </div>
-                     </div>
-                     <div class="ROOMS_text text-center justify-content-center">
-                         <h3> Double Room </h3>
-                         <span><i class="fas fa-dollar-sign"></i>310</span>
-                         <p>Comes with an extra balcony and child space. Best for adults & children. Rating: 4.5/5</p>
-                          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                     </div>
-                  </div>
-                </div>
-                <div class="col-lg-4">
-                   <div class="rooms-view">
-                     <div class="ROOMS_pic">
-                       <img src="{%static 'Allfiles/Photo/room-4.jpg'%}" alt="img">
-                       <div class="btn ">
-                          <div class="room_btn">
-                            <a href="{% if card_room_ids.3 %}{% url 'online_booking' %}?new=1&room={{ card_room_ids.3 }}{% else %}{% url 'online_booking' %}?new=1{% endif %}">Book Now</a>
-                          </div>
-                       </div>
-                     </div>
-                     <div class="ROOMS_text text-center justify-content-center">
-                         <h3> Luxury Room </h3>
-                         <span><i class="fas fa-dollar-sign"></i>350</span>
-                         <p>One of our top rated stay. Availlable at discount price 25% and with a free spa coupon. Ratings: 4.8/5</p>
-                          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                     </div>
-                  </div>
-                </div>
-                <div class="col-lg-4">
-                   <div class="rooms-view">
-                     <div class="ROOMS_pic">
-                       <img src="{%static 'Allfiles/Photo/room-5.jpg'%}" alt="img">
-                       <div class="btn ">
-                          <div class="room_btn">
-                            <a href="{% if card_room_ids.4 %}{% url 'online_booking' %}?new=1&room={{ card_room_ids.4 }}{% else %}{% url 'online_booking' %}?new=1{% endif %}">Book Now</a>
-                          </div>
-                       </div>
-                     </div>
-                     <div class="ROOMS_text text-center justify-content-center">
-                         <h3>Family Room </h3>
-                         <span><i class="fas fa-dollar-sign"></i>400</span>
-                         <p>Highly recommended to parents with toddlers and babies.Offers available. Ratins: 4.6/5</p>
-                          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                     </div>
-                  </div>
-                </div>
-                <div class="col-lg-4">
-                   <div class="rooms-view">
-                     <div class="ROOMS_pic">
-                       <img src="{%static 'Allfiles/Photo/room-6.jpg'%}" alt="img">
-                       <div class="btn ">
-                          <div class="room_btn">
-                            <a href="{% if card_room_ids.5 %}{% url 'online_booking' %}?new=1&room={{ card_room_ids.5 }}{% else %}{% url 'online_booking' %}?new=1{% endif %}">Book Now</a>
-                          </div>
-                       </div>
-                     </div>
-                     <div class="ROOMS_text text-center justify-content-center">
-                         <h3> Presidential Room </h3>
-                         <span><i class="fas fa-dollar-sign"></i>300</span>
-                         <p>Our top uxury room. Only availabe for VIP's with verified identity. Ratings: 4.7/5</p>
-                          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                     </div>
-                  </div>
-                </div>
+                {% endfor %}
                </div>
            </div>
        </div>

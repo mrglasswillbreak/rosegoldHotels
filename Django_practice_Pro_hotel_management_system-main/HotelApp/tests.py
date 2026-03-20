@@ -61,6 +61,51 @@ class HomeViewTests(TestCase):
         mocked_manager.all.return_value.order_by.assert_called_once_with("-id")
         mocked_queryset.__getitem__.assert_called_once_with(slice(None, 6, None))
 
+    def test_card_room_ids_always_present_and_length_six(self):
+        for i in range(6):
+            Room.objects.create(
+                room_number=f"T{i+1:03d}",
+                room_type="single",
+                floor=1,
+                facility="WiFi",
+                price="100.00",
+                status="available",
+            )
+        response = self.client.get(reverse("home"))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("card_room_ids", response.context)
+        self.assertEqual(len(response.context["card_room_ids"]), 6)
+
+    def test_card_room_ids_match_returned_room_ids_with_empty_string_padding(self):
+        rooms = []
+        for i in range(4):
+            room = Room.objects.create(
+                room_number=f"M{i+1:03d}",
+                room_type="double",
+                floor=2,
+                facility="WiFi, TV",
+                price="200.00",
+                status="available",
+            )
+            rooms.append(room)
+        response = self.client.get(reverse("home"))
+        self.assertEqual(response.status_code, 200)
+        card_ids = response.context["card_room_ids"]
+        self.assertEqual(len(card_ids), 6)
+        context_rooms = response.context["rooms"]
+        expected_ids = [str(r.id) for r in context_rooms]
+        expected_ids += [""] * (6 - len(expected_ids))
+        self.assertEqual(card_ids, expected_ids)
+
+    def test_card_room_ids_are_six_empty_strings_on_db_error(self):
+        with patch("HotelApp.views.Room.objects") as mocked_manager:
+            mocked_queryset = mocked_manager.all.return_value.order_by.return_value
+            mocked_queryset.__getitem__.side_effect = OperationalError("db unavailable")
+            response = self.client.get(reverse("home"))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("card_room_ids", response.context)
+        self.assertEqual(response.context["card_room_ids"], ["", "", "", "", "", ""])
+
 
 class RoomAvailabilityViewTests(TestCase):
     def setUp(self):
