@@ -29,9 +29,28 @@
       display: flex;
       align-items: center;
       position: relative;
-      background:
-         linear-gradient(120deg, rgba(20, 14, 9, 0.72), rgba(20, 14, 9, 0.5)),
-         url('{% static "Allfiles/Photo/slider-1.jpg" %}') center/cover no-repeat;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+   }
+
+   #slider .slider_pic::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, rgba(20, 14, 9, 0.72), rgba(20, 14, 9, 0.52));
+   }
+
+   #slider .slider_pic.slider-pic-1 {
+      background-image: url('{% static "Allfiles/Photo/slider-1.jpg" %}');
+   }
+
+   #slider .slider_pic.slider-pic-2 {
+      background-image: url('{% static "Allfiles/Photo/slider-2.jpg" %}');
+   }
+
+   #slider .slider_pic.slider-pic-3 {
+      background-image: url('{% static "Allfiles/Photo/slider-3.jpg" %}');
    }
 
    #slider .slider_pic .container {
@@ -47,6 +66,30 @@
       max-width: 860px;
       margin: 0 auto;
       text-align: center;
+   }
+
+   #slider .slide_text h1,
+   #slider .slide_text h2 {
+      color: #fff;
+      font-size: clamp(2.1rem, 6vw, 4rem);
+      line-height: 1.15;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 12px;
+   }
+
+   #slider .slide_text h4 {
+      color: #f0ca86;
+      font-size: clamp(1.2rem, 3.2vw, 2rem);
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+   }
+
+   #slider .slide_text p {
+      color: rgba(255, 255, 255, 0.94);
+      max-width: 740px;
+      margin: 0 auto;
    }
 
    #slider .slider-btn {
@@ -469,6 +512,19 @@
          min-height: 92vh;
       }
 
+      #slider .slide_text h1,
+      #slider .slide_text h2 {
+         font-size: clamp(1.7rem, 8vw, 2.5rem);
+      }
+
+      #slider .slide_text h4 {
+         font-size: clamp(1rem, 5vw, 1.4rem);
+      }
+
+      #slider .slide_text p {
+         font-size: 0.95rem;
+      }
+
       #about,
       #OUR_ROOMS,
       #Service,
@@ -598,7 +654,7 @@
 
 <!--================Slider Start=================-->
 <section id="slider">
-    <div class="slider_pic">
+    <div class="slider_pic slider-pic-1">
         <div class="container">
             <div class="row justify-content-center text-center">
                 <div class="col-md-10">
@@ -619,6 +675,48 @@
                </div>
             </div>
          </div>
+    <div class="slider_pic slider-pic-2">
+        <div class="container">
+            <div class="row justify-content-center text-center">
+                <div class="col-md-10">
+                    <div class="slide_text">
+                        <h2>Enjoy a luxury experience</h2>
+                        <h4>Hotel &amp; Resort</h4>
+                        <div class="slider-btn">
+                            <a class="default-btn" href="#OUR_ROOMS">explore</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pre_btn">
+               <span><i class="fas fa-angle-left"></i></span>
+            </div>
+            <div class="next_btn">
+               <span><i class="fas fa-angle-right"></i></span>
+            </div>
+        </div>
+    </div>
+    <div class="slider_pic slider-pic-3">
+        <div class="container">
+            <div class="row justify-content-center text-center">
+                <div class="col-md-10">
+                    <div class="slide_text">
+                        <h2>Spend quality holidays with us</h2>
+                        <p>The best way to spend your precious time and cherish every moment with your loved ones. Join today.</p>
+                        <div class="slider-btn">
+                            <a class="default-btn" href="#OUR_ROOMS">explore</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pre_btn">
+               <span><i class="fas fa-angle-left"></i></span>
+            </div>
+            <div class="next_btn">
+               <span><i class="fas fa-angle-right"></i></span>
+            </div>
+        </div>
+    </div>
    </section>
 
 
