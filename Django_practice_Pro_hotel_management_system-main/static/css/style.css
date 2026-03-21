@@ -1,1 +1,10 @@
-/* RoseGold Hotel - Global Style Overrides */
+/* RoseGold Hotel - Global Style Overrides
+ *
+ * NOTE: This stylesheet is intentionally left as a placeholder to satisfy
+ * existing <link> references. The application does not define any global
+ * overrides here at the moment.
+ *
+ * If you add new global styles in the future, place them below this
+ * comment block or replace this file with an @import that points to the
+ * real stylesheet you intend to serve.
+ */
