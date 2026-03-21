@@ -1982,13 +1982,9 @@ Counter Part CSS
     font-size: 1.1rem;
     border-radius: 50px;
 }
-/*Eniola's css editsss*****/
-.slider-pic-2 {
-    background: url("Allfiles/Photo/slider-2.jpg") center/cover no-repeat;
-    height: 500px; /* adjust height as needed */
-    width: 100%;
-}
-/*hero slider section*/
+/* =========================
+   HERO SLIDER
+========================= */
 .hero-slider {
     height: 100vh;
 }
@@ -2002,158 +1998,20 @@ Counter Part CSS
 
 .hero-overlay {
     background: rgba(0,0,0,0.55);
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.animate-text {
-    animation: fadeUp 1.5s ease-in-out;
-}
-/* =========================
-   MODERN NAVBAR
-========================= */
-.modern-navbar {
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(8px);
-  padding: 15px 0;
-  transition: all 0.3s ease;
-}
-
-.modern-navbar .nav-link {
-  color: #fff;
-  font-weight: 500;
-  margin-left: 15px;
-  transition: 0.3s;
-}
-
-.modern-navbar .nav-link:hover {
-  color: #5bc0de;
+    position: absolute;
+    inset: 0;
 }
 
 /* =========================
-   HERO SECTION
+   FOOTER
 ========================= */
-.hero-section {
-    min-height: 90vh;               /* Slightly less than 100vh to avoid scroll issues */
-    background-attachment: fixed;   /* Parallax feel if wanted */
-}
-
-.text-shadow {
-    text-shadow: 0 3px 12px rgba(0,0,0,0.75);  /* Better readability */
-}
-
-.hero-section .btn-lg {
-    min-width: 220px;               /* Prevents buttons from becoming too narrow */
-    white-space: nowrap;            /* Keeps text in one line */
-}
-
-@media (max-width: 576px) {
-    .hero-section h1 {
-        font-size: 2.8rem !important;
-    }
-    .hero-section .lead {
-        font-size: 1.2rem !important;
-    }
-}
-
-.hero-overlay {
-  width: 100%;
-}
-
-/* =========================
-   ROOM CARDS
-========================= */
-.room-price {
-  color: #3a8dde;
-  font-weight: 600;
-  margin-bottom: 10px;
-}
-
-.card {
-  border-radius: 15px;
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-}
-
-.card img {
-  height: 250px;
-  object-fit: cover;
-}
-body {
-  padding-top: 80px;
-}
-.card-body {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.card-body .btn {
-  margin-top: 10px;
-}
-.hero-section .btn {
-  display: inline-block;
-  margin: 10px;
-}
-.card-body {
-  padding: 25px;
-}
-
-.card-text {
-  flex-grow: 1;
-}
-
-.room-price {
-  font-weight: 600;
-  color: #3a8dde;
-  margin-bottom: 10px;
-}
-
-#rooms .card img {
-  height: 220px;
-  object-fit: cover;
-}
-.navbar-brand, .nav-link:hover { color: var(--accent) !important; }
-.room-price { color: var(--accent); }
-
 #footer { background: var(--primary); color: #ccc; }
 #footer a { color: var(--accent); }
 
-main, section {
-    padding-top: 4rem;
-    padding-bottom: 4rem;
-}
-
-#header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1030;          /* Higher than hero content */
-    background: rgba(0,0,0,0.9);
-}
-
-body {
-    padding-top: 140px;     /* Adjust based on your header height */
-}
-
-@media (max-width: 991px) {
-    body { padding-top: 120px; }
-}
-.hero-section {
-    min-height: 95vh;
-}
-
-.text-shadow {
-    text-shadow: 0 4px 15px rgba(0,0,0,0.7);
-}.navbar .btn-primary {
+/* =========================
+   NAVBAR BUTTON
+========================= */
+.navbar .btn-primary {
     background: var(--accent, #d4af37);
     border-color: var(--accent, #d4af37);
     box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
@@ -2162,4 +2020,11 @@ body {
 .navbar .btn-primary:hover {
     background: #b8972e;
     transform: translateY(-2px);
+}
+
+/* Prevent horizontal overflow on all screen sizes */
+html,
+body {
+    overflow-x: hidden;
+    max-width: 100%;
 }

@@ -22,6 +22,7 @@
 
    #slider {
       margin-top: -100px;
+      padding: 0;
    }
 
    #slider .slider_pic {
@@ -503,11 +504,14 @@
       padding: 0 10px;
    }
 
-   @media (max-width: 768px) {
+   @media (max-width: 992px) {
       #slider {
-         margin-top: -88px;
+         /* Matches body padding-top: 86px from allinclude.html @media (max-width: 992px) */
+         margin-top: -86px;
       }
+   }
 
+   @media (max-width: 768px) {
       #slider .slider_pic {
          min-height: 92vh;
       }
@@ -557,6 +561,13 @@
       #about .About_info,
       #OUR_ROOMS .ROOMS_text {
          padding: 16px;
+      }
+   }
+
+   @media (max-width: 576px) {
+      #slider {
+         /* Matches body padding-top: 74px from allinclude.html @media (max-width: 576px) */
+         margin-top: -74px;
       }
    }
 
