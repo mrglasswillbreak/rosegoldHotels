@@ -96,6 +96,8 @@
    #slider .slider-btn {
       display: flex;
       justify-content: center;
+      margin-left: auto;
+      margin-right: auto;
    }
 
    #about,
@@ -107,6 +109,16 @@
       padding: 92px 0;
       position: relative;
       overflow: hidden;
+   }
+
+   /* Allow rooms cards edge shadows to show without clipping */
+   #OUR_ROOMS {
+      overflow: visible;
+   }
+
+   /* Also override legacy .ROOMS_info overflow so card shadows are not clipped */
+   #OUR_ROOMS .ROOMS_info {
+      overflow: visible;
    }
 
    #about {
@@ -219,6 +231,7 @@
 
    #about .About_info {
       padding: 28px 24px;
+      margin-top: 0;
    }
 
    #about .About_info .about-title {
@@ -228,6 +241,25 @@
 
    #about .About_info p {
       margin-bottom: 10px;
+   }
+
+   /* Override old .about_btn container so pill-style read-more shows fully */
+   #about .about_btn {
+      width: auto;
+      height: auto;
+      overflow: visible;
+      background: none;
+      padding: 0;
+      margin-top: 18px;
+   }
+
+   #about .about_btn::before {
+      display: none;
+   }
+
+   /* Ensure legacy hover background doesn't reappear behind pill button */
+   #about .about_btn:hover {
+      background: none;
    }
 
    #about .read-more,
@@ -310,7 +342,7 @@
 
    #Service .Service_menu ul li {
       padding: 10px 14px;
-      margin-bottom: 12px;
+      margin-bottom: 20px;
       transition: transform 0.25s ease, border-color 0.25s ease;
    }
 
@@ -456,6 +488,11 @@
       margin: 0 8px;
    }
 
+   /* Add vertical gap between gallery/moments cards */
+   #GALLERY .GALLERY_info {
+      margin: 0 8px 20px;
+   }
+
    #Staff .Staff_title {
       margin-bottom: 10px;
    }
@@ -507,6 +544,23 @@
       box-shadow: none;
    }
 
+   /* Remove old rectangle/animation artifact behind Book Now button */
+   #OUR_ROOMS .room_btn {
+      background: transparent;
+      border: none;
+      width: auto;
+      height: auto;
+      padding: 0;
+   }
+
+   #OUR_ROOMS .room_btn::after {
+      display: none;
+   }
+
+   #OUR_ROOMS .room_btn:hover {
+      background: transparent;
+   }
+
    #OUR_ROOMS .room_btn a {
       min-width: 152px;
       white-space: nowrap;
@@ -525,6 +579,7 @@
       width: auto;
       height: auto;
       margin: 0;
+      background: transparent;
    }
 
    #OUR_ROOMS .room_slide .slick-dots li button {
@@ -549,10 +604,23 @@
       padding: 0 10px;
    }
 
+   /* Remove visible rectangle background from gallery slick dot nav items */
+   #GALLERY .GALLERY_slider .slick-dots li {
+      background: transparent;
+      width: auto;
+      height: auto;
+      margin: 0 4px;
+   }
+
    @media (max-width: 992px) {
       #slider {
          /* Matches body padding-top: 86px from allinclude.html @media (max-width: 992px) */
          margin-top: -86px;
+      }
+
+      /* Gap when about section video and info columns stack */
+      #about .About_info {
+         margin-top: 24px;
       }
    }
 
