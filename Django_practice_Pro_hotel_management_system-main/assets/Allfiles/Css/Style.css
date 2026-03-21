@@ -731,9 +731,11 @@ h2 {
 }
 
 .ROOMS_Title h2 {
-    width: 520px;
+    width: auto;
+    max-width: 100%;
     border-bottom: 2px solid var(--hovercolor);
-    margin-left: 110px
+    margin-left: auto;
+    margin-right: auto;
 }
 .ROOMS_Title p{
     margin-top:20px;
@@ -780,10 +782,12 @@ h2 {
      height: 100%;
      background: rgba(0, 0, 0, 0.2);
 }
-.btn{
+/* Scoped: only the overlay button container inside room picture cards */
+#OUR_ROOMS .ROOMS_pic .btn{
     position: absolute;
-    top:80%;
-    left:28%;
+    top: 80%;
+    left: 0;
+    right: 0;
 }
 .room_btn{
   position: relative;
@@ -877,8 +881,9 @@ h2 {
 }
  
 .ROOMS_info .slick-dots {
-     margin-left:500px;
-      margin-top:15px;  
+     margin-left: 0;
+     margin-top: 15px;
+     text-align: center;
 }
 .ROOMS_info .slick-dots li {
       width: 20px;
@@ -904,9 +909,11 @@ OUR AWESOME SERVICES
     margin-top:80px;
 }
 .Service_title h2 {
-    width:630px;
+    width: auto;
+    max-width: 100%;
     border-bottom: 2px solid var(--hovercolor);
-    margin-left:190px;
+    margin-left: auto;
+    margin-right: auto;
 }
 .Service_title{
    margin-bottom:50px;
@@ -938,21 +945,22 @@ OUR AWESOME SERVICES
     background:var(--bgcolor);
 }
 .Service_menu li .service-menu-title{
-     margin-top:-90px;
-     font-size: 32px;
-     margin-left:100px;
+     margin-top: 0;
+     font-size: 1.1rem;
+     margin-left: 0;
      font-weight: 500;
      font-family: 'Montserrat',
      sans-serif;
      color:var(--titlecolor);
 }
 .Service_menu li p{
-     margin-top:15px;
-     font-size: 17px;
-     margin-left:100px;
+     margin-top:6px;
+     font-size: 0.95rem;
+     margin-left: 0;
      font-weight: 400;
-     line-height: 26px;
-     width: 320px;
+     line-height: 1.6;
+     width: auto;
+     max-width: 100%;
      color:var(--titlecolor);
 }
 .Service_menu li span{
@@ -964,15 +972,15 @@ OUR AWESOME SERVICES
 }
 .Service_items1{
      margin-top:52px;
-     margin-left:-40px;
+     margin-left: 0;
 }
 .Service_items2 {
     margin-top:52px;
-    margin-left: -90px;
+    margin-left: 0;
 }
 .Service_items3 {
     margin-top:52px;
-    margin-left: -140px;
+    margin-left: 0;
 }
 /*************************
 OUR GALLERY
@@ -983,9 +991,11 @@ OUR GALLERY
     overflow: hidden;
 }
 .GALLERY_title h2 {
-    width:350px;
+    width: auto;
+    max-width: 100%;
     border-bottom: 2px solid var(--hovercolor);
-    margin-left:180px; 
+    margin-left: auto;
+    margin-right: auto;
 }
 .GALLERY_view{
     margin-top:40px; 
@@ -1029,8 +1039,9 @@ OUR GALLERY
 }
 
 .GALLERY_slider .slick-dots {
-    margin-left: 460px;
+    margin-left: 0;
     margin-top: 15px;
+    text-align: center;
     overflow: hidden;
 }
 
@@ -1120,9 +1131,11 @@ Counter Part CSS
  }
 
  .Staff_title h2 {
-     width:500px;
+     width: auto;
+     max-width: 100%;
      border-bottom: 2px solid var(--hovercolor);
-     margin-left: 150px;
+     margin-left: auto;
+     margin-right: auto;
  }
  .Staff_view{
     position: relative;
@@ -1130,6 +1143,9 @@ Counter Part CSS
  }
  .Staff_pic{
   cursor: pointer;
+  position: relative;
+ }
+ .Staff_info{
   position: relative;
  }
  .Staff_pic img{
@@ -1140,7 +1156,8 @@ Counter Part CSS
  }
  .Staff_overly{
    position:absolute;
-   width:264px;
+   left: 0;
+   right: 0;
    z-index:999;
    margin: -80px 0px 0px 0px;
    cursor: pointer;
@@ -1211,8 +1228,9 @@ Counter Part CSS
     background:var(--imgbg) ;
 }
 .Staff_slider .slick-dots {
-    margin-left: 460px;
+    margin-left: 0;
     margin-top: 15px;
+    text-align: center;
     overflow: hidden;
 }
 

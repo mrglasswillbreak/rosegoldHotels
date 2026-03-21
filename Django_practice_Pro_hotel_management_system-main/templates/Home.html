@@ -162,6 +162,9 @@
       flex-direction: column;
       align-items: center;
       gap: 10px;
+      width: auto;
+      margin-left: 0;
+      margin-right: 0;
    }
 
    #OUR_ROOMS .ROOMS_Title h2::after,
@@ -319,19 +322,61 @@
 
    #Service .Service_menu ul li a {
       text-decoration: none;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      column-gap: 12px;
+      align-items: flex-start;
    }
 
-   #Service .Service_menu ul {
-      padding-left: 0;
+   #Service .Service_menu ul li a h5,
+   #Service .Service_menu ul li a p {
+      grid-column: 2;
       margin: 0;
+   }
+
+   #Service .Service_menu li .service-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+   }
+
+   #Service .Service_menu li .service-icon img {
+      width: 44px;
+      height: 44px;
+      padding: 8px;
+      object-fit: contain;
    }
 
    #Service .service-menu-title {
       font-family: 'Playfair Display', serif;
       color: var(--lux-ink);
+      margin-top: 0 !important;
+      margin-left: 0 !important;
+      font-size: 1.05rem;
    }
 
-   #GALLERY .GALLERY_info,
+   #Service .Service_menu li p.text {
+      margin-top: 4px;
+      margin-left: 0 !important;
+      width: auto !important;
+      max-width: 100% !important;
+      font-size: 0.88rem;
+      line-height: 1.5;
+   }
+
+   #Service .Service_img img {
+      height: 380px;
+      width: 100%;
+      object-fit: cover;
+   }
+
+   #Service .Service_menu ul {
+      padding-left: 0;
+      margin: 0;
+      list-style: none;
+   }
+
+
    #Staff .Staff_info {
       overflow: hidden;
       transition: transform 0.32s ease, box-shadow 0.32s ease;
@@ -562,6 +607,16 @@
       #OUR_ROOMS .ROOMS_text {
          padding: 16px;
       }
+
+      #Service .Service_img img {
+         height: 280px;
+      }
+
+      #Service .Service_menu li .service-icon img {
+         width: 36px;
+         height: 36px;
+         padding: 6px;
+      }
    }
 
    @media (max-width: 576px) {
@@ -569,11 +624,27 @@
          /* Matches body padding-top: 74px from allinclude.html @media (max-width: 576px) */
          margin-top: -74px;
       }
+
+      #OUR_ROOMS .ROOMS_Title h2,
+      #Service .Service_title h2,
+      #GALLERY .GALLERY_title h2,
+      #Staff .Staff_title h2 {
+         font-size: clamp(1.5rem, 6vw, 2rem);
+      }
+
+      #Service .col-lg-7,
+      #Service .col-lg-5 {
+         width: 100%;
+      }
    }
 
    @media (max-width: 480px) {
       #Staff .Staff_slider:not(.slick-initialized) {
          grid-template-columns: 1fr;
+      }
+
+      #Service .Service_img img {
+         height: 220px;
       }
    }
 
@@ -753,7 +824,7 @@
           </div>
           <div class="ROOMS_info">
            <div class="row room_slide">
-                <div class="col-lg-4">
+                <div class="col-lg-4 col-md-6 col-sm-12">
                    <div class="rooms-view">
                      <div class="ROOMS_pic">
 
@@ -772,7 +843,7 @@
                      </div>
                   </div>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-lg-4 col-md-6 col-sm-12">
                    <div class="rooms-view">
                      <div class="ROOMS_pic">
                        <img src=" {%static 'Allfiles/Photo/room-2.jpg'%}" alt="img">
@@ -790,7 +861,7 @@
                      </div>
                   </div>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-lg-4 col-md-6 col-sm-12">
                    <div class="rooms-view">
                      <div class="ROOMS_pic">
                        <img src="{%static 'Allfiles/Photo/room-3.jpg'%}" alt="img">
@@ -808,7 +879,7 @@
                      </div>
                   </div>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-lg-4 col-md-6 col-sm-12">
                    <div class="rooms-view">
                      <div class="ROOMS_pic">
                        <img src="{%static 'Allfiles/Photo/room-4.jpg'%}" alt="img">
@@ -826,7 +897,7 @@
                      </div>
                   </div>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-lg-4 col-md-6 col-sm-12">
                    <div class="rooms-view">
                      <div class="ROOMS_pic">
                        <img src="{%static 'Allfiles/Photo/room-5.jpg'%}" alt="img">
@@ -844,7 +915,7 @@
                      </div>
                   </div>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-lg-4 col-md-6 col-sm-12">
                    <div class="rooms-view">
                      <div class="ROOMS_pic">
                        <img src="{%static 'Allfiles/Photo/room-6.jpg'%}" alt="img">
