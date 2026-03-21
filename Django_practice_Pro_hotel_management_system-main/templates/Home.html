@@ -116,6 +116,11 @@
       overflow: visible;
    }
 
+   /* Also override legacy .ROOMS_info overflow so card shadows are not clipped */
+   #OUR_ROOMS .ROOMS_info {
+      overflow: visible;
+   }
+
    #about {
       background: linear-gradient(145deg, #fbf8f2 0%, #f1e7d6 100%);
    }
@@ -250,6 +255,11 @@
 
    #about .about_btn::before {
       display: none;
+   }
+
+   /* Ensure legacy hover background doesn't reappear behind pill button */
+   #about .about_btn:hover {
+      background: none;
    }
 
    #about .read-more,
@@ -545,6 +555,10 @@
 
    #OUR_ROOMS .room_btn::after {
       display: none;
+   }
+
+   #OUR_ROOMS .room_btn:hover {
+      background: transparent;
    }
 
    #OUR_ROOMS .room_btn a {
