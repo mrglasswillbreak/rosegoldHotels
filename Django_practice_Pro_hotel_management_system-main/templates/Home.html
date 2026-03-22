@@ -493,8 +493,13 @@
       margin: 0 8px 12px;
    }
 
+   /* In non-slick (Bootstrap row) layout, rely on row-gap instead of extra bottom margin */
    #GALLERY .GALLERY_slider:not(.slick-initialized) {
       row-gap: 12px;
+   }
+
+   #GALLERY .GALLERY_slider:not(.slick-initialized) .GALLERY_info {
+      margin-bottom: 0;
    }
 
    #Staff .Staff_title {
