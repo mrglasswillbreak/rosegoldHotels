@@ -544,8 +544,9 @@ Hotel & Resort
     letter-spacing: 0.03em;
   }
 
-  /* Hero fullscreen: cancel body padding-top so slides start at y=0 behind the fixed navbar */
-  .hero-slider-shell {
+  /* Hero fullscreen: cancel body padding-top so slides start at y=0 behind the fixed navbar.
+     Use #slider (ID selector) to beat the specificity of #slider{margin-top:-167px} in Style.css */
+  #slider {
     margin-top: -100px;
   }
 
@@ -553,7 +554,7 @@ Hotel & Resort
     #about .About_info {
       margin-top: 24px;
     }
-    .hero-slider-shell {
+    #slider {
       margin-top: -86px;
     }
   }
@@ -617,7 +618,7 @@ Hotel & Resort
       width: 100%;
     }
 
-    .hero-slider-shell {
+    #slider {
       margin-top: -74px;
     }
   }
@@ -817,6 +818,13 @@ Hotel & Resort
     display: flex;
     align-items: center;
     position: relative;
+  }
+  /* Ensure the Bootstrap carousel chain expands to fill the full-screen hero */
+  #slider .carousel,
+  #slider .carousel-inner,
+  #slider .carousel-item {
+    min-height: 100vh;
+    min-height: 100dvh; /* dynamic viewport height (shrinks/grows with mobile address bar) */
   }
   .hero-slider-shell {
     position: relative;
