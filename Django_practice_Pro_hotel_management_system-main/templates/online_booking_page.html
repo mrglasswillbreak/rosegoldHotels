@@ -83,7 +83,7 @@
 
   .booking-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 20px;
   }
   .booking-card {
@@ -347,6 +347,7 @@
     border-radius: 16px;
     padding: 36px;
     box-shadow: 0 4px 30px rgba(0,0,0,0.07);
+    min-width: 0;
   }
   .form-section-title {
     font-family: 'Cormorant Garamond', serif;
@@ -371,7 +372,7 @@
   }
 
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-  .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; min-width: 0; }
   .form-group label {
     font-size: 0.78rem;
     text-transform: uppercase;
@@ -380,6 +381,8 @@
     font-weight: 500;
   }
   .form-group input, .form-group select {
+    width: 100%;
+    min-width: 0;
     padding: 12px 14px;
     border: 1.5px solid var(--cream-dark);
     border-radius: 8px;
