@@ -1,10 +1,13 @@
 {% extends "allinclude.html" %} {% block content %}
 
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link
+  href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap"
+  rel="stylesheet"
+/>
 
 <style>
   :root {
-    --gold: #C9A84C;
+    --gold: #c9a84c;
     --gold-light: #e8c97a;
     --dark: #1a1410;
     --dark-mid: #2c2218;
@@ -12,16 +15,20 @@
     --cream-dark: #ede4d3;
     --text-muted: #8a7a65;
     --card-bg: #ffffff;
-    --shadow: 0 8px 40px rgba(0,0,0,0.10);
-    --shadow-hover: 0 20px 60px rgba(0,0,0,0.18);
+    --shadow: 0 8px 40px rgba(0, 0, 0, 0.1);
+    --shadow-hover: 0 20px 60px rgba(0, 0, 0, 0.18);
   }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
 
   .rooms-page {
     background: var(--cream);
     min-height: 100vh;
-    font-family: 'DM Sans', sans-serif;
+    font-family: "DM Sans", sans-serif;
     padding-bottom: 80px;
   }
 
@@ -34,13 +41,17 @@
     overflow: hidden;
   }
   .rooms-hero::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at 60% 0%, rgba(201,168,76,0.18) 0%, transparent 70%);
+    background: radial-gradient(
+      ellipse at 60% 0%,
+      rgba(201, 168, 76, 0.18) 0%,
+      transparent 70%
+    );
   }
   .rooms-hero h1 {
-    font-family: 'Playfair Display', serif;
+    font-family: "Playfair Display", serif;
     font-size: clamp(2.2rem, 5vw, 3.5rem);
     color: var(--cream);
     letter-spacing: 0.02em;
@@ -82,7 +93,7 @@
     padding: 11px 18px;
     border: 1.5px solid var(--cream-dark);
     border-radius: 8px;
-    font-family: 'DM Sans', sans-serif;
+    font-family: "DM Sans", sans-serif;
     font-size: 0.92rem;
     background: #fff;
     color: var(--dark);
@@ -112,7 +123,7 @@
     border: 1.5px solid var(--gold);
     color: var(--gold);
     border-radius: 8px;
-    font-family: 'DM Sans', sans-serif;
+    font-family: "DM Sans", sans-serif;
     font-size: 0.88rem;
     cursor: pointer;
     transition: all 0.2s;
@@ -152,18 +163,15 @@
     border-radius: 16px;
     overflow: hidden;
     box-shadow: var(--shadow);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
     display: flex;
     flex-direction: column;
-    animation: fadeUp 0.5s ease both;
   }
   .room-card:hover {
     transform: translateY(-8px);
     box-shadow: var(--shadow-hover);
-  }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(24px); }
-    to   { opacity: 1; transform: translateY(0); }
   }
 
   /* IMAGE GALLERY */
@@ -208,15 +216,24 @@
     letter-spacing: 0.06em;
     text-transform: uppercase;
   }
-  .status-available  { background: #d4f5e2; color: #1a7a45; }
-  .status-occupied   { background: #fde8e8; color: #b91c1c; }
-  .status-maintenance{ background: #fef3c7; color: #92400e; }
+  .status-available {
+    background: #d4f5e2;
+    color: #1a7a45;
+  }
+  .status-occupied {
+    background: #fde8e8;
+    color: #b91c1c;
+  }
+  .status-maintenance {
+    background: #fef3c7;
+    color: #92400e;
+  }
 
   .type-tag {
     position: absolute;
     bottom: 14px;
     left: 14px;
-    background: rgba(26,20,16,0.75);
+    background: rgba(26, 20, 16, 0.75);
     color: var(--gold-light);
     padding: 4px 12px;
     border-radius: 20px;
@@ -233,7 +250,7 @@
     left: 14px;
     width: 32px;
     height: 32px;
-    background: rgba(255,255,255,0.85);
+    background: rgba(255, 255, 255, 0.85);
     border: none;
     border-radius: 50%;
     cursor: pointer;
@@ -261,7 +278,7 @@
     justify-content: space-between;
   }
   .room-number {
-    font-family: 'Playfair Display', serif;
+    font-family: "Playfair Display", serif;
     font-size: 1.3rem;
     color: var(--dark);
     font-weight: 600;
@@ -310,11 +327,13 @@
     text-align: center;
     text-decoration: none;
     border-radius: 10px;
-    font-family: 'DM Sans', sans-serif;
+    font-family: "DM Sans", sans-serif;
     font-size: 0.92rem;
     font-weight: 500;
     letter-spacing: 0.06em;
-    transition: background 0.2s, color 0.2s;
+    transition:
+      background 0.2s,
+      color 0.2s;
     border: 1.5px solid transparent;
   }
   .book-btn:hover {
@@ -335,27 +354,36 @@
     color: var(--text-muted);
     grid-column: 1/-1;
   }
-  .empty-state svg { opacity: 0.25; margin-bottom: 16px; }
-  .empty-state h3 { font-family: 'Playfair Display', serif; color: var(--dark); margin-bottom: 8px; }
+  .empty-state svg {
+    opacity: 0.25;
+    margin-bottom: 16px;
+  }
+  .empty-state h3 {
+    font-family: "Playfair Display", serif;
+    color: var(--dark);
+    margin-bottom: 8px;
+  }
 
   /* LIGHTBOX */
   .lightbox {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.92);
+    background: rgba(0, 0, 0, 0.92);
     z-index: 9999;
     align-items: center;
     justify-content: center;
     padding: 20px;
   }
-  .lightbox.open { display: flex; }
+  .lightbox.open {
+    display: flex;
+  }
   .lightbox img {
     max-width: 90vw;
     max-height: 85vh;
     border-radius: 12px;
     object-fit: contain;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
   }
   .lightbox-close {
     position: absolute;
@@ -369,7 +397,9 @@
     line-height: 1;
     opacity: 0.8;
   }
-  .lightbox-close:hover { opacity: 1; }
+  .lightbox-close:hover {
+    opacity: 1;
+  }
   .lightbox-caption {
     position: absolute;
     bottom: 30px;
@@ -377,27 +407,40 @@
     transform: translateX(-50%);
     color: #ccc;
     font-size: 0.9rem;
-    font-family: 'DM Sans', sans-serif;
+    font-family: "DM Sans", sans-serif;
     letter-spacing: 0.05em;
   }
 
   @media (max-width: 700px) {
-    .rooms-hero { padding: 50px 20px 36px; }
-    .filter-bar { padding: 24px 20px 8px; }
-    .rooms-grid { padding: 0 20px; gap: 20px; }
-    .results-meta { padding: 0 20px; }
+    .rooms-hero {
+      padding: 50px 20px 36px;
+    }
+    .filter-bar {
+      padding: 24px 20px 8px;
+    }
+    .rooms-grid {
+      padding: 0 20px;
+      gap: 20px;
+    }
+    .results-meta {
+      padding: 0 20px;
+    }
   }
 </style>
 
 <!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
-  <button class="lightbox-close" onclick="document.getElementById('lightbox').classList.remove('open')">&times;</button>
-  <img id="lightbox-img" src="" alt="">
+  <button
+    class="lightbox-close"
+    onclick="document.getElementById('lightbox').classList.remove('open')"
+  >
+    &times;
+  </button>
+  <img id="lightbox-img" src="" alt="" />
   <div class="lightbox-caption" id="lightbox-caption"></div>
 </div>
 
 <div class="rooms-page">
-
   <!-- HERO -->
   <div class="rooms-hero">
     <h1>Our <span>Rooms</span> & Suites</h1>
@@ -418,7 +461,13 @@
     </div>
     <div class="filter-group">
       <label>Max Price</label>
-      <input type="number" id="filter-price" placeholder="e.g. 50000" min="0" oninput="applyFilters()">
+      <input
+        type="number"
+        id="filter-price"
+        placeholder="e.g. 50000"
+        min="0"
+        oninput="applyFilters()"
+      />
     </div>
     <div class="filter-group">
       <label>Status</label>
@@ -438,27 +487,52 @@
 
   <!-- GRID -->
   <div class="rooms-grid" id="rooms-grid">
-
     {% for room in rooms %}
-    <div class="room-card"
-         data-type="{{ room.room_type }}"
-         data-price="{{ room.price }}"
-         data-status="{{ room.status }}">
-
+    <div
+      class="room-card"
+      data-type="{{ room.room_type }}"
+      data-price="{{ room.price }}"
+      data-status="{{ room.status }}"
+    >
       <!-- IMAGE -->
-      <div class="card-image" onclick="openLightbox('{% if room.image %}{{ room.image.url }}{% endif %}', 'Room {{ room.room_number }}')">
+      <div
+        class="card-image"
+        onclick="openLightbox('{% if room.image %}{{ room.image.url }}{% endif %}', 'Room {{ room.room_number }}')"
+      >
         {% if room.image %}
-          <img src="{{ room.image.url }}" alt="Room {{ room.room_number }}">
-          <button class="img-expand-btn" title="View full image">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
-          </button>
+        <img src="{{ room.image.url }}" alt="Room {{ room.room_number }}" />
+        <button class="img-expand-btn" title="View full image">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#333"
+            stroke-width="2.5"
+          >
+            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+          </svg>
+        </button>
         {% else %}
-          <div class="no-image">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-            <span style="font-size:0.8rem;">No image available</span>
-          </div>
+        <div class="no-image">
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+          >
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <circle cx="8.5" cy="8.5" r="1.5" />
+            <path d="M21 15l-5-5L5 21" />
+          </svg>
+          <span style="font-size: 0.8rem">No image available</span>
+        </div>
         {% endif %}
-        <span class="status-badge status-{{ room.status }}">{{ room.get_status_display }}</span>
+        <span class="status-badge status-{{ room.status }}"
+          >{{ room.get_status_display }}</span
+        >
         <span class="type-tag">{{ room.get_room_type_display }}</span>
       </div>
 
@@ -470,11 +544,34 @@
         </div>
         <div class="room-meta">
           <span>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:3px"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              style="vertical-align: -2px; margin-right: 3px"
+            >
+              <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+            </svg>
             Floor {{ room.floor }}
           </span>
           <span>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:3px"><rect x="1" y="3" width="15" height="13"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              style="vertical-align: -2px; margin-right: 3px"
+            >
+              <rect x="1" y="3" width="15" height="13" />
+              <path d="M16 8h4l3 3v5h-7V8z" />
+              <circle cx="5.5" cy="18.5" r="2.5" />
+              <circle cx="18.5" cy="18.5" r="2.5" />
+            </svg>
             {{ room.get_room_type_display }}
           </span>
         </div>
@@ -484,43 +581,58 @@
       <!-- FOOTER -->
       <div class="card-footer">
         {% if room.status == 'available' %}
-          <a href="{% url 'book_room' room.id %}" class="book-btn">Book This Room</a>
+        <a href="{% url 'book_room' room.id %}" class="book-btn"
+          >Book This Room</a
+        >
         {% else %}
-          <span class="book-btn disabled">Not Available</span>
+        <span class="book-btn disabled">Not Available</span>
         {% endif %}
       </div>
-
     </div>
     {% empty %}
     <div class="empty-state">
-      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+      <svg
+        width="64"
+        height="64"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1"
+      >
+        <rect x="3" y="3" width="18" height="18" rx="2" />
+        <circle cx="8.5" cy="8.5" r="1.5" />
+        <path d="M21 15l-5-5L5 21" />
+      </svg>
       <h3>No Rooms Found</h3>
       <p>Check back later or adjust your filters.</p>
     </div>
     {% endfor %}
-
   </div>
 </div>
 
 <script>
-  const cards = document.querySelectorAll('.room-card');
-  const countEl = document.getElementById('results-count');
+  const cards = document.querySelectorAll(".room-card");
+  const countEl = document.getElementById("results-count");
 
   function applyFilters() {
-    const type   = document.getElementById('filter-type').value;
-    const price  = parseFloat(document.getElementById('filter-price').value) || Infinity;
-    const status = document.getElementById('filter-status').value;
-    let visible  = 0;
+    const type = document.getElementById("filter-type").value;
+    const price =
+      parseFloat(document.getElementById("filter-price").value) || Infinity;
+    const status = document.getElementById("filter-status").value;
+    let visible = 0;
 
     cards.forEach((card, i) => {
-      const matchType   = !type   || card.dataset.type   === type;
-      const matchPrice  = parseFloat(card.dataset.price) <= price;
+      const matchType = !type || card.dataset.type === type;
+      const matchPrice = parseFloat(card.dataset.price) <= price;
       const matchStatus = !status || card.dataset.status === status;
       const show = matchType && matchPrice && matchStatus;
 
-      card.style.display = show ? '' : 'none';
+      card.style.display = show ? "" : "none";
       if (show) {
-        card.style.animationDelay = (visible * 0.06) + 's';
+        card.style.setProperty(
+          "--reveal-delay",
+          `${Math.min(visible * 90, 720)}ms`,
+        );
         visible++;
       }
     });
@@ -528,40 +640,45 @@
     countEl.textContent = visible;
 
     // Show empty state if no results
-    let empty = document.querySelector('.empty-state');
+    let empty = document.querySelector(".empty-state");
     if (!empty && visible === 0) {
-      const grid = document.getElementById('rooms-grid');
-      const div = document.createElement('div');
-      div.className = 'empty-state filter-empty';
+      const grid = document.getElementById("rooms-grid");
+      const div = document.createElement("div");
+      div.className = "empty-state filter-empty";
       div.innerHTML = `<h3>No rooms match your filters</h3><p>Try adjusting your search criteria.</p>`;
       grid.appendChild(div);
-    } else if (empty && empty.classList.contains('filter-empty') && visible > 0) {
+    } else if (
+      empty &&
+      empty.classList.contains("filter-empty") &&
+      visible > 0
+    ) {
       empty.remove();
     }
   }
 
   function resetFilters() {
-    document.getElementById('filter-type').value   = '';
-    document.getElementById('filter-price').value  = '';
-    document.getElementById('filter-status').value = '';
+    document.getElementById("filter-type").value = "";
+    document.getElementById("filter-price").value = "";
+    document.getElementById("filter-status").value = "";
     applyFilters();
   }
 
   function openLightbox(url, caption) {
     if (!url) return;
-    document.getElementById('lightbox-img').src     = url;
-    document.getElementById('lightbox-caption').textContent = caption;
-    document.getElementById('lightbox').classList.add('open');
+    document.getElementById("lightbox-img").src = url;
+    document.getElementById("lightbox-caption").textContent = caption;
+    document.getElementById("lightbox").classList.add("open");
   }
 
   function closeLightbox(e) {
-    if (e.target.id === 'lightbox') {
-      document.getElementById('lightbox').classList.remove('open');
+    if (e.target.id === "lightbox") {
+      document.getElementById("lightbox").classList.remove("open");
     }
   }
 
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') document.getElementById('lightbox').classList.remove('open');
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape")
+      document.getElementById("lightbox").classList.remove("open");
   });
 
   // Init count

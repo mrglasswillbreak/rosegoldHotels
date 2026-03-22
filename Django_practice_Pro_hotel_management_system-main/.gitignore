@@ -21,3 +21,9 @@ db.sqlite3
 
 # Static files collected
 staticfiles/
+
+# Node.js
+node_modules/
+
+# Frontend build output
+static/dist/

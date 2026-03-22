@@ -1,5 +1,199 @@
 {% extends "allinclude.html" %} {% block content %}
 
+{% if not show_form %}
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --ink: #1a1410;
+    --gold: #c9a84c;
+    --cream: #f7f2ea;
+    --cream-dark: #ede4d3;
+    --muted: #8a7a65;
+    --card-bg: #ffffff;
+    --shadow: 0 10px 30px rgba(0,0,0,0.08);
+  }
+
+  .bookings-page {
+    background: var(--cream);
+    min-height: 100vh;
+    font-family: 'DM Sans', sans-serif;
+    padding-bottom: 80px;
+  }
+
+  .bookings-hero {
+    background: var(--ink);
+    padding: 60px 40px 44px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .bookings-hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .bookings-hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: #fff;
+  }
+  .bookings-hero p {
+    color: var(--muted);
+    margin-top: 8px;
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .bookings-container {
+    max-width: 1100px;
+    margin: 40px auto 0;
+    padding: 0 24px;
+  }
+
+  .actions-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .actions-row .title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: var(--ink);
+  }
+  .new-booking-btn {
+    padding: 10px 18px;
+    background: var(--ink);
+    color: var(--gold);
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+    transition: background 0.2s, color 0.2s;
+  }
+  .new-booking-btn:hover {
+    background: var(--gold);
+    color: var(--ink);
+  }
+
+  .booking-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  .booking-card {
+    background: var(--card-bg);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+  }
+  .booking-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    background: var(--cream-dark);
+  }
+  .booking-card .no-image {
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--cream-dark);
+    color: var(--muted);
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .booking-body {
+    padding: 16px 18px 18px;
+  }
+  .booking-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--ink);
+  }
+  .booking-meta {
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--muted);
+    display: grid;
+    gap: 6px;
+  }
+  .booking-meta strong { color: var(--ink); font-weight: 600; }
+
+  .empty-state {
+    background: #fff;
+    border-radius: 16px;
+    padding: 40px 24px;
+    text-align: center;
+    box-shadow: var(--shadow);
+    color: var(--muted);
+  }
+  .empty-state h3 {
+    font-family: 'Playfair Display', serif;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+
+  @media (max-width: 600px) {
+    .actions-row { flex-direction: column; align-items: flex-start; }
+    .new-booking-btn { width: 100%; text-align: center; }
+    .bookings-hero { padding: 36px 20px 28px; }
+  }
+</style>
+
+<div class="bookings-page">
+  <div class="bookings-hero">
+    <h1>Current <em style="color: var(--gold); font-style: normal;">Bookings</em></h1>
+    <p>All active reservations</p>
+  </div>
+
+  <div class="bookings-container">
+    <div class="actions-row">
+      <div class="title">Active Bookings</div>
+      <a href="{% url 'online_booking' %}?new=1" class="new-booking-btn">New Booking</a>
+    </div>
+
+    {% if bookings %}
+    <div class="booking-grid">
+      {% for booking in bookings %}
+      <div class="booking-card">
+        {% if booking.room.image %}
+          <img src="{{ booking.room.image.url }}" alt="Room {{ booking.room.room_number }}">
+        {% else %}
+          <div class="no-image">No image</div>
+        {% endif %}
+        <div class="booking-body">
+          <div class="booking-title">Room {{ booking.room.room_number }}</div>
+          <div class="booking-meta">
+            <div><strong>Guest:</strong> {{ booking.user.first_name|default:booking.user.email }}</div>
+            <div><strong>Dates:</strong> {{ booking.check_in }} → {{ booking.check_out }}</div>
+            <div><strong>Nights:</strong> {{ booking.nights }}</div>
+            <div><strong>Guests:</strong> {{ booking.adults }} adult{{ booking.adults|pluralize }}{% if booking.children %}, {{ booking.children }} child{{ booking.children|pluralize:"ren" }}{% endif %}</div>
+            <div><strong>Price:</strong> ₦{{ booking.room.price }}/night</div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <h3>No Active Bookings</h3>
+      <p>There are currently no bookings to show.</p>
+      <a href="{% url 'online_booking' %}?new=1" class="new-booking-btn" style="margin-top: 14px; display: inline-block;">Create a Booking</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% else %}
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 
 <style>
@@ -56,24 +250,40 @@
     align-items: start;
   }
 
-  /* ROOM SUMMARY CARD */
   .room-summary {
     background: var(--ink);
     border-radius: 16px;
     overflow: hidden;
     position: sticky;
-    top: 24px;
+    top: var(--navbar-h); /* tracks the responsive navbar height set in allinclude.html */
   }
   .room-summary-img {
     height: 200px;
     overflow: hidden;
     background: #2c2218;
+    position: relative;
   }
   .room-summary-img img {
     width: 100%; height: 100%;
     object-fit: cover;
     opacity: 0.85;
   }
+  .preview-expand-btn {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,0.92);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+  }
+  .preview-expand-btn svg { width: 16px; height: 16px; }
   .room-summary-img .no-img {
     width: 100%; height: 100%;
     display: flex; align-items: center; justify-content: center;
@@ -132,12 +342,12 @@
   }
   .total-cost strong { color: var(--gold-light); }
 
-  /* FORM CARD */
   .booking-form-card {
     background: #fff;
     border-radius: 16px;
     padding: 36px;
     box-shadow: 0 4px 30px rgba(0,0,0,0.07);
+    min-width: 0;
   }
   .form-section-title {
     font-family: 'Cormorant Garamond', serif;
@@ -162,7 +372,7 @@
   }
 
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-  .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; min-width: 0; }
   .form-group label {
     font-size: 0.78rem;
     text-transform: uppercase;
@@ -171,6 +381,8 @@
     font-weight: 500;
   }
   .form-group input, .form-group select {
+    width: 100%;
+    min-width: 0;
     padding: 12px 14px;
     border: 1.5px solid var(--cream-dark);
     border-radius: 8px;
@@ -236,57 +448,109 @@
   }
   .back-link:hover { color: var(--gold); }
 
+  /* LIGHTBOX */
+  .lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .lightbox.open { display: flex; }
+  .lightbox img {
+    max-width: 90vw;
+    max-height: 85vh;
+    border-radius: 12px;
+    object-fit: contain;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+  }
+  .lightbox-close {
+    position: absolute;
+    top: 24px;
+    right: 30px;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 2rem;
+    cursor: pointer;
+    line-height: 1;
+    opacity: 0.8;
+  }
+  .lightbox-close:hover { opacity: 1; }
+  .lightbox-caption {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ccc;
+    font-size: 0.9rem;
+    font-family: 'DM Sans', sans-serif;
+    letter-spacing: 0.05em;
+  }
+
   @media (max-width: 768px) {
     .booking-layout { grid-template-columns: 1fr; }
     .room-summary { position: static; }
     .form-row, .guests-row { grid-template-columns: 1fr; }
     .booking-form-card { padding: 24px; }
+    .booking-hero { padding: 36px 20px 28px; }
   }
 </style>
 
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+  <button class="lightbox-close" onclick="document.getElementById('lightbox').classList.remove('open')">&times;</button>
+  <img id="lightbox-img" src="" alt="">
+  <div class="lightbox-caption" id="lightbox-caption"></div>
+</div>
+
 <div class="booking-page">
   <div class="booking-hero">
-    <h1>Book <em>Room {{ room.room_number }}</em></h1>
+    <h1>Book <em>Your Stay</em></h1>
     <p>Complete your reservation below</p>
   </div>
 
   <div class="booking-layout">
-
-    <!-- ROOM SUMMARY -->
     <div class="room-summary">
       <div class="room-summary-img">
-        {% if room.image %}
-          <img src="{{ room.image.url }}" alt="Room {{ room.room_number }}">
-        {% else %}
-          <div class="no-img">No image available</div>
-        {% endif %}
+        <img id="room-preview-img" src="{% if room and room.image %}{{ room.image.url }}{% endif %}" alt="" style="{% if not room or not room.image %}display:none;{% endif %}">
+        <button type="button" id="preview-expand" class="preview-expand-btn" aria-label="View full image">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#1a1410" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+        </button>
+        <div id="room-preview-empty" class="no-img" {% if room and room.image %}style="display:none;"{% endif %}>
+          {% if room %}No image available{% else %}Select a room to preview{% endif %}
+        </div>
       </div>
       <div class="room-summary-body">
-        <h3>Room {{ room.room_number }}</h3>
-        <span class="room-type-tag">{{ room.get_room_type_display }}</span>
+        <h3 id="room-preview-title">{% if room %}Room {{ room.room_number }}{% else %}Select a Room{% endif %}</h3>
+        <span id="room-preview-type" class="room-type-tag" {% if not room %}style="display:none;"{% endif %}>
+          {% if room %}{{ room.get_room_type_display }}{% endif %}
+        </span>
         <div class="room-detail-row">
           <span class="label">Floor</span>
-          <span class="value">{{ room.floor }}</span>
+          <span class="value" id="room-preview-floor">{% if room %}{{ room.floor }}{% else %}—{% endif %}</span>
         </div>
         <div class="room-detail-row">
           <span class="label">Status</span>
-          <span class="value">{{ room.get_status_display }}</span>
+          <span class="value" id="room-preview-status">{% if room %}{{ room.get_status_display }}{% else %}—{% endif %}</span>
         </div>
         <div class="room-detail-row">
           <span class="label">Facilities</span>
-          <span class="value" style="text-align:right; max-width:60%; font-size:0.82rem;">{{ room.facility }}</span>
+          <span class="value" id="room-preview-facility" style="text-align:right; max-width:60%; font-size:0.82rem;">
+            {% if room %}{{ room.facility }}{% else %}—{% endif %}
+          </span>
         </div>
         <div class="room-price-big">
-          <div class="amount">₦{{ room.price }}</div>
+          <div class="amount" id="room-preview-price">{% if room %}₦{{ room.price }}{% else %}₦—{% endif %}</div>
           <div class="per">per night</div>
         </div>
         <div class="total-cost" id="total-display"></div>
       </div>
     </div>
 
-    <!-- BOOKING FORM -->
     <div class="booking-form-card">
-
       {% if messages %}
       <div class="messages-list">
         {% for message in messages %}
@@ -295,21 +559,33 @@
       </div>
       {% endif %}
 
-      <form method="POST" id="booking-form">
+      <form method="POST" id="booking-form" class="needs-validation" novalidate>
         {% csrf_token %}
 
         <div class="form-section-title">
           <span class="num">1</span> Stay Details
         </div>
 
+        <div class="form-group">
+          <label>Room</label>
+          <select name="room_id" id="room_id" required>
+            <option value="">Select a room</option>
+            {% for r in rooms %}
+              <option value="{{ r.id }}" {% if form_data.room_id == r.id|stringformat:'s' %}selected{% endif %}>
+                Room {{ r.room_number }} · {{ r.get_room_type_display }} · ₦{{ r.price }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
         <div class="form-row">
           <div class="form-group">
             <label>Check-in Date</label>
-            <input type="date" name="check_in" id="check_in" required>
+            <input type="date" name="check_in" id="check_in" value="{{ form_data.check_in }}" required>
           </div>
           <div class="form-group">
             <label>Check-out Date</label>
-            <input type="date" name="check_out" id="check_out" required>
+            <input type="date" name="check_out" id="check_out" value="{{ form_data.check_out }}" required>
           </div>
         </div>
 
@@ -318,32 +594,11 @@
         <div class="guests-row">
           <div class="form-group">
             <label>Adults</label>
-            <input type="number" name="adults" min="1" max="10" value="1" required>
+            <input type="number" name="adults" min="1" max="10" value="{{ form_data.adults|default:'1' }}" required>
           </div>
           <div class="form-group">
             <label>Children</label>
-            <input type="number" name="children" min="0" max="10" value="0" required>
-          </div>
-        </div>
-
-        <div class="divider"></div>
-
-        <div class="form-section-title">
-          <span class="num">2</span> Personal Details
-        </div>
-
-        <div class="form-group">
-          <label>Address</label>
-          <input type="text" name="address" placeholder="e.g. 12 Marina Street" required>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>City</label>
-            <input type="text" name="city" placeholder="e.g. Lagos" required>
-          </div>
-          <div class="form-group">
-            <label>Country</label>
-            <input type="text" name="country" placeholder="e.g. Nigeria" required>
+            <input type="number" name="children" min="0" max="10" value="{{ form_data.children|default:'0' }}" required>
           </div>
         </div>
 
@@ -358,13 +613,37 @@
 </div>
 
 <script>
-  const pricePerNight = {{ room.price }};
+  const roomMap = {
+    {% for r in rooms %}
+    "{{ r.id }}": {
+      number: "{{ r.room_number|escapejs }}",
+      type: "{{ r.get_room_type_display|escapejs }}",
+      floor: "{{ r.floor }}",
+      status: "{{ r.get_status_display|escapejs }}",
+      facility: "{{ r.facility|escapejs }}",
+      price: "{{ r.price }}",
+      image: "{% if r.image %}{{ r.image.url }}{% endif %}"
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  };
+
+  const roomSelect = document.getElementById('room_id');
+  const roomTitle = document.getElementById('room-preview-title');
+  const roomType = document.getElementById('room-preview-type');
+  const roomFloor = document.getElementById('room-preview-floor');
+  const roomStatus = document.getElementById('room-preview-status');
+  const roomFacility = document.getElementById('room-preview-facility');
+  const roomPrice = document.getElementById('room-preview-price');
+  const roomImg = document.getElementById('room-preview-img');
+  const roomEmpty = document.getElementById('room-preview-empty');
+  const previewExpand = document.getElementById('preview-expand');
   const checkIn  = document.getElementById('check_in');
   const checkOut = document.getElementById('check_out');
   const summary  = document.getElementById('stay-summary');
   const totalEl  = document.getElementById('total-display');
+  const form = document.getElementById('booking-form');
+  let pricePerNight = Number(roomMap[roomSelect?.value]?.price || 0);
 
-  // Set min date to today
   const today = new Date().toISOString().split('T')[0];
   checkIn.min  = today;
   checkOut.min = today;
@@ -384,8 +663,87 @@
     const total = (pricePerNight * nights).toLocaleString();
     summary.innerHTML = `<strong>${nights} night${nights > 1 ? 's' : ''}</strong> &nbsp;·&nbsp; ${checkIn.value} → ${checkOut.value}`;
     summary.classList.add('visible');
-    totalEl.innerHTML = `Total: <strong>₦${total}</strong>`;
+    totalEl.innerHTML = pricePerNight ? `Total: <strong>₦${total}</strong>` : '';
   }
+
+  function updatePreview() {
+    const selectedId = roomSelect?.value;
+    const data = selectedId ? roomMap[selectedId] : null;
+    if (!data) {
+      roomTitle.textContent = 'Select a Room';
+      roomType.style.display = 'none';
+      roomFloor.textContent = '—';
+      roomStatus.textContent = '—';
+      roomFacility.textContent = '—';
+      roomPrice.textContent = '₦—';
+      roomImg.style.display = 'none';
+      roomImg.removeAttribute('src');
+      roomEmpty.style.display = 'flex';
+      pricePerNight = 0;
+      updateSummary();
+      return;
+    }
+
+    roomTitle.textContent = `Room ${data.number}`;
+    roomType.textContent = data.type;
+    roomType.style.display = 'inline-block';
+    roomFloor.textContent = data.floor || '—';
+    roomStatus.textContent = data.status || '—';
+    roomFacility.textContent = data.facility || '—';
+    roomPrice.textContent = `₦${data.price}`;
+    pricePerNight = Number(data.price || 0);
+
+    if (data.image) {
+      roomImg.src = data.image;
+      roomImg.alt = `Room ${data.number}`;
+      roomImg.style.display = 'block';
+      roomEmpty.style.display = 'none';
+      previewExpand.style.display = 'flex';
+    } else {
+      roomImg.style.display = 'none';
+      roomImg.removeAttribute('src');
+      roomEmpty.textContent = 'No image available';
+      roomEmpty.style.display = 'flex';
+      previewExpand.style.display = 'none';
+    }
+    updateSummary();
+  }
+
+  function openLightbox(url, caption) {
+    if (!url) return;
+    document.getElementById('lightbox-img').src = url;
+    document.getElementById('lightbox-caption').textContent = caption;
+    document.getElementById('lightbox').classList.add('open');
+  }
+
+  function closeLightbox(e) {
+    if (e.target.id === 'lightbox') {
+      document.getElementById('lightbox').classList.remove('open');
+    }
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') document.getElementById('lightbox').classList.remove('open');
+  });
+
+  previewExpand?.addEventListener('click', () => {
+    if (roomImg?.src) {
+      openLightbox(roomImg.src, roomTitle.textContent);
+    }
+  });
+
+  roomSelect?.addEventListener('change', updatePreview);
+  updatePreview();
+
+  form.addEventListener('submit', (e) => {
+    const invalidRange = checkIn.value && checkOut.value && checkIn.value >= checkOut.value;
+    if (!form.checkValidity() || invalidRange) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    form.classList.add('was-validated');
+  });
 </script>
+{% endif %}
 
 {% endblock %}

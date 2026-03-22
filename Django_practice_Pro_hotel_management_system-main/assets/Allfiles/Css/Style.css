@@ -731,9 +731,11 @@ h2 {
 }
 
 .ROOMS_Title h2 {
-    width: 520px;
+    width: auto;
+    max-width: 100%;
     border-bottom: 2px solid var(--hovercolor);
-    margin-left: 110px
+    margin-left: auto;
+    margin-right: auto;
 }
 .ROOMS_Title p{
     margin-top:20px;
@@ -780,10 +782,12 @@ h2 {
      height: 100%;
      background: rgba(0, 0, 0, 0.2);
 }
-.btn{
+/* Scoped: only the overlay button container inside room picture cards */
+#OUR_ROOMS .ROOMS_pic .btn{
     position: absolute;
-    top:80%;
-    left:28%;
+    top: 80%;
+    left: 0;
+    right: 0;
 }
 .room_btn{
   position: relative;
@@ -877,8 +881,9 @@ h2 {
 }
  
 .ROOMS_info .slick-dots {
-     margin-left:500px;
-      margin-top:15px;  
+     margin-left: 0;
+     margin-top: 15px;
+     text-align: center;
 }
 .ROOMS_info .slick-dots li {
       width: 20px;
@@ -904,9 +909,11 @@ OUR AWESOME SERVICES
     margin-top:80px;
 }
 .Service_title h2 {
-    width:630px;
+    width: auto;
+    max-width: 100%;
     border-bottom: 2px solid var(--hovercolor);
-    margin-left:190px;
+    margin-left: auto;
+    margin-right: auto;
 }
 .Service_title{
    margin-bottom:50px;
@@ -938,21 +945,22 @@ OUR AWESOME SERVICES
     background:var(--bgcolor);
 }
 .Service_menu li .service-menu-title{
-     margin-top:-90px;
-     font-size: 32px;
-     margin-left:100px;
+     margin-top: 0;
+     font-size: 1.1rem;
+     margin-left: 0;
      font-weight: 500;
      font-family: 'Montserrat',
      sans-serif;
      color:var(--titlecolor);
 }
 .Service_menu li p{
-     margin-top:15px;
-     font-size: 17px;
-     margin-left:100px;
+     margin-top:6px;
+     font-size: 0.95rem;
+     margin-left: 0;
      font-weight: 400;
-     line-height: 26px;
-     width: 320px;
+     line-height: 1.6;
+     width: auto;
+     max-width: 100%;
      color:var(--titlecolor);
 }
 .Service_menu li span{
@@ -964,15 +972,15 @@ OUR AWESOME SERVICES
 }
 .Service_items1{
      margin-top:52px;
-     margin-left:-40px;
+     margin-left: 0;
 }
 .Service_items2 {
     margin-top:52px;
-    margin-left: -90px;
+    margin-left: 0;
 }
 .Service_items3 {
     margin-top:52px;
-    margin-left: -140px;
+    margin-left: 0;
 }
 /*************************
 OUR GALLERY
@@ -983,9 +991,11 @@ OUR GALLERY
     overflow: hidden;
 }
 .GALLERY_title h2 {
-    width:350px;
+    width: auto;
+    max-width: 100%;
     border-bottom: 2px solid var(--hovercolor);
-    margin-left:180px; 
+    margin-left: auto;
+    margin-right: auto;
 }
 .GALLERY_view{
     margin-top:40px; 
@@ -1029,8 +1039,9 @@ OUR GALLERY
 }
 
 .GALLERY_slider .slick-dots {
-    margin-left: 460px;
+    margin-left: 0;
     margin-top: 15px;
+    text-align: center;
     overflow: hidden;
 }
 
@@ -1120,9 +1131,11 @@ Counter Part CSS
  }
 
  .Staff_title h2 {
-     width:500px;
+     width: auto;
+     max-width: 100%;
      border-bottom: 2px solid var(--hovercolor);
-     margin-left: 150px;
+     margin-left: auto;
+     margin-right: auto;
  }
  .Staff_view{
     position: relative;
@@ -1130,6 +1143,9 @@ Counter Part CSS
  }
  .Staff_pic{
   cursor: pointer;
+  position: relative;
+ }
+ .Staff_info{
   position: relative;
  }
  .Staff_pic img{
@@ -1140,7 +1156,8 @@ Counter Part CSS
  }
  .Staff_overly{
    position:absolute;
-   width:264px;
+   left: 0;
+   right: 0;
    z-index:999;
    margin: -80px 0px 0px 0px;
    cursor: pointer;
@@ -1211,8 +1228,9 @@ Counter Part CSS
     background:var(--imgbg) ;
 }
 .Staff_slider .slick-dots {
-    margin-left: 460px;
+    margin-left: 0;
     margin-top: 15px;
+    text-align: center;
     overflow: hidden;
 }
 
@@ -1982,13 +2000,9 @@ Counter Part CSS
     font-size: 1.1rem;
     border-radius: 50px;
 }
-/*Eniola's css editsss*****/
-.slider-pic-2 {
-    background: url("Allfiles/Photo/slider-2.jpg") center/cover no-repeat;
-    height: 500px; /* adjust height as needed */
-    width: 100%;
-}
-/*hero slider section*/
+/* =========================
+   HERO SLIDER
+========================= */
 .hero-slider {
     height: 100vh;
 }
@@ -2002,158 +2016,20 @@ Counter Part CSS
 
 .hero-overlay {
     background: rgba(0,0,0,0.55);
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.animate-text {
-    animation: fadeUp 1.5s ease-in-out;
-}
-/* =========================
-   MODERN NAVBAR
-========================= */
-.modern-navbar {
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(8px);
-  padding: 15px 0;
-  transition: all 0.3s ease;
-}
-
-.modern-navbar .nav-link {
-  color: #fff;
-  font-weight: 500;
-  margin-left: 15px;
-  transition: 0.3s;
-}
-
-.modern-navbar .nav-link:hover {
-  color: #5bc0de;
+    position: absolute;
+    inset: 0;
 }
 
 /* =========================
-   HERO SECTION
+   FOOTER
 ========================= */
-.hero-section {
-    min-height: 90vh;               /* Slightly less than 100vh to avoid scroll issues */
-    background-attachment: fixed;   /* Parallax feel if wanted */
-}
-
-.text-shadow {
-    text-shadow: 0 3px 12px rgba(0,0,0,0.75);  /* Better readability */
-}
-
-.hero-section .btn-lg {
-    min-width: 220px;               /* Prevents buttons from becoming too narrow */
-    white-space: nowrap;            /* Keeps text in one line */
-}
-
-@media (max-width: 576px) {
-    .hero-section h1 {
-        font-size: 2.8rem !important;
-    }
-    .hero-section .lead {
-        font-size: 1.2rem !important;
-    }
-}
-
-.hero-overlay {
-  width: 100%;
-}
-
-/* =========================
-   ROOM CARDS
-========================= */
-.room-price {
-  color: #3a8dde;
-  font-weight: 600;
-  margin-bottom: 10px;
-}
-
-.card {
-  border-radius: 15px;
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-}
-
-.card img {
-  height: 250px;
-  object-fit: cover;
-}
-body {
-  padding-top: 80px;
-}
-.card-body {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.card-body .btn {
-  margin-top: 10px;
-}
-.hero-section .btn {
-  display: inline-block;
-  margin: 10px;
-}
-.card-body {
-  padding: 25px;
-}
-
-.card-text {
-  flex-grow: 1;
-}
-
-.room-price {
-  font-weight: 600;
-  color: #3a8dde;
-  margin-bottom: 10px;
-}
-
-#rooms .card img {
-  height: 220px;
-  object-fit: cover;
-}
-.navbar-brand, .nav-link:hover { color: var(--accent) !important; }
-.room-price { color: var(--accent); }
-
 #footer { background: var(--primary); color: #ccc; }
 #footer a { color: var(--accent); }
 
-main, section {
-    padding-top: 4rem;
-    padding-bottom: 4rem;
-}
-
-#header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1030;          /* Higher than hero content */
-    background: rgba(0,0,0,0.9);
-}
-
-body {
-    padding-top: 140px;     /* Adjust based on your header height */
-}
-
-@media (max-width: 991px) {
-    body { padding-top: 120px; }
-}
-.hero-section {
-    min-height: 95vh;
-}
-
-.text-shadow {
-    text-shadow: 0 4px 15px rgba(0,0,0,0.7);
-}.navbar .btn-primary {
+/* =========================
+   NAVBAR BUTTON
+========================= */
+.navbar .btn-primary {
     background: var(--accent, #d4af37);
     border-color: var(--accent, #d4af37);
     box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
@@ -2162,4 +2038,11 @@ body {
 .navbar .btn-primary:hover {
     background: #b8972e;
     transform: translateY(-2px);
+}
+
+/* Prevent horizontal overflow on all screen sizes */
+html,
+body {
+    overflow-x: hidden;
+    max-width: 100%;
 }

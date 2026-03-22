@@ -16,20 +16,38 @@
     />
 
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
 
     <!-- Font Awesome 6 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
 
     <link rel="stylesheet" href="{% static 'css/style.css' %}" />
     <link rel="stylesheet" href="{% static 'css/user_home.css' %}" />
     <link rel="stylesheet" href="{% static 'Allfiles/css/animate.css' %}" />
     <link rel="stylesheet" href="{% static 'Allfiles/css/slick.css' %}" />
-    <link rel="stylesheet" href="{% static 'Allfiles/css/jquery.datetimepicker.min.css' %}"/>
-    <link rel="stylesheet" href="{% static 'Allfiles/css/modal-video.min.css' %}"/>
-    <link rel="stylesheet" href="{% static 'Allfiles/css/magnific-popup.css' %}"/>
+    <link
+      rel="stylesheet"
+      href="{% static 'Allfiles/css/jquery.datetimepicker.min.css' %}"
+    />
+    <link
+      rel="stylesheet"
+      href="{% static 'Allfiles/css/modal-video.min.css' %}"
+    />
+    <link
+      rel="stylesheet"
+      href="{% static 'Allfiles/css/magnific-popup.css' %}"
+    />
     <link rel="stylesheet" href="{% static 'Allfiles/css/style.css' %}" />
+    <link
+      rel="stylesheet"
+      href="{% static 'dist/assets/index-E6phwilR.css' %}"
+    />
 
     <style>
       :root {
@@ -38,27 +56,105 @@
         --light: #f8f9fa;
         --dark: #111;
         --gray: #6c757d;
+        --page-bg: #f4efe8;
+        --text-main: #1f2933;
+        --text-soft: #5f6670;
+        --surface: #fffaf1;
+        --surface-elevated: #ffffff;
+        --nav-bg: rgba(26, 26, 46, 0.88);
+        --nav-link: #f4f7fa;
+        --outline: #dacfbf;
+        --font-ui:
+          "Manrope", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+        --font-display: "Cormorant Garamond", Georgia, serif;
+        --btn-radius: 10px;
+        --navbar-h: 100px; /* matches body padding-top — used by sticky panels */
+      }
+
+      .dark {
+        --page-bg: #111823;
+        --text-main: #e9eef4;
+        --text-soft: #a8b7c5;
+        --surface: #182331;
+        --surface-elevated: #1f2f42;
+        --nav-bg: rgba(13, 20, 30, 0.94);
+        --nav-link: #f8fbff;
+        --outline: #2f4256;
       }
 
       body {
-        font-family: "Open Sans", sans-serif;
-        color: #333;
-        background-color: var(--light);
+        font-family: var(--font-ui);
+        color: var(--text-main);
+        background:
+          radial-gradient(
+            circle at 12% 8%,
+            rgba(212, 175, 55, 0.2),
+            transparent 28%
+          ),
+          radial-gradient(
+            circle at 88% 12%,
+            rgba(20, 184, 166, 0.16),
+            transparent 34%
+          ),
+          var(--page-bg);
+        transition:
+          background-color 0.4s ease,
+          color 0.4s ease;
         padding-top: 100px;
+        overflow-x: hidden; /* fallback for browsers that don't support clip */
+        overflow-x: clip;   /* preferred: clips without creating a scroll container (preserves sticky) */
       }
 
-      h1, h2, h3, h4, h5, h6 {
-        font-family: "Montserrat", sans-serif;
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        font-family: var(--font-display);
         font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+
+      p,
+      a,
+      li,
+      span,
+      button,
+      input,
+      textarea,
+      select,
+      label,
+      .nav-link,
+      .dropdown-item-custom,
+      .user-avatar-btn,
+      .btn {
+        font-family: var(--font-ui);
+      }
+
+      .navbar-brand,
+      .section-title,
+      .booking-room-name,
+      .room-number,
+      .hero-content h1,
+      .bookings-hero h1,
+      .booking-hero h1,
+      .rooms-hero h1 {
+        font-family: var(--font-display) !important;
       }
 
       .btn-primary {
         background: var(--accent);
         border-color: var(--accent);
-        border-radius: 50px;
+        border-radius: var(--btn-radius);
         padding: 12px 32px;
         font-weight: 600;
-        transition: all 0.3s ease;
+        transition:
+          transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+          box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+          background-color 0.35s ease,
+          border-color 0.35s ease,
+          color 0.35s ease;
       }
       .btn-primary:hover {
         background: #b8972e;
@@ -66,27 +162,43 @@
         box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3);
       }
 
+      .btn,
+      button:not(.theme-toggle),
+      input[type="submit"],
+      input[type="button"],
+      .book-btn,
+      .new-booking-btn,
+      .btn-modify,
+      .btn-cancel,
+      .btn-confirm,
+      .btn-close-modal,
+      .filter-reset {
+        border-radius: var(--btn-radius) !important;
+      }
+
       /* Modern Navbar */
       .modern-navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1050;
-}
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1050;
+      }
 
-.user-dropdown {
-  position: relative;
-  z-index: 1051;
-}
+      .user-dropdown {
+        position: relative;
+        z-index: 1051;
+      }
 
-.user-dropdown-menu {
-  z-index: 1200;
-}
+      .user-dropdown-menu {
+        z-index: 1200;
+      }
       .modern-navbar {
-        background: rgba(26, 26, 46, 0.92) !important;
+        background: var(--nav-bg) !important;
+        -webkit-backdrop-filter: blur(10px);
         backdrop-filter: blur(10px);
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        transition: background 0.35s ease;
       }
       .navbar-brand {
         color: white !important;
@@ -94,11 +206,13 @@
         font-weight: 700;
       }
       .nav-link {
-        color: white !important;
+        color: var(--nav-link) !important;
         font-weight: 500;
         margin: 0 12px;
+        transition: color 0.2s ease;
       }
-      .nav-link:hover, .nav-link.active {
+      .nav-link:hover,
+      .nav-link.active {
         color: var(--accent) !important;
       }
 
@@ -106,22 +220,27 @@
       .user-avatar-btn {
         display: flex;
         align-items: center;
-        gap: 9px;
-        background: rgba(255,255,255,0.08);
-        border: 1.5px solid rgba(212,175,55,0.35);
-        border-radius: 50px;
-        padding: 5px 14px 5px 6px;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1.5px solid rgba(212, 175, 55, 0.35);
+        border-radius: 12px;
+        padding: 5px 10px 5px 6px;
         color: #fff;
         text-decoration: none;
-        font-family: 'Open Sans', sans-serif;
-        font-size: 0.85rem;
+        font-family: var(--font-ui);
+        font-size: 0;
         font-weight: 500;
+        line-height: 0;
         cursor: pointer;
-        transition: background 0.2s, border-color 0.2s;
+        transition:
+          background 0.2s,
+          border-color 0.2s;
         position: relative;
+        white-space: nowrap;
+        overflow: hidden;
       }
       .user-avatar-btn:hover {
-        background: rgba(212,175,55,0.15);
+        background: rgba(212, 175, 55, 0.15);
         border-color: var(--accent);
         color: var(--accent);
       }
@@ -141,21 +260,21 @@
         justify-content: center;
         font-size: 0.75rem;
         font-weight: 700;
-        font-family: 'Montserrat', sans-serif;
+        font-family: var(--font-display);
         flex-shrink: 0;
-        transition: background 0.2s, color 0.2s;
+        transition:
+          background 0.2s,
+          color 0.2s;
         letter-spacing: 0.03em;
       }
 
       .avatar-name {
-        max-width: 110px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        display: none;
       }
 
       .avatar-chevron {
         font-size: 0.65rem;
+        line-height: 1;
         opacity: 0.7;
         margin-left: 2px;
         transition: transform 0.2s;
@@ -172,24 +291,32 @@
         right: 0;
         background: #fff;
         border-radius: 12px;
-        box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
         min-width: 200px;
         z-index: 9999;
         overflow: hidden;
         animation: dropIn 0.18s ease;
       }
       @keyframes dropIn {
-        from { opacity: 0; transform: translateY(-8px); }
-        to   { opacity: 1; transform: translateY(0); }
+        from {
+          opacity: 0;
+          transform: translateY(-8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
-      .user-dropdown-menu.open { display: block; }
+      .user-dropdown-menu.open {
+        display: block;
+      }
 
       .dropdown-user-info {
         padding: 14px 16px 10px;
         border-bottom: 1px solid #f0e9da;
       }
       .dropdown-user-info .d-name {
-        font-family: 'Montserrat', sans-serif;
+        font-family: "Montserrat", sans-serif;
         font-size: 0.88rem;
         font-weight: 700;
         color: #1a1a2e;
@@ -212,7 +339,7 @@
         color: #333;
         text-decoration: none;
         font-size: 0.86rem;
-        font-family: 'Open Sans', sans-serif;
+        font-family: var(--font-ui);
         transition: background 0.15s;
       }
       .dropdown-item-custom:hover {
@@ -245,7 +372,8 @@
 
       /* Hero Section */
       .hero-section {
-        background: url("{% static 'Allfiles/Photo/slider-1jpg.jpg' %}") center/cover no-repeat fixed;
+        background: url("{% static 'Allfiles/Photo/slider-1jpg.jpg' %}")
+          center/cover no-repeat fixed;
         min-height: 100vh;
         position: relative;
         display: flex;
@@ -259,110 +387,686 @@
         inset: 0;
         background: rgba(0, 0, 0, 0.55);
       }
-      .hero-content { position: relative; z-index: 2; }
-      .hero-content h1 { font-size: 4.5rem; text-shadow: 0 4px 12px rgba(0,0,0,0.7); }
-      .hero-content p { font-size: 1.5rem; margin: 1.5rem 0 2rem; text-shadow: 0 2px 8px rgba(0,0,0,0.6); }
+      .hero-content {
+        position: relative;
+        z-index: 2;
+      }
+      .hero-content h1 {
+        font-size: 4.5rem;
+        text-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+      }
+      .hero-content p {
+        font-size: 1.5rem;
+        margin: 1.5rem 0 2rem;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+      }
 
       /* Room Cards */
       .room-card {
         border: none;
         border-radius: 16px;
         overflow: hidden;
-        transition: all 0.4s ease;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition:
+          transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+          box-shadow 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+          border-color 0.35s ease;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
       }
       .room-card:hover {
-        transform: translateY(-12px);
-        box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+        transform: translateY(-9px);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
       }
-      .room-card img { height: 260px; object-fit: cover; }
-      .room-price { color: var(--accent); font-size: 1.4rem; font-weight: 700; }
+      .room-card img {
+        height: 260px;
+        object-fit: cover;
+      }
+      .room-price {
+        color: var(--accent);
+        font-size: 1.4rem;
+        font-weight: 700;
+      }
 
       .cta-section {
         background: linear-gradient(135deg, var(--primary), #2a2a4a);
         color: white;
       }
+
+      .theme-toggle {
+        width: 52px;
+        height: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.45);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.12);
+        display: inline-flex;
+        align-items: center;
+        padding: 3px;
+        transition:
+          background 0.25s ease,
+          border-color 0.25s ease;
+      }
+
+      .theme-toggle-track {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+
+      .theme-toggle-knob {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: #fff;
+        color: #111827;
+        font-size: 11px;
+        line-height: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transform: translateX(0);
+        transition: transform 0.22s ease;
+      }
+
+      .dark .theme-toggle {
+        background: rgba(44, 183, 168, 0.22);
+        border-color: rgba(44, 183, 168, 0.6);
+      }
+
+      .dark .theme-toggle-knob {
+        transform: translateX(22px);
+      }
+
+      .scroll-fade-card {
+        opacity: 0;
+        transform: translate3d(0, 44px, 0) scale(0.97);
+        transform-origin: 50% 65%;
+        filter: saturate(92%);
+        transition:
+          opacity 1280ms cubic-bezier(0.16, 1, 0.3, 1),
+          transform 1280ms cubic-bezier(0.16, 1, 0.3, 1),
+          filter 1280ms cubic-bezier(0.16, 1, 0.3, 1);
+        transition-delay: var(--reveal-delay, 0ms);
+        will-change: opacity, transform;
+        animation: none !important;
+      }
+
+      .scroll-fade-card.is-visible {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1);
+        filter: saturate(100%);
+      }
+
+      .card,
+      .room-card,
+      .booking-card,
+      .stat-card,
+      .booking-form-card,
+      .feature-card,
+      .contact-card {
+        transition:
+          transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+          box-shadow 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+          border-color 0.35s ease,
+          background-color 0.35s ease;
+      }
+
+      .nav-link,
+      .dropdown-item-custom,
+      .user-avatar-btn,
+      .btn,
+      button:not(.theme-toggle),
+      .book-btn,
+      .new-booking-btn,
+      .btn-modify,
+      .btn-cancel,
+      .btn-confirm,
+      .btn-close-modal {
+        transition:
+          transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+          box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+          color 0.3s ease,
+          background-color 0.3s ease,
+          border-color 0.3s ease;
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .card:hover,
+        .booking-card:hover,
+        .stat-card:hover,
+        .feature-card:hover,
+        .contact-card:hover {
+          transform: translateY(-6px);
+          box-shadow: 0 18px 36px rgba(17, 24, 39, 0.14);
+        }
+
+        .btn:hover,
+        .book-btn:hover,
+        .new-booking-btn:hover,
+        .btn-modify:hover,
+        .btn-confirm:hover {
+          transform: translateY(-2px);
+        }
+      }
+
+      @media (max-width: 992px) {
+        :root { --navbar-h: 86px; }
+
+        body {
+          padding-top: 86px;
+        }
+
+        #header .container .row.py-2 {
+          font-size: 0.85rem;
+          row-gap: 6px;
+        }
+
+        #header .top-contact {
+          justify-content: center;
+        }
+
+        .modern-navbar .container {
+          padding-left: 14px;
+          padding-right: 14px;
+        }
+
+        .hero-content h1 {
+          font-size: clamp(2.1rem, 7vw, 3.2rem);
+        }
+
+        .hero-content p {
+          font-size: clamp(1rem, 2.8vw, 1.25rem);
+        }
+
+        .navbar-nav {
+          gap: 6px;
+          align-items: stretch !important;
+        }
+
+        .navbar-collapse {
+          margin-top: 10px;
+          background: rgba(14, 18, 28, 0.95);
+          border-radius: 12px;
+          padding: 10px 14px;
+          border: 1px solid rgba(212, 175, 55, 0.22);
+          box-shadow: 0 16px 34px rgba(0, 0, 0, 0.28);
+        }
+
+        .nav-link {
+          margin: 0;
+          padding: 10px 0;
+        }
+
+        .navbar-nav .nav-item.ms-3 {
+          margin-left: 0 !important;
+          margin-top: 8px;
+        }
+
+        .user-dropdown-menu {
+          position: relative;
+          top: auto;
+          right: auto;
+          width: 100%;
+          min-width: 0;
+          margin-top: 6px;
+          border-radius: 8px;
+        }
+      }
+
+      @media (max-width: 576px) {
+        :root { --navbar-h: 74px; }
+
+        #header > .container {
+          display: none;
+        }
+
+        body {
+          padding-top: 74px;
+        }
+
+        .navbar-brand {
+          font-size: 1.35rem;
+        }
+
+        .btn,
+        .book-btn,
+        .new-booking-btn,
+        .btn-modify,
+        .btn-cancel,
+        .btn-confirm,
+        .btn-close-modal {
+          width: 100%;
+          max-width: 100%;
+          justify-content: center;
+        }
+
+        .user-avatar-btn {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .scroll-fade-card {
+          opacity: 1;
+          transform: none;
+          transition: none;
+        }
+      }
+
+      .dark .card,
+      .dark .booking-summary,
+      .dark .room-card {
+        background-color: var(--surface) !important;
+        color: var(--text-main) !important;
+        border-color: var(--outline) !important;
+      }
+
+      .dark .text-muted,
+      .dark .card-text,
+      .dark .booking-helper {
+        color: var(--text-soft) !important;
+      }
+
+      .dark .user-dropdown-menu {
+        background: var(--surface-elevated);
+      }
+
+      .top-social .text-dark {
+        color: var(--text-main) !important;
+      }
+
+      #rooms.bg-light {
+        background: var(--surface-elevated) !important;
+      }
+
+      #rooms > .container > h2,
+      .rooms-page > .rooms-hero + .filter-bar,
+      .bookings-page,
+      .booking-page {
+        transition:
+          background-color 0.35s ease,
+          color 0.35s ease;
+      }
+
+      .dark #rooms.bg-light {
+        background: transparent !important;
+      }
+
+      .dark #rooms > .container > h2 {
+        color: var(--text-main) !important;
+      }
+
+      .dark .rooms-page,
+      .dark .bookings-page,
+      .dark .booking-page {
+        background: transparent !important;
+        color: var(--text-main) !important;
+      }
+
+      .dark body > .rooms-page,
+      .dark body > .bookings-page,
+      .dark body > .booking-page {
+        background: transparent !important;
+      }
+
+      .dark .filter-bar {
+        background: var(--surface) !important;
+        border: 1px solid var(--outline);
+        border-radius: 14px;
+        margin-top: 14px;
+      }
+
+      .dark body > .rooms-page > .filter-bar {
+        background: var(--surface) !important;
+      }
+
+      .dark .bookings-page .bookings-container,
+      .dark .booking-page .booking-layout,
+      .dark .rooms-page .rooms-grid {
+        color: var(--text-main);
+      }
+
+      .dark .filter-bar label,
+      .dark .results-meta,
+      .dark .room-facility,
+      .dark .booking-meta,
+      .dark .msg.success,
+      .dark .msg.error,
+      .dark .empty-state p {
+        color: var(--text-soft) !important;
+      }
+
+      .dark .room-number,
+      .dark .booking-room-name,
+      .dark .section-title,
+      .dark .actions-row .title,
+      .dark .empty-state h3,
+      .dark .bookings-hero h1,
+      .dark .booking-hero h1,
+      .dark .rooms-hero h1 {
+        color: var(--text-main) !important;
+      }
+
+      .dark .filter-bar input,
+      .dark .filter-bar select,
+      .dark .booking-modal .form-group input,
+      .dark .booking-form-card input,
+      .dark .booking-form-card select,
+      .dark .booking-form-card textarea {
+        background: #101a25 !important;
+        border-color: var(--outline) !important;
+        color: var(--text-main) !important;
+      }
+
+      .dark .filter-bar input::placeholder,
+      .dark .booking-form-card input::placeholder,
+      .dark .booking-form-card textarea::placeholder {
+        color: #97a8b7;
+      }
+
+      .dark .date-box,
+      .dark .stat-card,
+      .dark .booking-card,
+      .dark .booking-form-card,
+      .dark .empty-state,
+      .dark .room-card,
+      .dark .bookings-container .booking-card {
+        background: var(--surface) !important;
+        color: var(--text-main) !important;
+        border: 1px solid var(--outline) !important;
+        box-shadow: 0 14px 32px rgba(0, 0, 0, 0.28) !important;
+      }
+
+      .dark .room-summary,
+      .dark .bookings-hero,
+      .dark .booking-hero,
+      .dark .rooms-hero,
+      .dark .cta-section {
+        background: #0f1722 !important;
+      }
+
+      .dark .new-booking-btn,
+      .dark .btn-modify,
+      .dark .book-btn,
+      .dark .btn-confirm {
+        background: linear-gradient(135deg, #143244, #1f5f70) !important;
+        color: #e8f7ff !important;
+        border-color: #2a7083 !important;
+      }
+
+      .dark .new-booking-btn:hover,
+      .dark .btn-modify:hover,
+      .dark .book-btn:hover,
+      .dark .btn-confirm:hover {
+        filter: brightness(1.1);
+      }
+
+      .dark .btn-cancel,
+      .dark .btn-close-modal {
+        border-color: #8f3d46 !important;
+        color: #f8b5be !important;
+        background: transparent !important;
+      }
+
+      .dark .btn-cancel:hover,
+      .dark .btn-close-modal:hover {
+        background: rgba(185, 28, 28, 0.16) !important;
+      }
+
+      .dark .type-tag,
+      .dark .booking-type-tag,
+      .dark .status-badge,
+      .dark .room-type-tag {
+        border: 1px solid var(--outline);
+      }
+
+      .dark .date-box .d-value,
+      .dark .stat-card .num,
+      .dark .room-price,
+      .dark .booking-price {
+        color: #5ad4c2 !important;
+      }
+
+      .dark .profile-page {
+        background: transparent !important;
+        color: var(--text-main) !important;
+      }
+
+      .dark .profile-card,
+      .dark .profile-container .profile-card {
+        background: var(--surface) !important;
+        border: 1px solid var(--outline) !important;
+        box-shadow: 0 14px 32px rgba(0, 0, 0, 0.28) !important;
+      }
+
+      .dark .profile-hero {
+        background: #0f1722 !important;
+      }
+
+      .dark .profile-hero h1,
+      .dark .card-header h2,
+      .dark .info-item .info-value,
+      .dark .pw-note,
+      .dark .danger-section p {
+        color: var(--text-main) !important;
+      }
+
+      .dark .profile-hero p,
+      .dark .info-item .info-label,
+      .dark .form-group label,
+      .dark .dropdown-user-info .d-email {
+        color: var(--text-soft) !important;
+      }
+
+      .dark .card-header {
+        border-bottom: 1px solid var(--outline) !important;
+      }
+
+      .dark .edit-toggle,
+      .dark .save-btn,
+      .dark .danger-btn,
+      .dark .profile-page .btn {
+        border-color: var(--outline) !important;
+      }
+
+      .dark .form-group input {
+        background: #101a25 !important;
+        border-color: var(--outline) !important;
+        color: var(--text-main) !important;
+      }
+
+      .dark .form-group input:focus {
+        background: #142334 !important;
+        border-color: #2a7083 !important;
+      }
+
+      .dark .danger-section {
+        background: rgba(185, 28, 28, 0.12) !important;
+        border-color: #8f3d46 !important;
+      }
+
+      .dark .danger-section h3 {
+        color: #f8b5be !important;
+      }
     </style>
   </head>
-  <body>
+  <body data-authenticated="{{ user.is_authenticated|yesno:'true,false' }}">
     <!-- Header -->
     <header id="header">
-      <div class="container">
+        <div class="container">
         <div class="row py-2 align-items-center">
-          <div class="col-lg-7 d-flex gap-3">
-            <span><i class="fas fa-map-marker-alt"></i> 24, Gbagada Cresent, Lagos</span>
+          <div class="col-lg-7 d-flex flex-wrap gap-2 top-contact">
+            <span
+              ><i class="fas fa-map-marker-alt"></i> 24, Gbagada Cresent,
+              Lagos</span
+            >
             <span><i class="fas fa-phone-alt"></i> 08125063942</span>
             <span><i class="far fa-envelope"></i> enioladavid33@gmail.com</span>
           </div>
-          <div class="col-lg-5 text-end">
-            <a href="https://www.facebook.com/" class="text-dark me-2"><i class="fab fa-facebook-f"></i></a>
-            <a href="https://twitter.com/" class="text-dark me-2"><i class="fab fa-twitter"></i></a>
-            <a href="https://plus.google.com/" class="text-dark me-2"><i class="fab fa-google-plus-g"></i></a>
-            <a href="https://www.instagram.com/" class="text-dark me-2"><i class="fab fa-instagram"></i></a>
+          <div class="col-lg-5 text-end top-social d-none d-lg-block">
+            <a
+              href="https://www.facebook.com/"
+              class="text-dark me-2"
+              aria-label="Facebook"
+              title="Facebook"
+              ><i class="fab fa-facebook-f"></i
+            ></a>
+            <a
+              href="https://twitter.com/"
+              class="text-dark me-2"
+              aria-label="Twitter"
+              title="Twitter"
+              ><i class="fab fa-twitter"></i
+            ></a>
+            <a
+              href="https://plus.google.com/"
+              class="text-dark me-2"
+              aria-label="Google Plus"
+              title="Google Plus"
+              ><i class="fab fa-google-plus-g"></i
+            ></a>
+            <a
+              href="https://www.instagram.com/"
+              class="text-dark me-2"
+              aria-label="Instagram"
+              title="Instagram"
+              ><i class="fab fa-instagram"></i
+            ></a>
           </div>
         </div>
       </div>
 
       <nav class="navbar navbar-expand-lg modern-navbar">
         <div class="container">
-          <a class="navbar-brand fw-bold text-white" href="{% url 'home' %}">RoseGold Hotel</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <a class="navbar-brand fw-bold text-white" href="{% url 'home' %}"
+            >RoseGold Hotel</a
+          >
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav"
+            aria-label="Toggle navigation"
+            title="Toggle navigation"
+          >
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto align-items-center">
               <li class="nav-item">
-                <a class="nav-link active" href="{% url 'home' %}">Home</a>
+                <a
+                  class="nav-link {% if user.is_authenticated and request.path|slice:':6' == '/home/' or not user.is_authenticated and request.path == '/' %}active{% endif %}"
+                  href="{% if user.is_authenticated %}{% url 'user_home' %}{% else %}{% url 'home' %}{% endif %}"
+                  >Home</a
+                >
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'room_list' %}">Rooms</a>
+                <a
+                  class="nav-link {% if request.path|slice:':6' == '/rooms' %}active{% endif %}"
+                  href="{% url 'room_list' %}"
+                  >Rooms</a
+                >
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'online_booking' %}">Booking</a>
+                <a
+                  class="nav-link {% if request.path|slice:':15' == '/online-booking' or request.path|slice:':12' == '/my-bookings' %}active{% endif %}"
+                  href="{% url 'online_booking' %}"
+                  >Booking</a
+                >
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">Contact</a>
+                <a
+                  class="nav-link {% if request.path|slice:':8' == '/contact' %}active{% endif %}"
+                  href="{% url 'contact' %}"
+                  >Contact</a
+                >
               </li>
 
               <li class="nav-item ms-3">
                 {% if user.is_authenticated %}
                 <!-- USER AVATAR DROPDOWN -->
                 <div class="user-dropdown">
-                  <button class="user-avatar-btn" onclick="toggleUserMenu(event)">
+                  <button
+                    class="user-avatar-btn"
+                    onclick="toggleUserMenu(event)"
+                  >
                     <div class="avatar-circle">
-                      {{ user.first_name|slice:":1"|upper }}{{ user.last_name|slice:":1"|upper }}
+                      {{ user.first_name|slice:":1"|upper }}{{
+                      user.last_name|slice:":1"|upper }}
                     </div>
-                    <span class="avatar-name">{{ user.first_name|default:user.email }}</span>
-                    <i class="fas fa-chevron-down avatar-chevron" id="avatar-chevron"></i>
+                    <i
+                      class="fas fa-chevron-down avatar-chevron"
+                      id="avatar-chevron"
+                    ></i>
                   </button>
 
                   <div class="user-dropdown-menu" id="user-dropdown-menu">
                     <div class="dropdown-user-info">
-                      <div class="d-name">{{ user.first_name }} {{ user.last_name }}</div>
+                      <div class="d-name">
+                        {{ user.first_name }} {{ user.last_name }}
+                      </div>
                       <div class="d-email">{{ user.email }}</div>
                     </div>
-                    <a href="{% url 'user_profile' %}" class="dropdown-item-custom">
+                    <a
+                      href="{% url 'user_profile' %}"
+                      class="dropdown-item-custom"
+                    >
                       <span class="d-icon"><i class="fas fa-user"></i></span>
                       My Profile
                     </a>
-                    <a href="{% url 'my_bookings' %}" class="dropdown-item-custom">
-                      <span class="d-icon"><i class="fas fa-calendar-check"></i></span>
+                    <a
+                      href="{% url 'my_bookings' %}"
+                      class="dropdown-item-custom"
+                    >
+                      <span class="d-icon"
+                        ><i class="fas fa-calendar-check"></i
+                      ></span>
                       My Bookings
                     </a>
-                    <a href="{% url 'auth_logout' %}" class="dropdown-item-custom logout">
-                      <span class="d-icon"><i class="fas fa-sign-out-alt"></i></span>
+                    <a
+                      href="{% url 'auth_logout' %}"
+                      class="dropdown-item-custom logout"
+                    >
+                      <span class="d-icon"
+                        ><i class="fas fa-sign-out-alt"></i
+                      ></span>
                       Log Out
                     </a>
                   </div>
                 </div>
 
                 {% else %}
-                <a href="{% url 'author_login' %}" class="btn btn-outline-light btn-sm">Login</a>
+                <a
+                  href="{% url 'author_login' %}"
+                  class="btn btn-outline-light btn-sm"
+                  >Login</a
+                >
                 {% endif %}
               </li>
 
+              <li
+                class="nav-item ms-3 {% if request.path == '/online-booking/' or request.path == '/my-bookings/' %}d-none{% endif %}"
+              >
+                <a
+                  href="{% url 'online_booking' %}?new=1"
+                  class="btn btn-primary btn-md px-4 py-2 fw-bold"
+                  >Book Now</a
+                >
+              </li>
               <li class="nav-item ms-3">
-                <a href="{% url 'online_booking' %}" class="btn btn-primary btn-md px-4 py-2 fw-bold">Book Now</a>
+                <button
+                  id="theme-toggle"
+                  class="theme-toggle"
+                  aria-label="Toggle dark mode"
+                  aria-pressed="false"
+                >
+                  <span class="theme-toggle-track">
+                    <span class="theme-toggle-knob" id="theme-toggle-knob"
+                      >☀</span
+                    >
+                  </span>
+                </button>
               </li>
             </ul>
           </div>
@@ -371,16 +1075,7 @@
     </header>
 
     {% block content %}
-    <!-- Hero Section -->
-    <section class="hero-section d-flex align-items-center text-center">
-      <div class="container position-relative z-2 py-5">
-        <h1 class="display-3 fw-bold mb-4">Experience Luxury Redefined</h1>
-        <p class="lead mb-5">Premium Comfort. Exceptional Service at RoseGold Hotel.</p>
-        <div class="mt-5">
-          <i class="fas fa-chevron-down fa-2x text-white opacity-50 animate__animated animate__infinite animate__pulse"></i>
-        </div>
-      </div>
-    </section>
+    <div id="react-root"></div>
 
     <!-- Rooms Section -->
     <section id="rooms" class="py-5 bg-light">
@@ -389,34 +1084,63 @@
         <div class="row g-4">
           <div class="col-lg-4 col-md-6">
             <div class="room-card card h-100">
-              <img src="{% static 'Allfiles/Photo/room-1.jpg' %}" class="card-img-top" alt="Deluxe Room"/>
+              <img
+                src="{% static 'Allfiles/Photo/room-1.jpg' %}"
+                class="card-img-top"
+                alt="Deluxe Room"
+              />
               <div class="card-body text-center">
                 <h5 class="card-title fw-bold">Deluxe Room</h5>
                 <p class="room-price">₦45,000 / night</p>
-                <p class="card-text text-muted">Spacious king-size bed, modern amenities, city view.</p>
-                <a href="{% url 'online_booking' %}" class="btn btn-primary mt-3">Book Now</a>
+                <p class="card-text text-muted">
+                  Spacious king-size bed, modern amenities, city view.
+                </p>
+                <a
+                  href="{% url 'online_booking' %}"
+                  class="btn btn-primary mt-3"
+                  >Book Now</a
+                >
               </div>
             </div>
           </div>
           <div class="col-lg-4 col-md-6">
             <div class="room-card card h-100">
-              <img src="{% static 'Allfiles/Photo/room-2.jpg' %}" class="card-img-top" alt="Executive Room"/>
+              <img
+                src="{% static 'Allfiles/Photo/room-2.jpg' %}"
+                class="card-img-top"
+                alt="Executive Room"
+              />
               <div class="card-body text-center">
                 <h5 class="card-title fw-bold">Executive Room</h5>
                 <p class="room-price">₦75,000 / night</p>
-                <p class="card-text text-muted">Comfortable room with modern amenities and workspace.</p>
-                <a href="{% url 'online_booking' %}" class="btn btn-primary mt-3">Book Now</a>
+                <p class="card-text text-muted">
+                  Comfortable room with modern amenities and workspace.
+                </p>
+                <a
+                  href="{% url 'online_booking' %}"
+                  class="btn btn-primary mt-3"
+                  >Book Now</a
+                >
               </div>
             </div>
           </div>
           <div class="col-lg-4 col-md-6">
             <div class="room-card card h-100">
-              <img src="{% static 'Allfiles/Photo/room-3.jpg' %}" class="card-img-top" alt="Luxury Suite"/>
+              <img
+                src="{% static 'Allfiles/Photo/room-3.jpg' %}"
+                class="card-img-top"
+                alt="Luxury Suite"
+              />
               <div class="card-body text-center">
                 <h5 class="card-title fw-bold">Luxury Suite</h5>
                 <p class="room-price">₦150,000 / night</p>
-                <p class="card-text">Premium suite with private lounge, kitchenette, and ocean view.</p>
-                <a href="{% url 'online_booking' %}" class="btn btn-primary">Book Now</a>
+                <p class="card-text">
+                  Premium suite with private lounge, kitchenette, and ocean
+                  view.
+                </p>
+                <a href="{% url 'online_booking' %}" class="btn btn-primary"
+                  >Book Now</a
+                >
               </div>
             </div>
           </div>
@@ -428,13 +1152,21 @@
     <section class="cta-section text-white text-center py-5">
       <div class="container">
         <h2 class="mb-4">Plan Your Stay With Us</h2>
-        <p class="lead mb-4">Book your perfect room now and enjoy a luxury experience.</p>
-        <a href="{% url 'room_list' %}" class="btn btn-light btn-lg">Explore Rooms</a>
+        <p class="lead mb-4">
+          Book your perfect room now and enjoy a luxury experience.
+        </p>
+        <a href="{% url 'room_list' %}" class="btn btn-light btn-lg"
+          >Explore Rooms</a
+        >
       </div>
     </section>
 
     {% block extra_js %}
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"
+    ></script>
     <script>
       $(document).ready(function () {
         $(".Service_img").hide();
@@ -447,11 +1179,12 @@
           $(".Service_img").fadeOut(200);
           $(target).fadeIn(400);
         });
-        $(".Service_menu .tabs li:first-child").addClass("active").trigger("click");
+        $(".Service_menu .tabs li:first-child")
+          .addClass("active")
+          .trigger("click");
       });
     </script>
-    {% endblock %}
-    {% endblock content %}
+    {% endblock %} {% endblock content %}
 
     <!-- Footer -->
     <footer id="footer">
@@ -471,24 +1204,138 @@
     <script src="{% static 'Allfiles/js/jquery.magnific-popup.min.js' %}"></script>
     <script src="{% static 'Allfiles/js/jquery.counterup.min.js' %}"></script>
     <script src="{% static 'Allfiles/js/Script.js' %}"></script>
+    <script
+      type="module"
+      src="{% static 'dist/assets/index-BkDxWaGx.js' %}"
+    ></script>
 
     <script>
+      (function () {
+        const html = document.documentElement;
+        const btn = document.getElementById("theme-toggle");
+        const knob = document.getElementById("theme-toggle-knob");
+        const canPersist = document.body.dataset.authenticated === "true";
+
+        function applyTheme(theme) {
+          const isDark = theme === "dark";
+          html.classList.toggle("dark", isDark);
+          btn?.setAttribute("aria-pressed", String(isDark));
+          if (knob) knob.textContent = isDark ? "☾" : "☀";
+          localStorage.setItem("theme", theme);
+          if (canPersist) {
+            fetch("/api/theme/", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken":
+                  (document.cookie.match(/csrftoken=([^;]+)/) || [])[1] || "",
+              },
+              credentials: "include",
+              body: JSON.stringify({ theme }),
+            }).catch(() => {});
+          }
+        }
+
+        function loadTheme() {
+          const local = localStorage.getItem("theme");
+          if (local) {
+            applyTheme(local);
+            return;
+          }
+          if (canPersist) {
+            fetch("/api/theme/", { credentials: "include" })
+              .then((r) => (r.ok ? r.json() : { theme: null }))
+              .then((d) => {
+                if (d.theme) {
+                  applyTheme(d.theme);
+                } else {
+                  applyTheme(
+                    window.matchMedia("(prefers-color-scheme: dark)").matches
+                      ? "dark"
+                      : "light",
+                  );
+                }
+              })
+              .catch(() => {});
+          } else {
+            applyTheme(
+              window.matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light",
+            );
+          }
+        }
+
+        btn?.addEventListener("click", () => {
+          const next = html.classList.contains("dark") ? "light" : "dark";
+          applyTheme(next);
+        });
+        loadTheme();
+
+        const revealTargets = document.querySelectorAll(
+          [
+            ".room-card",
+            ".booking-card",
+            ".stat-card",
+            ".booking-form-card",
+            ".contact-card",
+            ".feature-card",
+            ".container .card",
+            ".rooms-grid > div",
+            ".rooms-grid .empty-state",
+            ".booking-grid > div",
+            ".bookings-container > .section-title",
+            ".bookings-container .empty-state",
+            ".bookings-container .messages-list",
+            ".bookings-container .msg",
+            ".rooms-page .filter-bar",
+            ".rooms-page .results-meta",
+            ".cta-section",
+            ".booking-shell",
+            ".booking-summary",
+          ].join(","),
+        );
+
+        revealTargets.forEach((el, index) => {
+          el.classList.add("scroll-fade-card");
+          const staggerDelay = Math.min((index % 8) * 120, 840);
+          el.style.setProperty("--reveal-delay", `${staggerDelay}ms`);
+        });
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("is-visible");
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          {
+            threshold: 0.12,
+            rootMargin: "0px 0px -8% 0px",
+          },
+        );
+
+        revealTargets.forEach((el) => observer.observe(el));
+      })();
+
       function toggleUserMenu(e) {
         e.stopPropagation();
-        const menu    = document.getElementById('user-dropdown-menu');
-        const chevron = document.getElementById('avatar-chevron');
-        const isOpen  = menu.classList.contains('open');
-        menu.classList.toggle('open');
-        chevron.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+        const menu = document.getElementById("user-dropdown-menu");
+        const chevron = document.getElementById("avatar-chevron");
+        const isOpen = menu.classList.contains("open");
+        menu.classList.toggle("open");
+        chevron.style.transform = isOpen ? "rotate(0deg)" : "rotate(180deg)";
       }
 
       // Close dropdown when clicking anywhere else
-      document.addEventListener('click', function () {
-        const menu    = document.getElementById('user-dropdown-menu');
-        const chevron = document.getElementById('avatar-chevron');
+      document.addEventListener("click", function () {
+        const menu = document.getElementById("user-dropdown-menu");
+        const chevron = document.getElementById("avatar-chevron");
         if (menu) {
-          menu.classList.remove('open');
-          chevron.style.transform = 'rotate(0deg)';
+          menu.classList.remove("open");
+          if (chevron) chevron.style.transform = "rotate(0deg)";
         }
       });
     </script>

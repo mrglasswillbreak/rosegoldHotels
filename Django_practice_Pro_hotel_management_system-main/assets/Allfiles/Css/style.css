@@ -1,0 +1,11 @@
+/*------------------------------------------------------------------------------
+ *
+ *  Alias stylesheet for case compatibility.
+ *
+ *  This file intentionally does not contain its own CSS rules. It simply
+ *  imports the canonical "Style.css" so that both "style.css" and "Style.css"
+ *  can be referenced by templates without maintaining duplicate content.
+ *
+ *----------------------------------------------------------------------------*/
+
+@import url("Style.css");

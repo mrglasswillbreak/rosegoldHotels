@@ -1,10 +1,28 @@
 {% extends 'allinclude.html' %}
 {% load static %}
+{% block title %}
+Hotel & Resort
+{% endblock %}
+
+{% block content %}
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap');
+
+  :root {
+    --lux-ink: #1f1a17;
+    --lux-subtle: #6b6259;
+    --lux-gold: #c6a46a;
+    --lux-gold-deep: #9a7644;
+    --lux-card: #fffdf9;
+    --lux-shadow: 0 20px 45px rgba(28, 21, 12, 0.12);
+    --lux-border: rgba(161, 130, 86, 0.22);
+  }
+
   #slider,
   #slider .slider_pic {
     position: relative;
     z-index: 1;
+    padding: 0;
   }
 
   #Book_Table,
@@ -13,41 +31,724 @@
   #Service,
   .counterstart,
   #Staff {
+    padding: 92px 0;
     position: relative;
     z-index: 1;
+    overflow: hidden;
+  }
+
+  #Book_Table {
+    background: linear-gradient(145deg, #fbf7ef 0%, #f2e8d8 100%);
+  }
+
+  /* Allow room card edge shadows to show without clipping */
+  #OUR_ROOMS {
+    overflow: visible;
+  }
+
+  /* Also override legacy .ROOMS_info overflow so card shadows are not clipped */
+  #OUR_ROOMS .ROOMS_info {
+    overflow: visible;
+  }
+
+  #about {
+    background: linear-gradient(145deg, #fbf8f2 0%, #f1e7d6 100%);
+  }
+
+  #OUR_ROOMS,
+  #Staff {
+    background: linear-gradient(180deg, #fffdfa 0%, #f7f0e5 100%);
+  }
+
+  #Service {
+    background: linear-gradient(180deg, #f6efe3 0%, #fffdfa 100%);
+  }
+
+  .counterstart {
+    background: radial-gradient(circle at top, #2f2418 0%, #1a1410 78%);
+  }
+
+  #about .about-title,
+  #OUR_ROOMS .ROOMS_Title h2,
+  #Service .Service_title h2,
+  #Staff .Staff_title h2,
+  .counterstart .counter_heading h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.9rem, 3vw, 2.7rem);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--lux-ink);
+    margin-bottom: 12px;
+    text-transform: none;
+  }
+
+  #OUR_ROOMS .ROOMS_Title,
+  #Service .Service_title,
+  #Staff .Staff_title,
+  .counterstart .counter_heading {
+    text-align: center;
+    max-width: 760px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  #OUR_ROOMS .ROOMS_Title h2,
+  #Service .Service_title h2,
+  #Staff .Staff_title h2,
+  .counterstart .counter_heading h2 {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  #OUR_ROOMS .ROOMS_Title h2::after,
+  #Service .Service_title h2::after,
+  #Staff .Staff_title h2::after,
+  .counterstart .counter_heading h2::after {
+    content: "";
+    width: 78px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, var(--lux-gold) 20%, var(--lux-gold) 80%, transparent 100%);
+  }
+
+  #OUR_ROOMS .ROOMS_Title p,
+  #Service .Service_title p,
+  #Staff .Staff_title p,
+  .counterstart .counter_heading p,
+  #about .About_info p,
+  #Book_Table label {
+    font-family: 'Manrope', sans-serif;
+    font-size: 1.02rem;
+    line-height: 1.72;
+    color: var(--lux-subtle);
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  #Book_Table .modern-booking {
+    background: var(--lux-card);
+    border: 1px solid var(--lux-border);
+    border-radius: 18px;
+    box-shadow: var(--lux-shadow);
+    padding: 26px 22px;
+  }
+
+  #Book_Table .form-control,
+  #Book_Table .form-select {
+    border-radius: 12px;
+    border: 1px solid rgba(161, 130, 86, 0.32);
+    min-width: 170px;
+  }
+
+  #Book_Table .modern-btn {
+    border-radius: 999px;
+    padding: 12px 24px;
+    border: 1px solid var(--lux-gold);
+    background: linear-gradient(135deg, var(--lux-gold) 0%, #e7c58a 100%);
+    color: #2d2116;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: transform 0.28s ease, box-shadow 0.28s ease;
+  }
+
+  #Book_Table .modern-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 30px rgba(154, 118, 68, 0.34);
+  }
+
+  #about .about_video img,
+  #about .About_info,
+  #OUR_ROOMS .rooms-view,
+  #Service .Service_img,
+  #Service .Service_menu ul li,
+  #Staff .Staff_info,
+  .counterstart .Counter_info1 {
+    border-radius: 18px;
+    border: 1px solid var(--lux-border);
+    box-shadow: var(--lux-shadow);
+    background: var(--lux-card);
+  }
+
+  #about .about_video img,
+  #OUR_ROOMS .ROOMS_pic img,
+  #Service .Service_img img,
+  #Staff .Staff_pic img {
+    border-radius: 16px;
+    width: 100%;
+    object-fit: cover;
+  }
+
+  #about .About_info {
+    padding: 28px 24px;
+    margin-top: 0;
+  }
+
+  #about .About_info .about-title {
+    font-size: clamp(1.8rem, 2.6vw, 2.3rem);
+    margin-bottom: 14px;
+  }
+
+  #about .About_info p {
+    margin-bottom: 10px;
+  }
+
+  /* Override old .about_btn container so pill-style read-more shows fully */
+  #about .about_btn {
+    width: auto;
+    height: auto;
+    overflow: visible;
+    background: none;
+    padding: 0;
+    margin-top: 18px;
+  }
+
+  #about .about_btn::before {
+    display: none;
+  }
+
+  /* Ensure legacy hover background doesn't reappear behind pill button */
+  #about .about_btn:hover {
+    background: none;
+  }
+
+  #about .read-more,
+  #OUR_ROOMS .room_btn a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 11px 22px;
+    border-radius: 999px;
+    border: 1px solid var(--lux-gold);
+    background: linear-gradient(135deg, var(--lux-gold) 0%, #e7c58a 100%);
+    color: #2d2116;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: transform 0.28s ease, box-shadow 0.28s ease;
+  }
+
+  #about .read-more:hover,
+  #OUR_ROOMS .room_btn a:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 30px rgba(154, 118, 68, 0.34);
+    color: #24190f;
+  }
+
+  #OUR_ROOMS .ROOMS_Title,
+  #Service .Service_title,
+  #Staff .Staff_title,
+  .counterstart .counter_heading {
+    margin-bottom: 26px;
+  }
+
+  #OUR_ROOMS .ROOMS_info,
+  #Service .row,
+  #Staff .Staff_view,
+  .counterstart .Counter_info {
+    margin-top: 6px;
+  }
+
+  /* Tighten the gap between the specific service image column and the text-card column */
+  #Service .row:has(.col-lg-7):has(.col-lg-5) {
+    --bs-gutter-x: 0.75rem;
+  }
+
+  #OUR_ROOMS .ROOMS_info {
+    margin-top: 14px;
+  }
+
+  #OUR_ROOMS .room_slide {
+    row-gap: 26px;
+  }
+
+  #OUR_ROOMS .room_slide > [class*="col-"] {
+    margin-bottom: 8px;
+  }
+
+  #OUR_ROOMS .rooms-view {
+    height: 100%;
+    margin: 0 8px;
+    overflow: hidden;
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+  }
+
+  #OUR_ROOMS .rooms-view:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 24px 40px rgba(59, 42, 21, 0.2);
+  }
+
+  #OUR_ROOMS .ROOMS_text {
+    padding: 18px 20px 22px;
+  }
+
+  #OUR_ROOMS .ROOMS_text h3 {
+    font-family: 'Playfair Display', serif;
+    color: var(--lux-ink);
+    font-size: 1.35rem;
+  }
+
+  #OUR_ROOMS .ROOMS_text span {
+    font-family: 'Manrope', sans-serif;
+    color: var(--lux-gold-deep);
+    font-weight: 700;
+    display: inline-block;
+    margin: 8px 0;
+  }
+
+  #GALLERY .GALLERY_info,
+  #Staff .Staff_info,
+  #Service .Service_img {
+    margin: 0 8px;
+  }
+
+  #Service .Service_title {
+    text-align: center;
+  }
+
+  #Service .Service_img {
+    padding: 10px;
+  }
+
+  #Service .Service_menu ul li {
+    padding: 10px 14px;
+    margin-bottom: 10px;
+    transition: transform 0.25s ease, border-color 0.25s ease;
+  }
+
+  #Service .Service_menu ul li:hover,
+  #Service .Service_menu ul li.active {
+    transform: translateY(-3px);
+    border-color: rgba(198, 164, 106, 0.55);
+  }
+
+  #Service .Service_menu ul li a {
+    text-decoration: none;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 12px;
+    align-items: flex-start;
+  }
+
+  #Service .Service_menu ul li a h5,
+  #Service .Service_menu ul li a p {
+    grid-column: 2;
+    margin: 0;
+  }
+
+  #Service .Service_menu li .service-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #Service .Service_menu li .service-icon img {
+    width: 44px;
+    height: 44px;
+    padding: 8px;
+    object-fit: contain;
+  }
+
+  #Service .Service_menu ul {
+    padding-left: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  #Service .service-menu-title {
+    font-family: 'Playfair Display', serif;
+    color: var(--lux-ink);
+    margin-top: 0;
+    margin-left: 0;
+    font-size: 1.05rem;
+  }
+
+  #Service .Service_menu li p.text {
+    margin-top: 4px;
+    margin-left: 0;
+    width: auto;
+    max-width: 100%;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  #Service .Service_img img {
+    height: 380px;
+    width: 100%;
+    object-fit: cover;
+  }
+
+  #Staff .Staff_title {
+    margin-bottom: 10px;
+  }
+
+  #Staff .Staff_view {
+    margin-top: 8px;
+  }
+
+  #Staff .Staff_slider {
+    row-gap: 14px;
+  }
+
+  #Staff .Staff_slider:not(.slick-initialized) {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    column-gap: 16px;
+    row-gap: 14px;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  #Staff .Staff_slider:not(.slick-initialized) .Staff_info {
+    width: auto;
+    max-width: none;
+    margin: 0;
+  }
+
+  #OUR_ROOMS .room_slide.slick-slider .slick-list {
+    margin: 0 -10px;
+  }
+
+  #GALLERY .GALLERY_slider.slick-slider .slick-list,
+  #Staff .Staff_slider.slick-slider .slick-list {
+    margin: 0 -10px;
+  }
+
+  #OUR_ROOMS .room_slide.slick-slider .slick-slide {
+    padding: 0 10px;
+  }
+
+  #OUR_ROOMS .ROOMS_pic .btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  /* Remove old rectangle/animation artifact behind Book Now button */
+  #OUR_ROOMS .room_btn {
+    background: transparent;
+    border: none;
+    width: auto;
+    height: auto;
+    padding: 0;
+  }
+
+  #OUR_ROOMS .room_btn::after {
+    display: none;
+  }
+
+  #OUR_ROOMS .room_btn:hover {
+    background: transparent;
+  }
+
+  #OUR_ROOMS .room_btn a {
+    min-width: 152px;
+    white-space: nowrap;
+  }
+
+  #OUR_ROOMS .room_slide .slick-dots {
+    display: flex !important;
+    justify-content: center;
+    gap: 10px;
+    list-style: none;
+    margin: 18px 0 0;
+    padding: 0;
+  }
+
+  #OUR_ROOMS .room_slide .slick-dots li {
+    width: auto;
+    height: auto;
+    margin: 0;
+    background: transparent;
+  }
+
+  #OUR_ROOMS .room_slide .slick-dots li button {
+    width: 10px;
+    height: 10px;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(45, 33, 22, 0.25);
+    font-size: 0;
+    line-height: 0;
+    color: transparent;
+    text-indent: -9999px;
+  }
+
+  #OUR_ROOMS .room_slide .slick-dots li.slick-active button {
+    background: var(--lux-gold);
+  }
+
+  #GALLERY .GALLERY_slider.slick-slider .slick-slide,
+  #Staff .Staff_slider.slick-slider .slick-slide {
+    padding: 0 10px;
+  }
+
+  .counterstart .counter_heading {
+    text-align: center;
+    max-width: 760px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .counterstart .counter_heading h2,
+  .counterstart .counter_heading p,
+  .counterstart .Counter_info1,
+  .counterstart .Counter_info1 p,
+  .counterstart .Counter_info1 h2,
+  .counterstart .Counter_info1 span {
+    color: #f5ece1;
+  }
+
+  .counterstart .Counter_info1 {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 223, 171, 0.28);
+    padding: 22px 10px;
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+  }
+
+  #Staff .Staff_info {
+    overflow: hidden;
+    transition: transform 0.32s ease, box-shadow 0.32s ease;
+  }
+
+  #Staff .Staff_info:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 24px 40px rgba(53, 39, 21, 0.18);
+  }
+
+  #Staff .Staff_part1 {
+    background: #fff8ed;
+    border-top: 1px solid rgba(161, 130, 86, 0.25);
+  }
+
+  #Staff .Staff_part1 h5 {
+    font-family: 'Playfair Display', serif;
+    color: var(--lux-ink);
+    margin-bottom: 4px;
+  }
+
+  #Staff .Staff_part1 h6 {
+    font-family: 'Manrope', sans-serif;
+    color: var(--lux-subtle);
+    letter-spacing: 0.03em;
+  }
+
+  /* Hero fullscreen: cancel body padding-top so slides start at y=0 behind the fixed navbar.
+     Use #slider (ID selector) to beat the specificity of #slider{margin-top:-167px} in Style.css */
+  #slider {
+    margin-top: -100px;
+  }
+
+  @media (max-width: 992px) {
+    #about .About_info {
+      margin-top: 24px;
+    }
+    #slider {
+      margin-top: -86px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    #Book_Table,
+    #about,
+    #OUR_ROOMS,
+    #Service,
+    .counterstart,
+    #Staff {
+      padding: 70px 0;
+    }
+
+    #OUR_ROOMS .room_slide {
+      row-gap: 18px;
+    }
+
+    #OUR_ROOMS .rooms-view {
+      margin: 0;
+    }
+
+    #GALLERY .GALLERY_info,
+    #Staff .Staff_info,
+    #Service .Service_img {
+      margin: 0;
+    }
+
+    #Staff .Staff_slider:not(.slick-initialized) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 12px;
+      row-gap: 12px;
+    }
+
+    #about .About_info,
+    #OUR_ROOMS .ROOMS_text,
+    #Book_Table .modern-booking {
+      padding: 16px;
+    }
+
+    #Service .Service_img img {
+      height: 280px;
+    }
+
+    #Service .Service_menu li .service-icon img {
+      width: 36px;
+      height: 36px;
+      padding: 6px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    #OUR_ROOMS .ROOMS_Title h2,
+    #Service .Service_title h2,
+    #Staff .Staff_title h2 {
+      font-size: clamp(1.5rem, 6vw, 2rem);
+    }
+
+    #Service .col-lg-7,
+    #Service .col-lg-5 {
+      width: 100%;
+    }
+
+    #slider {
+      margin-top: -74px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    #Staff .Staff_slider:not(.slick-initialized) {
+      grid-template-columns: 1fr;
+    }
+
+    #Service .Service_img img {
+      height: 220px;
+    }
+  }
+
+  html.dark {
+    --lux-ink: var(--text-main);
+    --lux-subtle: var(--text-soft);
+    --lux-gold: var(--accent);
+    --lux-gold-deep: #f0ca86;
+    --lux-card: var(--surface);
+    --lux-shadow: 0 18px 36px rgba(5, 9, 14, 0.45);
+    --lux-border: var(--outline);
+  }
+
+  html.dark #Book_Table,
+  html.dark #about,
+  html.dark #OUR_ROOMS,
+  html.dark #Service,
+  html.dark #Staff {
+    background: transparent;
+  }
+
+  html.dark .counterstart {
+    background: var(--surface-elevated);
+  }
+
+  html.dark #Book_Table .modern-booking,
+  html.dark #about .about_video img,
+  html.dark #about .About_info,
+  html.dark #OUR_ROOMS .rooms-view,
+  html.dark #Service .Service_img,
+  html.dark #Service .Service_menu ul li,
+  html.dark #Staff .Staff_info,
+  html.dark .counterstart .Counter_info1 {
+    background: var(--surface);
+    border-color: var(--outline);
+    box-shadow: 0 18px 36px rgba(5, 9, 14, 0.45);
+  }
+
+  html.dark #Book_Table .form-control,
+  html.dark #Book_Table .form-select {
+    background: #101a25;
+    border-color: var(--outline);
+    color: var(--text-main);
+  }
+
+  html.dark #Staff .Staff_part1 {
+    background: var(--surface-elevated);
+    border-top-color: var(--outline);
+  }
+
+  html.dark #about .about-title,
+  html.dark #OUR_ROOMS .ROOMS_Title h2,
+  html.dark #Service .Service_title h2,
+  html.dark #Staff .Staff_title h2,
+  html.dark .counterstart .counter_heading h2,
+  html.dark #OUR_ROOMS .ROOMS_text h3,
+  html.dark #Service .service-menu-title,
+  html.dark #Staff .Staff_part1 h5,
+  html.dark #Book_Table label {
+    color: #f3e8d8;
+  }
+
+  html.dark #about .About_info p,
+  html.dark #OUR_ROOMS .ROOMS_Title p,
+  html.dark #Service .Service_title p,
+  html.dark #Staff .Staff_title p,
+  html.dark #OUR_ROOMS .ROOMS_text p,
+  html.dark #Service .Service_menu .text,
+  html.dark #Staff .Staff_part1 h6,
+  html.dark .counterstart .counter_heading p {
+    color: #d6c6ad;
+  }
+
+  html.dark #OUR_ROOMS .ROOMS_text span {
+    color: #f0ca86;
+  }
+
+  html.dark #Service .Service_menu ul li:hover,
+  html.dark #Service .Service_menu ul li.active,
+  html.dark #OUR_ROOMS .rooms-view:hover,
+  html.dark #Staff .Staff_info:hover {
+    border-color: var(--accent);
+    box-shadow: 0 24px 40px rgba(0, 0, 0, 0.52);
+  }
+
+  html.dark #OUR_ROOMS .room_slide .slick-dots li button {
+    background: rgba(233, 238, 244, 0.35);
+  }
+
+  html.dark #OUR_ROOMS .room_slide .slick-dots li.slick-active button {
+    background: var(--accent);
   }
 </style>
-{% block title %}
-Hotel & Resort
-{% endblock %}
-
-{% block content %}
 
 <!--================Slider Start=================-->
 <!--================Slider Start=================-->
-<section id="slider" style="position:relative; z-index:1;">
+<section id="slider" class="hero-slider-shell">
 
   <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="4000">
 
     <!-- Indicators -->
     <div class="carousel-indicators">
-      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"></button>
-      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
-      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
-      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="3"></button>
-      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="4"></button>
+      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" title="Go to slide 1" aria-label="Go to slide 1"></button>
+      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" title="Go to slide 2" aria-label="Go to slide 2"></button>
+      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" title="Go to slide 3" aria-label="Go to slide 3"></button>
+      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="3" title="Go to slide 4" aria-label="Go to slide 4"></button>
+      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="4" title="Go to slide 5" aria-label="Go to slide 5"></button>
     </div>
 
     <!-- Slides -->
     <div class="carousel-inner">
       {% with slides="slider-1.jpg,slider-2.jpg,slider-3.jpg,slider-4.jpg,slider-5.jpg" %}
       <div class="carousel-item active">
-        <div class="hero-slide" style="background-image: url('{% static 'Allfiles/Photo/slider-1.jpg' %}');">
+        <div class="hero-slide hero-slide-1">
           <div class="hero-overlay"></div>
           <div class="hero-content-wrap container">
             <h1 class="display-4 fw-bold text-white mb-4">
               Welcome {{ request.user.first_name|default:request.user.username }},
-              <span style="color:#d4af37;">to RoseGold Hotel & Suites</span>
+              <span class="gold-accent">to RoseGold Hotel & Suites</span>
             </h1>
             <p class="lead text-white mb-5 opacity-90">Your one-stop solution for hassle-free hotel reservations.</p>
             <a href="{% url 'online_booking' %}" class="hero-cta-btn">Book Now</a>
@@ -55,40 +756,40 @@ Hotel & Resort
         </div>
       </div>
       <div class="carousel-item">
-        <div class="hero-slide" style="background-image: url('{% static 'Allfiles/Photo/slider-2.jpg' %}');">
+        <div class="hero-slide hero-slide-2">
           <div class="hero-overlay"></div>
           <div class="hero-content-wrap container">
-            <h1 class="display-4 fw-bold text-white mb-4">Luxury <span style="color:#d4af37;">Redefined</span></h1>
+            <h1 class="display-4 fw-bold text-white mb-4">Luxury <span class="gold-accent">Redefined</span></h1>
             <p class="lead text-white mb-5">Experience premium comfort and exceptional service.</p>
             <a href="{% url 'room_list' %}" class="hero-cta-btn">Explore Rooms</a>
           </div>
         </div>
       </div>
       <div class="carousel-item">
-        <div class="hero-slide" style="background-image: url('{% static 'Allfiles/Photo/slider-3.jpg' %}');">
+        <div class="hero-slide hero-slide-3">
           <div class="hero-overlay"></div>
           <div class="hero-content-wrap container">
-            <h1 class="display-4 fw-bold text-white mb-4">World-Class <span style="color:#d4af37;">Amenities</span></h1>
+            <h1 class="display-4 fw-bold text-white mb-4">World-Class <span class="gold-accent">Amenities</span></h1>
             <p class="lead text-white mb-5">Spa, pool, restaurant and more — all under one roof.</p>
             <a href="{% url 'online_booking' %}" class="hero-cta-btn">Book Now</a>
           </div>
         </div>
       </div>
       <div class="carousel-item">
-        <div class="hero-slide" style="background-image: url('{% static 'Allfiles/Photo/slider-4.jpg' %}');">
+        <div class="hero-slide hero-slide-4">
           <div class="hero-overlay"></div>
           <div class="hero-content-wrap container">
-            <h1 class="display-4 fw-bold text-white mb-4">Your <span style="color:#d4af37;">Perfect Stay</span> Awaits</h1>
+            <h1 class="display-4 fw-bold text-white mb-4">Your <span class="gold-accent">Perfect Stay</span> Awaits</h1>
             <p class="lead text-white mb-5">Unwind in rooms designed for relaxation and elegance.</p>
             <a href="{% url 'room_list' %}" class="hero-cta-btn">View Rooms</a>
           </div>
         </div>
       </div>
       <div class="carousel-item">
-        <div class="hero-slide" style="background-image: url('{% static 'Allfiles/Photo/slider-5.jpg' %}');">
+        <div class="hero-slide hero-slide-5">
           <div class="hero-overlay"></div>
           <div class="hero-content-wrap container">
-            <h1 class="display-4 fw-bold text-white mb-4">Make <span style="color:#d4af37;">Memories</span> Here</h1>
+            <h1 class="display-4 fw-bold text-white mb-4">Make <span class="gold-accent">Memories</span> Here</h1>
             <p class="lead text-white mb-5">RoseGold Hotel — where every moment is unforgettable.</p>
             <a href="{% url 'online_booking' %}" class="hero-cta-btn">Book Now</a>
           </div>
@@ -98,10 +799,10 @@ Hotel & Resort
     </div>
 
     <!-- Controls -->
-    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev" title="Previous slide" aria-label="Previous slide">
       <span class="carousel-control-prev-icon"></span>
     </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next" title="Next slide" aria-label="Next slide">
       <span class="carousel-control-next-icon"></span>
     </button>
   </div>
@@ -110,7 +811,8 @@ Hotel & Resort
 
 <style>
   .hero-slide {
-    height: 100vh;
+    min-height: 100vh;
+    min-height: 100dvh; /* dynamic viewport height — keeps slides within the carousel-inner clip boundary on mobile */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -118,6 +820,23 @@ Hotel & Resort
     align-items: center;
     position: relative;
   }
+  /* Ensure the Bootstrap carousel chain expands to fill the full-screen hero */
+  #slider .carousel,
+  #slider .carousel-inner,
+  #slider .carousel-item {
+    min-height: 100vh;
+    min-height: 100dvh; /* dynamic viewport height (shrinks/grows with mobile address bar) */
+  }
+  .hero-slider-shell {
+    position: relative;
+    z-index: 1;
+  }
+  .hero-slide-1 { background-image: url('{% static 'Allfiles/Photo/slider-1.jpg' %}'); }
+  .hero-slide-2 { background-image: url('{% static 'Allfiles/Photo/slider-2.jpg' %}'); }
+  .hero-slide-3 { background-image: url('{% static 'Allfiles/Photo/slider-3.jpg' %}'); }
+  .hero-slide-4 { background-image: url('{% static 'Allfiles/Photo/slider-4.jpg' %}'); }
+  .hero-slide-5 { background-image: url('{% static 'Allfiles/Photo/slider-5.jpg' %}'); }
+  .gold-accent { color: #d4af37; }
   .hero-overlay {
     position: absolute;
     inset: 0;
@@ -167,16 +886,16 @@ Hotel & Resort
   <div class="container">
     <form method="GET" class="modern-booking d-flex flex-wrap justify-content-center align-items-end gap-4">
       <div>
-        <label>Check-in</label>
-        <input type="date" name="check_in" class="form-control" required>
+        <label for="check_in_date">Check-in</label>
+        <input id="check_in_date" type="date" name="check_in" class="form-control" title="Check-in date" required>
       </div>
       <div>
-        <label>Check-out</label>
-        <input type="date" name="check_out" class="form-control" required>
+        <label for="check_out_date">Check-out</label>
+        <input id="check_out_date" type="date" name="check_out" class="form-control" title="Check-out date" required>
       </div>
       <div>
-        <label>Adults</label>
-        <select name="adults" class="form-select">
+        <label for="adults_count">Adults</label>
+        <select id="adults_count" name="adults" class="form-select" title="Number of adults">
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="3">3</option>
@@ -184,8 +903,8 @@ Hotel & Resort
         </select>
       </div>
       <div>
-        <label>Children</label>
-        <select name="children" class="form-select">
+        <label for="children_count">Children</label>
+        <select id="children_count" name="children" class="form-select" title="Number of children">
           <option value="0">0</option>
           <option value="1">1</option>
           <option value="2">2</option>
@@ -211,7 +930,7 @@ Hotel & Resort
                <div class="col-lg-4">
                  <div class="About_info">
                    <h2 class="about-title">About Us</h2>
-                      <p>Welcome to Hotel Booking Management, your one-stop solution for hassle-free hotel reservations.Quickly find the perfect hotel for your next stay. Use our search tool to browse and book an hotel.</p>
+                      <p>Experience refined comfort, attentive service, and effortless reservations. RoseGold Hotel blends timeless elegance with modern hospitality to make every visit unforgettable.</p>
                       <p>This is such a great place to connect and spend your free time in peace.</p>
                       <p>Hope you enjoy our services.</p>
                      <div class="about_btn">
@@ -230,7 +949,7 @@ Hotel & Resort
              <div class="col-lg-8">
                 <div class="ROOMS_Title">
                    <h2>EXPLORE OUR ROOMS</h2>
-                   <p>Welcome to your one stop 5 star rated hotel with all the luxuries you ever need. This is your time. Enjoy!</p>
+                   <p>Choose from thoughtfully designed spaces crafted for relaxation, privacy, and elevated comfort at every price point.</p>
                 </div>
              </div>
           </div>
@@ -356,7 +1075,8 @@ Hotel & Resort
             <div class="row text-center justify-content-center">
                 <div class="col-lg-12">
                      <div class="Service_title">
-                         <h2>OUR AWESOME SERVICES </h2>
+                     <h2>Curated Luxury Services</h2>
+                     <p>Every amenity is tailored to enhance your stay, from wellness rituals to culinary experiences and seamless business support.</p>
                      </div>
                 </div>
             </div>
@@ -436,6 +1156,10 @@ Hotel & Resort
 
     <section class="counterstart">
        <div class="container">
+         <div class="counter_heading">
+           <h2>RoseGold In Numbers</h2>
+           <p>A trusted destination for guests who value warm service, premium comfort, and memorable hospitality.</p>
+         </div>
           <div class="row">
              <div class="Counter_info">
                 <div class="row">
@@ -480,8 +1204,8 @@ Hotel & Resort
        <div class="row text-center justify-content-center">
           <div class="col-lg-8">
               <div class="Staff_title">
-                <h2>OUR SPECIAL STAFF</h2>
-                <p>This is your one-stop solution for hassle-free hotel reservations.Quickly find the perfect hotel for your next stay. Use our search tool to browse and book hotels in the area.</p>
+                <h2>OUR HOSPITALITY TEAM</h2>
+                <p>Meet the people behind your comfort. From reception to housekeeping and chef services, our dedicated staff is here to make every stay smooth and memorable.</p>
                </div>
           </div>
        </div>
@@ -498,10 +1222,10 @@ Hotel & Resort
                          </div>
                          <div class="Staff_part2 text-center">
                             <ul>
-                                <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
-                                <li><a href="#"><i class="fab fa-twitter"></i></a></i></a></li>
-                                <li><a href="#"><i class="fab fa-google-plus-g"></i></a></li>
-                                <li><a href="#"><i class="fab fa-instagram"></i></a></li>
+                                <li><a href="#" title="Facebook profile" aria-label="Facebook profile"><i class="fab fa-facebook-f"></i></a></li>
+                                <li><a href="#" title="Twitter profile" aria-label="Twitter profile"><i class="fab fa-twitter"></i></a></li>
+                                <li><a href="#" title="Google profile" aria-label="Google profile"><i class="fab fa-google-plus-g"></i></a></li>
+                                <li><a href="#" title="Instagram profile" aria-label="Instagram profile"><i class="fab fa-instagram"></i></a></li>
                             </ul>
                          </div>
                      </div>
@@ -517,10 +1241,10 @@ Hotel & Resort
                          </div>
                          <div class="Staff_part2 text-center">
                             <ul>
-                                <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
-                                <li><a href="#"><i class="fab fa-twitter"></i></a></i></a></li>
-                                <li><a href="#"><i class="fab fa-google-plus-g"></i></a></li>
-                                <li><a href="#"><i class="fab fa-instagram"></i></a></li>
+                                <li><a href="#" title="Facebook profile" aria-label="Facebook profile"><i class="fab fa-facebook-f"></i></a></li>
+                                <li><a href="#" title="Twitter profile" aria-label="Twitter profile"><i class="fab fa-twitter"></i></a></li>
+                                <li><a href="#" title="Google profile" aria-label="Google profile"><i class="fab fa-google-plus-g"></i></a></li>
+                                <li><a href="#" title="Instagram profile" aria-label="Instagram profile"><i class="fab fa-instagram"></i></a></li>
                             </ul>
                          </div>
                      </div>
@@ -536,10 +1260,10 @@ Hotel & Resort
                          </div>
                          <div class="Staff_part2 text-center">
                             <ul>
-                                <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
-                                <li><a href="#"><i class="fab fa-twitter"></i></a></i></a></li>
-                                <li><a href="#"><i class="fab fa-google-plus-g"></i></a></li>
-                                <li><a href="#"><i class="fab fa-instagram"></i></a></li>
+                                <li><a href="#" title="Facebook profile" aria-label="Facebook profile"><i class="fab fa-facebook-f"></i></a></li>
+                                <li><a href="#" title="Twitter profile" aria-label="Twitter profile"><i class="fab fa-twitter"></i></a></li>
+                                <li><a href="#" title="Google profile" aria-label="Google profile"><i class="fab fa-google-plus-g"></i></a></li>
+                                <li><a href="#" title="Instagram profile" aria-label="Instagram profile"><i class="fab fa-instagram"></i></a></li>
                             </ul>
                          </div>
                      </div>
@@ -555,10 +1279,10 @@ Hotel & Resort
                          </div>
                          <div class="Staff_part2 text-center">
                             <ul>
-                                <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
-                                <li><a href="#"><i class="fab fa-twitter"></i></a></i></a></li>
-                                <li><a href="#"><i class="fab fa-google-plus-g"></i></a></li>
-                                <li><a href="#"><i class="fab fa-instagram"></i></a></li>
+                                <li><a href="#" title="Facebook profile" aria-label="Facebook profile"><i class="fab fa-facebook-f"></i></a></li>
+                                <li><a href="#" title="Twitter profile" aria-label="Twitter profile"><i class="fab fa-twitter"></i></a></li>
+                                <li><a href="#" title="Google profile" aria-label="Google profile"><i class="fab fa-google-plus-g"></i></a></li>
+                                <li><a href="#" title="Instagram profile" aria-label="Instagram profile"><i class="fab fa-instagram"></i></a></li>
                             </ul>
                          </div>
                      </div>

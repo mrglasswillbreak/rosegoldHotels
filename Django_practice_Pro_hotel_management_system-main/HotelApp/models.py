@@ -1,12 +1,10 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 
 
 # =========================
 # CUSTOM USER MODEL
 # =========================
-from django.contrib.auth.models import AbstractUser, BaseUserManager
-from django.db import models
 
 
 class CustomUserManager(BaseUserManager):
@@ -31,6 +29,7 @@ class Authorregis(AbstractUser):
     username = None  # remove username
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
+    theme = models.CharField(max_length=10, choices=[('light', 'Light'), ('dark', 'Dark')], default='light')
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -44,8 +43,6 @@ class Authorregis(AbstractUser):
 # =========================
 # ROOM MODEL
 # =========================
-
-from django.db import models
 
 class Room(models.Model):
     ROOM_STATUS = [
@@ -61,12 +58,12 @@ class Room(models.Model):
     ]
 
     room_number = models.CharField(max_length=50, unique=True)
-    room_type = models.CharField(max_length=20, choices=ROOM_TYPES)
+    room_type = models.CharField(max_length=20, choices=ROOM_TYPES, db_index=True)
     floor = models.IntegerField()
     facility = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     image = models.ImageField(upload_to='rooms/', blank=True, null=True)
-    status = models.CharField(max_length=20, choices=ROOM_STATUS, default='available')
+    status = models.CharField(max_length=20, choices=ROOM_STATUS, default='available', db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -80,8 +77,8 @@ class OnlineBooking(models.Model):
     user = models.ForeignKey(Authorregis, on_delete=models.CASCADE)
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
 
-    check_in = models.DateField()
-    check_out = models.DateField()
+    check_in = models.DateField(db_index=True)
+    check_out = models.DateField(db_index=True)
 
     adults = models.IntegerField()
     children = models.IntegerField()
@@ -108,8 +105,8 @@ class OfflineBooking(models.Model):
     email = models.EmailField()
     mobile_number = models.CharField(max_length=15)
 
-    check_in = models.DateField()
-    check_out = models.DateField()
+    check_in = models.DateField(db_index=True)
+    check_out = models.DateField(db_index=True)
 
     adults = models.IntegerField()
     children = models.IntegerField()

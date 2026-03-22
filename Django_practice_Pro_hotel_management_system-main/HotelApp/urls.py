@@ -10,6 +10,8 @@ urlpatterns = [
     path('book/<int:room_id>/', views.book_room, name='book_room'),
     path('my-bookings/', views.my_bookings, name='my_bookings'),
     path('profile/', views.user_profile, name='user_profile'),
+    path('contact/', views.contact, name='contact'),
+    path('api/theme/', views.set_theme, name='set_theme'),
 
     # AUTH SYSTEM
     path('login/', views.author_login, name='author_login'),

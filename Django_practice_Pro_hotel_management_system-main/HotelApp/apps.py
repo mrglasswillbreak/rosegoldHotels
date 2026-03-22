@@ -5,9 +5,5 @@ class HotelappConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'HotelApp'
 
-class YourAppConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'yourapp'
-
     def ready(self):
-        import yourapp.signals
+        from . import signals  # noqa: F401

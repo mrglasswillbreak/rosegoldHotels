@@ -1,0 +1,247 @@
+{% extends "allinclude.html" %} {% block content %}
+<style>
+  .booking-shell {
+    max-width: 1000px;
+  }
+
+  .booking-card {
+    border: 1px solid var(--outline, #e5e7eb);
+    border-radius: 20px;
+    background: var(--surface, #fffaf1);
+    box-shadow: 0 18px 44px rgba(15, 23, 42, 0.12);
+  }
+
+  .booking-hero {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: baseline;
+  }
+
+  .booking-price {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f766e;
+  }
+
+  .booking-room-preview {
+    border-radius: 14px;
+    border: 1px solid var(--outline, #d4d4d8);
+    max-height: 320px;
+    width: 100%;
+    object-fit: cover;
+  }
+
+  .booking-helper {
+    font-size: 0.85rem;
+    color: var(--text-soft, #6c757d);
+  }
+
+  .booking-summary {
+    background: var(--surface-elevated, #f8f9fa);
+    border: 1px dashed var(--outline, #e5e7eb);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 0.9rem;
+  }
+
+  .booking-actions .btn {
+    border-radius: 999px;
+    font-weight: 600;
+    padding: 0.6rem 1.2rem;
+  }
+
+  .booking-actions .btn-primary {
+    background: linear-gradient(135deg, #0f766e, #14b8a6);
+    border: none;
+  }
+
+  .booking-actions .btn-primary:hover {
+    filter: brightness(1.08);
+  }
+
+  .dark .booking-price {
+    color: #2cb7a8;
+  }
+
+  .dark .form-control,
+  .dark .form-select {
+    background-color: #101a25;
+    border-color: var(--outline, #334155);
+    color: var(--text-main, #e2e8f0);
+  }
+
+  .dark .form-control:focus,
+  .dark .form-select:focus {
+    border-color: #2cb7a8;
+    box-shadow: 0 0 0 0.2rem rgba(44, 183, 168, 0.18);
+  }
+
+  @media (max-width: 576px) {
+    .booking-actions {
+      flex-direction: column;
+    }
+    .booking-actions .btn {
+      width: 100%;
+    }
+  }
+</style>
+<div class="container py-5 booking-shell">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card booking-card border-0">
+        <div class="card-body p-4 p-md-5">
+          <div class="booking-hero mb-3">
+            <h2 class="h4 mb-0">Book Room {{ room.room_number }}</h2>
+            <div class="booking-price">${{ room.price }} / night</div>
+          </div>
+          <p class="text-muted mb-4">{{ room.room_type }}</p>
+
+          {% if room.image %}
+          <img
+            src="{{ room.image.url }}"
+            alt="Room {{ room.room_number }}"
+            class="img-fluid booking-room-preview mb-4"
+          />
+          {% endif %} {% if messages %}
+          <div class="mb-3">
+            {% for message in messages %}
+            <div
+              class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %}"
+              role="alert"
+            >
+              {{ message }}
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <form method="post" class="needs-validation" novalidate>
+            {% csrf_token %}
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label" for="check-in">Check-in</label>
+                <input
+                  type="date"
+                  name="check_in"
+                  id="check-in"
+                  class="form-control"
+                  required
+                />
+                <div class="invalid-feedback">
+                  Please select a valid check-in date.
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="stay-duration"
+                  >Stay duration (nights)</label
+                >
+                <input
+                  type="number"
+                  name="stay_duration"
+                  id="stay-duration"
+                  class="form-control"
+                  min="1"
+                  value="1"
+                  required
+                />
+                <div class="invalid-feedback">
+                  Stay duration must be at least 1 night.
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="adults">Adults</label>
+                <input
+                  type="number"
+                  name="adults"
+                  id="adults"
+                  class="form-control"
+                  min="1"
+                  value="1"
+                  required
+                />
+                <div class="invalid-feedback">Adults must be at least 1.</div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="children">Children</label>
+                <input
+                  type="number"
+                  name="children"
+                  id="children"
+                  class="form-control"
+                  min="0"
+                  value="0"
+                />
+                <div class="invalid-feedback">Children cannot be negative.</div>
+              </div>
+              <div class="col-12">
+                <div class="booking-summary">
+                  Estimated check-out:
+                  <strong id="computed-checkout">Select dates</strong>
+                </div>
+                <div class="booking-helper mt-2">
+                  Check-out is calculated from check-in + stay duration.
+                </div>
+              </div>
+            </div>
+            <div class="d-flex gap-2 mt-4 booking-actions">
+              <button type="submit" class="btn btn-primary">
+                Confirm Booking
+              </button>
+              <a href="{% url 'room_list' %}" class="btn btn-outline-secondary"
+                >Back to rooms</a
+              >
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.querySelector(".needs-validation");
+    if (!form) return;
+
+    const checkIn = document.getElementById("check-in");
+    const stay = document.getElementById("stay-duration");
+    const adults = document.getElementById("adults");
+    const children = document.getElementById("children");
+    const checkout = document.getElementById("computed-checkout");
+    const today = new Date().toISOString().split("T")[0];
+
+    checkIn.min = today;
+
+    function updateCheckout() {
+      if (!checkIn.value || !stay.value) {
+        checkout.textContent = "Select dates";
+        return;
+      }
+      const start = new Date(checkIn.value);
+      const nights = Number(stay.value);
+      if (Number.isNaN(nights) || nights <= 0) {
+        checkout.textContent = "Select dates";
+        return;
+      }
+      start.setDate(start.getDate() + nights);
+      checkout.textContent = start.toISOString().split("T")[0];
+    }
+
+    [checkIn, stay].forEach((el) =>
+      el.addEventListener("input", updateCheckout),
+    );
+    updateCheckout();
+
+    form.addEventListener("submit", (e) => {
+      const invalidCounts =
+        Number(adults.value) < 1 || Number(children.value) < 0;
+      if (!form.checkValidity() || invalidCounts) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      form.classList.add("was-validated");
+    });
+  });
+</script>
+{% endblock %}

@@ -58,7 +58,23 @@ $(function () {
         slidesToShow:3,
         slidesToScroll:2,
         dots: true,
-        arrows:false
+        arrows:false,
+        responsive: [
+            {
+                breakpoint: 992,
+                settings: {
+                    slidesToShow: 2,
+                    slidesToScroll: 1
+                }
+            },
+            {
+                breakpoint: 576,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1
+                }
+            }
+        ]
     });
   //OUR AWESOME SERVICES js
     
@@ -82,7 +98,23 @@ $(function () {
         slidesToShow:4,
         slidesToScroll:2,
         dots: true,
-        arrows:false
+        arrows:false,
+        responsive: [
+            {
+                breakpoint: 992,
+                settings: {
+                    slidesToShow: 2,
+                    slidesToScroll: 1
+                }
+            },
+            {
+                breakpoint: 576,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1
+                }
+            }
+        ]
     });
 
       //Our Special Staff Part start
@@ -92,7 +124,23 @@ $(function () {
         slidesToShow:4,
         slidesToScroll:2,
         dots: true,
-        arrows:false
+        arrows:false,
+        responsive: [
+            {
+                breakpoint: 992,
+                settings: {
+                    slidesToShow: 2,
+                    slidesToScroll: 1
+                }
+            },
+            {
+                breakpoint: 576,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1
+                }
+            }
+        ]
     });
    
    //counter part js
