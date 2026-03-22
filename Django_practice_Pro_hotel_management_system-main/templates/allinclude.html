@@ -68,6 +68,7 @@
           "Manrope", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
         --font-display: "Cormorant Garamond", Georgia, serif;
         --btn-radius: 10px;
+        --navbar-h: 100px; /* matches body padding-top — used by sticky panels */
       }
 
       .dark {
@@ -100,7 +101,8 @@
           background-color 0.4s ease,
           color 0.4s ease;
         padding-top: 100px;
-        overflow-x: hidden;
+        overflow-x: hidden; /* fallback for browsers that don't support clip */
+        overflow-x: clip;   /* preferred: clips without creating a scroll container (preserves sticky) */
       }
 
       h1,
@@ -548,6 +550,8 @@
       }
 
       @media (max-width: 992px) {
+        :root { --navbar-h: 86px; }
+
         body {
           padding-top: 86px;
         }
@@ -610,6 +614,8 @@
       }
 
       @media (max-width: 576px) {
+        :root { --navbar-h: 74px; }
+
         #header > .container {
           display: none;
         }
@@ -1299,7 +1305,10 @@
         const observer = new IntersectionObserver(
           (entries) => {
             entries.forEach((entry) => {
-              entry.target.classList.toggle("is-visible", entry.isIntersecting);
+              if (entry.isIntersecting) {
+                entry.target.classList.add("is-visible");
+                observer.unobserve(entry.target);
+              }
             });
           },
           {
