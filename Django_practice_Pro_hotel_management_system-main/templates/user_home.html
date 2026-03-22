@@ -253,8 +253,8 @@ Hotel & Resort
     margin-top: 6px;
   }
 
-  /* Tighten the gap between the service image column and the text-card column */
-  #Service .row {
+  /* Tighten the gap between the specific service image column and the text-card column */
+  #Service .row:has(.col-lg-7):has(.col-lg-5) {
     --bs-gutter-x: 0.75rem;
   }
 
@@ -544,6 +544,11 @@ Hotel & Resort
     letter-spacing: 0.03em;
   }
 
+  /* Hero fullscreen: cancel body padding-top so slides start at y=0 behind the fixed navbar */
+  .hero-slider-shell {
+    margin-top: -100px;
+  }
+
   @media (max-width: 992px) {
     #about .About_info {
       margin-top: 24px;
@@ -816,7 +821,6 @@ Hotel & Resort
   .hero-slider-shell {
     position: relative;
     z-index: 1;
-    margin-top: -100px;
   }
   .hero-slide-1 { background-image: url('{% static 'Allfiles/Photo/slider-1.jpg' %}'); }
   .hero-slide-2 { background-image: url('{% static 'Allfiles/Photo/slider-2.jpg' %}'); }
