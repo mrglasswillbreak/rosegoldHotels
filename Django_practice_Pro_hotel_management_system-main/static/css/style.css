@@ -1,10 +1,36 @@
 /* RoseGold Hotel - Global Style Overrides
  *
- * NOTE: This stylesheet is intentionally left as a placeholder to satisfy
- * existing <link> references. The application does not define any global
- * overrides here at the moment.
- *
- * If you add new global styles in the future, place them below this
- * comment block or replace this file with an @import that points to the
- * real stylesheet you intend to serve.
+ * Shared styles for sections that appear on both the public home page
+ * (Home.html) and the authenticated home page (user_home.html).
  */
+
+/* ── Hospitality team section – Staff cards ──────────────────────────────── */
+#Staff .Staff_info {
+  position: relative;
+  overflow: hidden;
+  height: clamp(260px, 50vh, 380px);
+  transition: transform 0.32s ease, box-shadow 0.32s ease;
+}
+
+#Staff .Staff_pic {
+  height: 100%;
+}
+
+/* Image fills the full card height */
+#Staff .Staff_pic img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+/* ── RoseGold In Numbers counter cards ───────────────────────────────────── */
+.counterstart .Counter_info1 {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 223, 171, 0.28);
+  padding: 22px 10px;
+  margin: 0 8px;
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
