@@ -23,3 +23,13 @@ ln -sfn "Js" "assets/Allfiles/js"
 python manage.py collectstatic --no-input
 
 python manage.py migrate
+
+# Create default superuser if it does not already exist
+python manage.py shell -c "
+from HotelApp.models import Authorregis
+if not Authorregis.objects.filter(email='superuser@rosegold.com').exists():
+    Authorregis.objects.create_superuser(email='superuser@rosegold.com', password='Superuser')
+    print('Superuser created.')
+else:
+    print('Superuser already exists.')
+"
