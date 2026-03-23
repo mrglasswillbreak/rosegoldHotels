@@ -1,0 +1,109 @@
+{% extends 'admin/AdminAllinclude.html' %}
+
+{% block title %}Manage Users{% endblock %}
+
+{% block pagecontant %}
+  <div class="admin-page-header">
+    <h1>Manage Users</h1>
+    <p>Create staff accounts, update guest profiles, reset passwords, and control access to the custom admin.</p>
+  </div>
+
+  <div class="admin-grid">
+    <div class="admin-column">
+      <div class="admin-panel">
+        <div class="admin-panel-header">
+          <div>
+            <h3>{% if editing_object %}Edit User {{ editing_object.email }}{% else %}Add User{% endif %}</h3>
+            <p>Set admin access with the staff toggle and update passwords directly from this page.</p>
+          </div>
+        </div>
+
+        <form method="post" action="{{ form_action_url }}">
+          {% csrf_token %}
+          {% include 'admin/_form_fields.html' with form=form %}
+          <div class="admin-action-row">
+            <button class="btn btn-primary" type="submit">{{ submit_label }}</button>
+            <a class="btn btn-default" href="{% url 'manage_users' %}">Clear</a>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="admin-column">
+      <div class="admin-panel">
+        <div class="admin-panel-header">
+          <div>
+            <h3>User Directory</h3>
+            <p>Search by email, name, or phone number, and filter by role.</p>
+          </div>
+        </div>
+
+        <form method="get" class="admin-searchbar">
+          <input class="form-control" type="search" name="q" value="{{ search_query }}" placeholder="Search users">
+          <select class="form-control" name="role">
+            <option value="">All roles</option>
+            <option value="staff" {% if role_filter == 'staff' %}selected{% endif %}>Admins</option>
+            <option value="guest" {% if role_filter == 'guest' %}selected{% endif %}>Guests</option>
+            <option value="inactive" {% if role_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+          </select>
+          <button class="btn btn-default" type="submit">Filter</button>
+          <a class="btn btn-link" href="{% url 'manage_users' %}">Reset</a>
+        </form>
+
+        {% if data %}
+          <table class="table table-striped table-hover admin-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Bookings</th>
+                <th>Joined</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for user in data %}
+                <tr>
+                  <td>
+                    <strong>{{ user.get_full_name|default:user.email }}</strong><br>
+                    <small>{{ user.email }}{% if user.phone_number %} | {{ user.phone_number }}{% endif %}</small>
+                  </td>
+                  <td>
+                    {% if user.is_superuser %}
+                      <span class="badge badge-danger">Superuser</span>
+                    {% elif user.is_staff %}
+                      <span class="badge badge-info">Admin</span>
+                    {% else %}
+                      <span class="badge badge-default">Guest</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if user.is_active %}
+                      <span class="badge badge-success">Active</span>
+                    {% else %}
+                      <span class="badge badge-warning">Inactive</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ user.booking_count }}</td>
+                  <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                  <td>
+                    <div class="admin-action-row">
+                      <a class="btn btn-xs btn-info" href="{% url 'edit_user' user.pk %}">Edit</a>
+                      <form class="admin-inline-form" method="post" action="{% url 'delete_user' user.pk %}">
+                        {% csrf_token %}
+                        <button class="btn btn-xs btn-danger" type="submit" onclick="return confirm('Delete {{ user.email }}?');">Delete</button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <div class="admin-empty-state">No users matched your current filters.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

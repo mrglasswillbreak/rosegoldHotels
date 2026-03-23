@@ -1,37 +1,274 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <!-- Meta, title, CSS, favicons, etc. -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="icon" href="images/favicon.ico" type="image/ico" />
+    <link rel="icon" href="{% static 'Allfiles/Photo/img.jpg' %}" type="image/ico" />
+    <title>{% block title %}{% endblock %}</title>
 
-    <title>
-      {% block title %}
+    <link rel="stylesheet" href="{% static 'Allfiles/vendors/bootstrap/dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'Allfiles/Css/fontawesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'Allfiles/vendors/font-awesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'Allfiles/vendors/nprogress/nprogress.css' %}">
+    <link rel="stylesheet" href="{% static 'Allfiles/vendors/iCheck/skins/flat/green.css' %}">
+    <link rel="stylesheet" href="{% static 'Allfiles/vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css' %}">
+    <link rel="stylesheet" href="{% static 'Allfiles/vendors/jqvmap/dist/jqvmap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'Allfiles/vendors/bootstrap-daterangepicker/daterangepicker.css' %}">
+    <link rel="stylesheet" href="{% static 'Allfiles/build/css/custom.css' %}">
 
-    {% endblock %}
-    </title>
-      {% load static %}
-    <!-- Bootstrap -->
-    <link rel="stylesheet" href="{%static 'Allfiles/vendors/bootstrap/dist/css/bootstrap.min.css'%}">
-    <!-- Font Awesome -->
-     <link rel="stylesheet" href="{%static 'Allfiles/Css/fontawesome.min.css'%}">
-     <link rel="stylesheet" href="{%static 'Allfiles/vendors/font-awesome/css/font-awesome.min.css'%}">
-    <!-- NProgress -->
-     <link rel="stylesheet" href="{%static 'Allfiles/vendors/nprogress/nprogress.css'%}">
-    <!-- iCheck -->
-     <link rel="stylesheet" href="{%static 'Allfiles/vendors/iCheck/skins/flat/green.css'%}">
+    <style>
+      .admin-modern {
+        background: #f5f7fb;
+      }
 
-    <!-- bootstrap-progressbar -->
-     <link rel="stylesheet" href="{%static 'Allfiles/vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css'%}">
-    <!-- JQVMap -->
-     <link rel="stylesheet" href="{%static 'Allfiles/vendors/jqvmap/dist/jqvmap.min.css'%}">
-    <!-- bootstrap-daterangepicker -->
-     <link rel="stylesheet" href="{%static 'Allfiles/vendors/bootstrap-daterangepicker/daterangepicker.css'%}">
-    <!-- Custom Theme Style -->
-      <link rel="stylesheet" href="{%static 'Allfiles/build/css/custom.css'%}">
+      .admin-modern .left_col {
+        background: linear-gradient(180deg, #1f2a44 0%, #101827 100%);
+      }
+
+      .admin-modern .nav_title {
+        background: transparent;
+      }
+
+      .admin-modern .site_title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #fff !important;
+      }
+
+      .admin-modern .profile {
+        padding: 16px 18px 0;
+      }
+
+      .admin-modern .profile_info h2,
+      .admin-modern .user-profile,
+      .admin-modern .menu_section h3,
+      .admin-modern .side-menu > li > a,
+      .admin-modern .nav.child_menu > li > a {
+        color: #f8fafc !important;
+      }
+
+      .admin-modern .side-menu > li.active > a,
+      .admin-modern .side-menu > li.current-page > a,
+      .admin-modern .side-menu > li > a:hover,
+      .admin-modern .nav.child_menu > li.current-page a,
+      .admin-modern .nav.child_menu > li a:hover {
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .admin-page-wrap {
+        padding: 24px 24px 40px;
+      }
+
+      .admin-page-header {
+        background: #fff;
+        border-radius: 16px;
+        padding: 24px 28px;
+        margin-bottom: 24px;
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+      }
+
+      .admin-page-header h1,
+      .admin-page-header h2 {
+        margin: 0 0 6px;
+        color: #111827;
+        font-weight: 700;
+      }
+
+      .admin-page-header p {
+        margin: 0;
+        color: #6b7280;
+      }
+
+      .admin-stat-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+        margin-bottom: 24px;
+      }
+
+      .admin-stat-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 20px 22px;
+        min-width: 180px;
+        flex: 1 1 180px;
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+      }
+
+      .admin-stat-card .label {
+        display: inline-block;
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #64748b;
+        margin-bottom: 10px;
+        padding: 0;
+      }
+
+      .admin-stat-card .value {
+        display: block;
+        font-size: 30px;
+        line-height: 1.1;
+        font-weight: 700;
+        color: #111827;
+      }
+
+      .admin-stat-card .meta {
+        display: block;
+        margin-top: 8px;
+        color: #64748b;
+      }
+
+      .admin-panel {
+        background: #fff;
+        border-radius: 16px;
+        padding: 22px 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+      }
+
+      .admin-panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+
+      .admin-panel-header h3 {
+        margin: 0;
+        color: #111827;
+        font-size: 22px;
+        font-weight: 700;
+      }
+
+      .admin-panel-header p {
+        margin: 0;
+        color: #6b7280;
+      }
+
+      .admin-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+      }
+
+      .admin-grid > .admin-column {
+        flex: 1 1 420px;
+      }
+
+      .admin-searchbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+
+      .admin-searchbar .form-control {
+        min-width: 200px;
+      }
+
+      .admin-action-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .admin-table {
+        width: 100%;
+      }
+
+      .admin-table th {
+        white-space: nowrap;
+        background: #f8fafc;
+      }
+
+      .admin-table td,
+      .admin-table th {
+        vertical-align: middle !important;
+      }
+
+      .admin-table .badge {
+        font-size: 12px;
+      }
+
+      .admin-quick-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .admin-quick-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 16px;
+        border-radius: 12px;
+        background: #f8fafc;
+        color: #1f2937;
+        text-decoration: none;
+      }
+
+      .admin-quick-link:hover {
+        background: #e5eefb;
+        color: #0f172a;
+        text-decoration: none;
+      }
+
+      .admin-form-section .helptext {
+        display: block;
+        margin-top: 6px;
+        color: #6b7280;
+        font-size: 12px;
+      }
+
+      .admin-form-section .errorlist {
+        margin: 8px 0 0;
+        padding-left: 18px;
+        color: #c0392b;
+      }
+
+      .admin-checkbox {
+        width: 18px;
+        height: 18px;
+        vertical-align: middle;
+      }
+
+      .admin-thumbnail {
+        width: 56px;
+        height: 56px;
+        object-fit: cover;
+        border-radius: 12px;
+        background: #e5e7eb;
+      }
+
+      .admin-empty-state {
+        padding: 20px;
+        text-align: center;
+        color: #64748b;
+        border: 1px dashed #cbd5e1;
+        border-radius: 12px;
+      }
+
+      .admin-inline-form {
+        display: inline;
+      }
+
+      @media (max-width: 767px) {
+        .admin-page-wrap {
+          padding: 16px 16px 32px;
+        }
+
+        .admin-page-header,
+        .admin-panel,
+        .admin-stat-card {
+          padding: 18px;
+        }
+      }
+    </style>
   </head>
 
   <body class="nav-md admin-modern">
@@ -40,200 +277,158 @@
         <div class="col-md-3 left_col">
           <div class="left_col scroll-view">
             <div class="navbar nav_title" style="border: 0;">
-              <a href="{% url 'home' %}" class="site_title"><i class="fa fa-paw"></i> <span>Lucia Hotel</span></a>
+              <a href="{% url 'dashboard' %}" class="site_title"><i class="fa fa-building"></i> <span>RoseGold Admin</span></a>
             </div>
 
             <div class="clearfix"></div>
 
-            <!-- menu profile quick info -->
             <div class="profile clearfix">
               <div class="profile_pic">
-
-                <img src="{%static 'Allfiles/Photo/img.jpg'%}" alt="..." class="img-circle profile_img">
+                <img src="{% static 'Allfiles/Photo/img.jpg' %}" alt="..." class="img-circle profile_img">
               </div>
               <div class="profile_info">
-                <span>Welcome,</span>
-                <h2>John Doe</h2>
+                <span>Signed in as</span>
+                <h2>{{ request.user.get_full_name|default:request.user.email }}</h2>
               </div>
             </div>
-            <!-- /menu profile quick info -->
 
             <br />
 
-            <!-- sidebar menu -->
             <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
               <div class="menu_section">
-                <h3>General</h3>
+                <h3>Operations</h3>
                 <ul class="nav side-menu">
-                  <li><a><i class="fa fa-home"></i> Home <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
-                    </ul>
+                  <li class="{% if active_admin_section == 'dashboard' %}current-page{% endif %}">
+                    <a href="{% url 'dashboard' %}"><i class="fa fa-dashboard"></i> Dashboard</a>
                   </li>
-                  <li><a><i class="fa fa-edit"></i> Customers Booking <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      <li><a href="{% url 'add_customer' %}">All Customers</a></li>
-                      <li><a href="{% url 'add_customer' %}">Add Customers</a></li>
-                    </ul>
+                  <li class="{% if active_admin_section == 'online_bookings' %}current-page{% endif %}">
+                    <a href="{% url 'online_booking_list' %}"><i class="fa fa-globe"></i> Online Bookings</a>
                   </li>
-                   <li><a href="{% url 'online_booking_list' %}"><i class="fa fa-edit"></i> Online Booking <span class="fa fa-chevron-down"></span></a>
-
+                  <li class="{% if active_admin_section == 'offline_bookings' %}current-page{% endif %}">
+                    <a href="{% url 'add_customer' %}"><i class="fa fa-bed"></i> Desk Bookings</a>
                   </li>
-                  <li><a><i class="fa fa-desktop"></i> Rooms <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      <li><a href="{% url 'add_room' %}">All Rooms</a></li>
-                      <li><a href="{% url 'add_room' %}">Add Rooms</a></li>
-                    </ul>
+                  <li class="{% if active_admin_section == 'rooms' %}current-page{% endif %}">
+                    <a href="{% url 'add_room' %}"><i class="fa fa-home"></i> Rooms</a>
                   </li>
-                   <li><a><i class="fa fa-edit"></i> Employees <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      <li><a href="{% url 'add_employee' %}">All Employees</a></li>
-                      <li><a href="{% url 'add_employee' %}">Add Employees</a></li>
-                    </ul>
+                  <li class="{% if active_admin_section == 'employees' %}current-page{% endif %}">
+                    <a href="{% url 'add_employee' %}"><i class="fa fa-users"></i> Employees</a>
                   </li>
-                   <li><a><i class="fa fa-edit"></i>Employee Salary <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      <li><a href="{% url 'add_salary' %}">Add Employer Salary </a></li>
-                    </ul>
+                  <li class="{% if active_admin_section == 'salaries' %}current-page{% endif %}">
+                    <a href="{% url 'add_salary' %}"><i class="fa fa-money"></i> Salaries</a>
                   </li>
-
+                  <li class="{% if active_admin_section == 'users' %}current-page{% endif %}">
+                    <a href="{% url 'manage_users' %}"><i class="fa fa-user-circle"></i> Users</a>
+                  </li>
                 </ul>
               </div>
+
               <div class="menu_section">
-                <h3>Live On</h3>
+                <h3>Shortcuts</h3>
                 <ul class="nav side-menu">
+                  <li><a href="{% url 'home' %}"><i class="fa fa-external-link"></i> Public Website</a></li>
+                  <li><a href="/admin/"><i class="fa fa-cogs"></i> Django Admin</a></li>
                 </ul>
               </div>
-
             </div>
-            <!-- /sidebar menu -->
 
-            <!-- /menu footer buttons -->
             <div class="sidebar-footer hidden-small">
-              <a data-toggle="tooltip" data-placement="top" title="Settings">
-                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+              <a data-toggle="tooltip" data-placement="top" title="Dashboard" href="{% url 'dashboard' %}">
+                <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
               </a>
-              <a data-toggle="tooltip" data-placement="top" title="FullScreen">
-                <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
+              <a data-toggle="tooltip" data-placement="top" title="Website" href="{% url 'home' %}">
+                <span class="glyphicon glyphicon-new-window" aria-hidden="true"></span>
               </a>
-              <a data-toggle="tooltip" data-placement="top" title="Lock">
-                <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
+              <a data-toggle="tooltip" data-placement="top" title="Users" href="{% url 'manage_users' %}">
+                <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
               </a>
-              <a data-toggle="tooltip" data-placement="top" title="Logout" href="login.html">
+              <a data-toggle="tooltip" data-placement="top" title="Logout" href="{% url 'auth_logout' %}">
                 <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
               </a>
             </div>
-            <!-- /menu footer buttons -->
           </div>
         </div>
 
-        <!-- top navigation -->
         <div class="top_nav">
           <div class="nav_menu">
-              <div class="nav toggle">
-                <a id="menu_toggle"><i class="fa fa-bars"></i></a>
-              </div>
-              <nav class="nav navbar-nav">
-              <ul class=" navbar-right">
+            <div class="nav toggle">
+              <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+            </div>
+            <nav class="nav navbar-nav">
+              <ul class="nav navbar-right">
                 <li class="nav-item dropdown open" style="padding-left: 15px;">
                   <a href="javascript:;" class="user-profile dropdown-toggle" aria-haspopup="true" id="navbarDropdown" data-toggle="dropdown" aria-expanded="false">
-                    <img src="{%static 'Allfiles/Photo/img.jpg'%}" alt="">John Doe
+                    <img src="{% static 'Allfiles/Photo/img.jpg' %}" alt="">{{ request.user.get_full_name|default:request.user.email }}
                   </a>
                   <div class="dropdown-menu dropdown-usermenu pull-right" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item"  href="javascript:;"> Profile</a>
-                      <a class="dropdown-item"  href="javascript:;">
-                        <span class="badge bg-red pull-right">50%</span>
-                        <span>Settings</span>
-                      </a>
-                  <a class="dropdown-item"  href="javascript:;">Help</a>
-                    <a class="dropdown-item"  href="{% url 'auth_logout' %}"><i class="fa fa-sign-out pull-right"></i> Log Out</a>
+                    <a class="dropdown-item" href="{% url 'manage_users' %}">Manage Users</a>
+                    <a class="dropdown-item" href="{% url 'dashboard' %}">Dashboard</a>
+                    <a class="dropdown-item" href="{% url 'auth_logout' %}"><i class="fa fa-sign-out pull-right"></i> Log Out</a>
                   </div>
-                </li>
-
-                <li role="presentation" class="nav-item dropdown open">
-                  <a href="javascript:;" class="dropdown-toggle info-number" id="navbarDropdown1" data-toggle="dropdown" aria-expanded="false">
-                    <i class="fa fa-envelope-o"></i>
-                    <span class="badge bg-green">6</span>
-                  </a>
-
                 </li>
               </ul>
             </nav>
           </div>
         </div>
-        <!-- /top navigation -->
-          <div class="admin-page-wrap">
-          {% block  pagecontant %}
 
-        {% endblock %}
-          </div>
+        <div class="admin-page-wrap">
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade in" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">x</span></button>
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
 
+          {% block pagecontant %}{% endblock %}
+        </div>
+      </div>
+    </div>
 
+    <script src="{% static 'Allfiles/vendors/jquery/dist/jquery.min.js' %}"></script>
+    <script src="{% static 'Allfiles/vendors/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'Allfiles/vendors/fastclick/lib/fastclick.js' %}"></script>
+    <script src="{% static 'Allfiles/vendors/nprogress/nprogress.js' %}"></script>
+    <script src="{% static 'Allfiles/vendors/Chart.js/dist/Chart.min.js' %}"></script>
+    <script src="{% static 'Allfiles/vendors/gauge.js/dist/gauge.min.js' %}"></script>
+    <script src="{% static 'Allfiles/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js' %}"></script>
+    <script src="{% static 'Allfiles/vendors/iCheck/icheck.min.js' %}"></script>
+    <script src="{% static 'Allfiles/vendors/skycons/skycons.js' %}"></script>
+    <script src="{% static 'Allfiles/vendors/Flot/jquery.flot.js' %}"></script>
+    <script src="{% static 'Allfiles/vendors/Flot/jquery.flot.pie.js' %}"></script>
+    <script src="{% static 'Allfiles/vendors/Flot/jquery.flot.time.js' %}"></script>
+    <script src="{% static 'Allfiles/vendors/Flot/jquery.flot.stack.js' %}"></script>
+    <script src="{% static 'Allfiles/vendors/Flot/jquery.flot.resize.js' %}"></script>
+    <script src="{% static 'Allfiles/vendors/flot.orderbars/js/jquery.flot.orderBars.js' %}"></script>
+    <script src="{% static 'Allfiles/vendors/flot-spline/js/jquery.flot.spline.min.js' %}"></script>
+    <script src="{% static 'Allfiles/vendors/flot.curvedlines/curvedLines.js' %}"></script>
+    <script src="{% static 'Allfiles/vendors/DateJS/build/date.js' %}"></script>
+    <script src="{% static 'Allfiles/vendors/jqvmap/dist/jquery.vmap.js' %}"></script>
+    <script src="{% static 'Allfiles/vendors/jqvmap/dist/maps/jquery.vmap.world.js' %}"></script>
+    <script src="{% static 'Allfiles/vendors/jqvmap/examples/js/jquery.vmap.sampledata.js' %}"></script>
+    <script src="{% static 'Allfiles/vendors/moment/min/moment.min.js' %}"></script>
+    <script src="{% static 'Allfiles/vendors/bootstrap-daterangepicker/daterangepicker.js' %}"></script>
 
-    <!-- jQuery -->
-          <script src="{%static 'Allfiles/vendors/jquery/dist/jquery.min.js'%}"></script>
-    <!-- Bootstrap -->
-          <script src="{%static 'Allfiles/vendors/bootstrap/dist/js/bootstrap.bundle.min.js'%}"></script>
-    <!-- FastClick -->
-          <script src="{%static 'Allfiles/vendors/fastclick/lib/fastclick.js'%}"></script>
-    <!-- NProgress -->
-          <script src="{%static 'Allfiles/vendors/nprogress/nprogress.js'%}"></script>
-    <!-- Chart.js -->
-          <script src="{%static 'Allfiles/vendors/Chart.js/dist/Chart.min.js'%}"></script>
+    <script>
+      (function () {
+        function wrapTablesForMobile() {
+          var tables = document.querySelectorAll('.admin-page-wrap table');
+          tables.forEach(function (table) {
+            if (table.closest('.table-responsive')) return;
+            var wrapper = document.createElement('div');
+            wrapper.className = 'table-responsive';
+            table.parentNode.insertBefore(wrapper, table);
+            wrapper.appendChild(table);
+          });
+        }
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', wrapTablesForMobile);
+        } else {
+          wrapTablesForMobile();
+        }
+      })();
+    </script>
 
-    <!-- gauge.js -->
-        <script src="{%static 'Allfiles/vendors/gauge.js/dist/gauge.min.js'%}"></script>
-    <!-- bootstrap-progressbar -->
-          <script src="{%static 'Allfiles/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js'%}"></script>
-    <!-- iCheck -->
-          <script src="{%static 'Allfiles/vendors/iCheck/icheck.min.js'%}"></script>
-    <!-- Skycons -->
-          <script src="{%static 'Allfiles/vendors/skycons/skycons.js'%}"></script>
-    <!-- Flot -->
-          <script src="{%static 'Allfiles/vendors/Flot/jquery.flot.js'%}"></script>
-          <script src="{%static 'Allfiles/vendors/Flot/jquery.flot.pie.js'%}"></script>
-          <script src="{%static 'Allfiles/vendors/Flot/jquery.flot.time.js'%}"></script>
-          <script src="{%static 'Allfiles/vendors/Flot/jquery.flot.stack.js'%}"></script>
-          <script src="{%static 'Allfiles/vendors/Flot/jquery.flot.resize.js'%}"></script>
-    <!-- Flot plugins -->
-          <script src="{%static 'Allfiles/vendors/flot.orderbars/js/jquery.flot.orderBars.js'%}"></script>
-          <script src="{%static 'Allfiles/vendors/flot-spline/js/jquery.flot.spline.min.js'%}"></script>
-          <script src="{%static 'Allfiles/vendors/flot.curvedlines/curvedLines.js'%}"></script>
-    <!-- DateJS -->
-          <script src="{%static 'Allfiles/vendors/DateJS/build/date.js'%}"></script>
-    <!-- JQVMap -->
-          <script src="{%static 'Allfiles/vendors/jqvmap/dist/jquery.vmap.js'%}"></script>
-          <script src="{%static 'Allfiles/vendors/jqvmap/dist/maps/jquery.vmap.world.js'%}"></script>
-          <script src="{%static 'Allfiles/vendors/jqvmap/examples/js/jquery.vmap.sampledata.js'%}"></script>
-    <!-- bootstrap-daterangepicker -->
-         <script src="{%static 'Allfiles/vendors/moment/min/moment.min.js'%}"></script>
-        <script src="{%static 'Allfiles/vendors/bootstrap-daterangepicker/daterangepicker.js'%}"></script>
-
-     <script>
-       (function () {
-         function wrapTablesForMobile() {
-           var tables = document.querySelectorAll('.right_col table');
-           tables.forEach(function (table) {
-             if (table.closest('.table-responsive')) return;
-             var wrapper = document.createElement('div');
-             wrapper.className = 'table-responsive';
-             table.parentNode.insertBefore(wrapper, table);
-             wrapper.appendChild(table);
-           });
-         }
-         if (document.readyState === 'loading') {
-           document.addEventListener('DOMContentLoaded', wrapTablesForMobile);
-         } else {
-           wrapTablesForMobile();
-         }
-       })();
-     </script>
-
-     <!-- Custom Theme Scripts -->
-        <script src="{%static 'Allfiles/build/js/custom.min.js'%}"></script>
-
-
-
+    <script src="{% static 'Allfiles/build/js/custom.min.js' %}"></script>
   </body>
-
 </html>

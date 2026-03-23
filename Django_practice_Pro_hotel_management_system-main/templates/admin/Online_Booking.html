@@ -1,232 +1,91 @@
-{%extends 'admin/AdminAllinclude.html'%}
-{% block title %}
- Online Customers Booking
-{% endblock %}
-  {% block  pagecontant %}
-     {% load static %}
-         <!-- page content -->
-      <!--************************************
-			Table part start
-		*************************************-->
+{% extends 'admin/AdminAllinclude.html' %}
 
-    <div class="right_col" role="main">
-        <div class="row">
-            <div class ="col-lg-12" style="background:gray;">
+{% block title %}Manage Online Bookings{% endblock %}
 
-                 <div class ="col-lg-6">
-                     <div class="add_student">
-                        <h2 >All Online Booking Customers</h2>
-                     </div>
-                 </div>
-                <div class ="col-lg-6">
-                    <div class="add_student_link">
-                        <a href="{% url 'dashboard' %}">Home</a> <i class="fas fa-angle-right"></i> <a href="#">Online Booking</a>
-                     </div>
-                 </div>
-            </div>
-        </div>
-          <div class="row" style="margin-top:10px;">
-              <div class="col-lg-12">
-                  <div class="table_menu">
-                      <!-- Nav tabs -->
-                        <ul class="nav nav-tabs" role="tablist">
-                          <li class="active"><a href="#List_View" role="tab" data-toggle="tab">List View</a></li>
-                          <li ><a href="#Grid_view" role="tab" data-toggle="tab">Grid view</a></li>
-                        </ul>
-                        <!-- Tab panes -->
-                        <div class="tab-content">
-                          <div class="tab-pane active" id="List_View">
-                              <div class="col-lg-12">
-                                  <div class="table_tilte">
-                                      <h4>Online Booking Customers List</h4>
-                                  </div>
-                              </div>
-                              <div class="col-lg-12">
-                                  <div class="table_info11">
-                                      <form action="" method="post" enctype="multipart/form-data">
-                                          {% csrf_token %}
-                                          <div class="form-group table_info_btn">
-                                               <label class="form-label">Show</label>
-                                               <select class="form-control">
-                                                   <option value="Class">15</option>
-                                                   <option value="html">25</option>
-                                                   <option value="css">50</option>
-                                                   <option value="javascript">75</option>
-                                                   <option value="angular">100</option>
-                                               </select>
-                                            </div>
-                                          <div class="form-group table_info_btn1" >
-                                              <select class="form-control">
-                                               <option value="Select Country<">Select Country</option>
-                                               <option value="Uk">Uk</option>
-                                               <option value="Canada">Canada</option>
-                                               <option value="Bangladesh">Bangladesh</option>
-                                               <option value="Pakistan">Pakistan</option>
-                                              </select>
-                                        </div>
-                                          <div class="table_info_btn2">
-                                             <div class="form-group">
-                                               <input type="search" name="search" class="form-control" placeholder="" required>
-                                           </div>
-                                         </div>
-                                        <div class="table_info_btn3">
-                                            <div class="form_btn2">
-                                               <button type="submit">Search</button>
-                                            </div>
-                                            <div class="form_btn2">
-                                              <button type="submit">Show All</button>
-                                           </div>
-                                         </div>
-                                      </form>
-                                  </div>
-                              </div>
-                              <div class="col-lg-12 form_table1" >
-                                      <div id="example" class="example table-wrapper-scroll-y my-custom-scrollbar">
-                                        <table  class="table-bordered table-striped">
-                                          <tr>
-                                              <th>Id</th>
-                                                <th>Check in</th>
-                                            <th>Check out</th>
-                                            <th>Adult</th>
-                                            <th>Children</th>
-                                            <th>Name</th>
-                                            <th>Surname</th>
-                                              <th>Email</th>
-                                            <th>Phone Number</th>
-                                              <th>City</th>
-                                            <th>Country</th>
-                                              <th>Nid No</th>
-                                               <th>img</th>
-                                              <th>Messege</th>
-                                               <th>Action</th>
-                                          </tr>
-                                            {%if data %}
+{% block pagecontant %}
+  <div class="admin-page-header">
+    <h1>Manage Online Bookings</h1>
+    <p>Review, create, and update bookings submitted from the public website.</p>
+  </div>
 
-                                        {% for i in data %}
-                                         <tr>
-                                              <td>{{i.Id}}</td>
-                                              <td>{{i.Check_in}}</td>
-                                              <td>{{i.Check_out}}</td>
-                                              <td>{{i.ADULT}}</td>
-                                              <td>{{i.CHILDREN}}</td>
-                                              <td>{{i.Name}}</td>
-                                              <td>{{i.Surname}}</td>
-                                              <td>{{i.Email}}</td>
-                                              <td>{{i.Phone_Number}}</td>
-                                              <td>{{i.City}}</td>
-                                              <td>{{i.Country}}</td>
-                                              <td>{{i.Nid_No}}</td>
-                                              <td>{{i.Img}}</td>
-                                              <td>{{i.Address}}</td>
-                                              <td class="action">
-                                                   <a  href="{% url 'delete' id=i.Id%}">Delete</a>
-                                                   <a  href="{% url 'Edit_online_Booking' id=i.Id%}">Update</a>
-                                              </td>
-                                         </tr>
-                                        {%endfor%}
-
-                                        {% endif %}
-                                        </table>
-                                    </div>
-                              </div>
-                          </div>
-                          <div class="tab-pane" id="Grid_view">
-                               <div class="col-lg-12">
-                                  <div class="table_info11">
-                                      <form method="post" action="">
-                                          {% csrf_token %}
-                                          <div class="form-group table_info_btn">
-                                               <label class="form-label">Show</label>
-                                               <select class="form-control" name="">
-                                                   <option value="Class">15</option>
-                                                   <option value="html">25</option>
-                                                   <option value="css">50</option>
-                                                   <option value="javascript">75</option>
-                                                   <option value="angular">100</option>
-                                               </select>
-                                            </div>
-                                          <div class="form-group table_info_btn1" >
-                                              <select class="form-control" name="dept">
-                                               <option value="Class">Select Options</option>
-                                               <option value="html">CSE</option>
-                                               <option value="css">EEE</option>
-                                               <option value="javascript">LLB</option>
-                                               <option value="angular">BBA</option>
-                                              </select>
-                                        </div>
-                                          <div class="table_info_btn2">
-                                             <div class="form-group">
-                                               <input type="search" name="serch" class="form-control" placeholder="" required>
-                                           </div>
-                                         </div>
-                                        <div class="table_info_btn3">
-                                            <div class="form_btn2">
-                                               <button type="submit">Search</button>
-                                            </div>
-                                            <div class="form_btn2">
-                                              <button type="submit">Show All</button>
-                                           </div>
-                                         </div>
-                                      </form>
-                                  </div>
-                              </div>
-                              <div class="col-lg-12 table-wrapper-scroll-y my-custom-scrollbar Grid_view_pic">
-                                     {%if data %}
-
-                                    {% for i in data %}
-                                     <div class="col-lg-4 Grid_view_pic_info" >
-                                          <div class="Grid_view_top">
-                                              <p> <span class="hover_icon"><i class="fas fa-ellipsis-h"></i></span>
-                                                 <div class="del_Edit">
-                                                   <a href="{% url 'Edit_online_Booking' id=i.Id%}"> <i class="fas fa-user-edit"></i></a>
-                                                   <a href="{% url 'delete' id=i.Id%}"><i class="fas fa-trash-alt"></i></a>
-                                                </div>
-                                              </p>
-                                               {%if i.Img %}
-                                               <img src="{{i.Img.url}}" alt="img">
-                                               {% endif %}
-                                              <h4>{{i.Name}} {{i.Surname}}</h4>
-                                              <h6>{{i.Phone_Number}}</h6>
-                                          </div>
-                                           <div class="Grid_view_botton">
-                                                    <div class="Grid_view_botton_info">
-                                                        <h5>Check in:</h5>
-                                                        <p>{{i.Check_in}}</p>
-                                                    </div>
-                                                      <div class="Grid_view_botton_info">
-                                                          <h5>Check out:</h5>
-                                                          <p>{{i.Check_out}}</p>
-                                                      </div>
-                                                      <div class="Grid_view_botton_info">
-                                                          <h5 >Email:</h5>
-                                                          <p>{{i.Email}}</p>
-                                                      </div>
-                                                      <div class="Grid_view_botton_info">
-                                                          <h5>Nid No:</h5>
-                                                          <p>{{i.Nid_No}}</p>
-                                                      </div>
-                                                       <div class="Grid_view_botton_info">
-                                                           <h5>Adult:</h5>
-                                                           <p>{{i.ADULT}}</p>
-                                                       </div>
-                                                     <div class="Grid_view_botton_info">
-                                                         <h5>Children:</h5>
-                                                         <p>{{i.CHILDREN}}</p>
-                                                     </div>
-                                           </div>
-                                  </div>
-                                    {%endfor%}
-
-                                  {% endif %}
-                                  <div class="col-lg-4">
-                                  
-
-                                  </div>
-                              </div>
-                          </div>
-                        </div>
-                  </div>
-              </div>
+  <div class="admin-grid">
+    <div class="admin-column">
+      <div class="admin-panel">
+        <div class="admin-panel-header">
+          <div>
+            <h3>{% if editing_object %}Edit Online Booking{% else %}Add Online Booking{% endif %}</h3>
+            <p>Admins can create bookings on behalf of users and keep room allocation accurate.</p>
           </div>
+        </div>
+
+        <form method="post" action="{{ form_action_url }}">
+          {% csrf_token %}
+          {% include 'admin/_form_fields.html' with form=form %}
+          <div class="admin-action-row">
+            <button class="btn btn-primary" type="submit">{{ submit_label }}</button>
+            <a class="btn btn-default" href="{% url 'online_booking_list' %}">Clear</a>
+          </div>
+        </form>
+      </div>
     </div>
- {% endblock %}
+
+    <div class="admin-column">
+      <div class="admin-panel">
+        <div class="admin-panel-header">
+          <div>
+            <h3>Online Booking List</h3>
+            <p>Search by user email, guest name, room number, city, country, or address.</p>
+          </div>
+        </div>
+
+        <form method="get" class="admin-searchbar">
+          <input class="form-control" type="search" name="q" value="{{ search_query }}" placeholder="Search online bookings">
+          <button class="btn btn-default" type="submit">Search</button>
+          <a class="btn btn-link" href="{% url 'online_booking_list' %}">Reset</a>
+        </form>
+
+        {% if data %}
+          <table class="table table-striped table-hover admin-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Room</th>
+                <th>Stay</th>
+                <th>Guests</th>
+                <th>Location</th>
+                <th>Created</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for booking in data %}
+                <tr>
+                  <td>
+                    <strong>{{ booking.user.get_full_name|default:booking.user.email }}</strong><br>
+                    <small>{{ booking.user.email }}</small>
+                  </td>
+                  <td>{{ booking.room.room_number }}</td>
+                  <td>{{ booking.check_in }} to {{ booking.check_out }}</td>
+                  <td>{{ booking.adults }} adults / {{ booking.children }} children</td>
+                  <td>{{ booking.city }}, {{ booking.country }}</td>
+                  <td>{{ booking.created_at|date:"M d, Y" }}</td>
+                  <td>
+                    <div class="admin-action-row">
+                      <a class="btn btn-xs btn-info" href="{% url 'edit_online_booking' booking.pk %}">Edit</a>
+                      <form class="admin-inline-form" method="post" action="{% url 'delete_online_booking' booking.pk %}">
+                        {% csrf_token %}
+                        <button class="btn btn-xs btn-danger" type="submit" onclick="return confirm('Delete this online booking?');">Delete</button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <div class="admin-empty-state">No online bookings matched your search.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

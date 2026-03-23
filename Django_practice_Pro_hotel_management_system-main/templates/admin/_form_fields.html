@@ -1,0 +1,28 @@
+{% if form.non_field_errors %}
+  <div class="alert alert-danger">
+    {% for error in form.non_field_errors %}
+      <div>{{ error }}</div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<div class="row admin-form-section">
+  {% for field in form %}
+    <div class="{% if field.field.widget.input_type == 'checkbox' %}col-xs-12{% elif field.field.widget.input_type == 'file' or field.name == 'address' or field.name == 'facility' %}col-xs-12{% else %}col-sm-6{% endif %}">
+      <div class="form-group">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        <div>{{ field }}</div>
+        {% if field.help_text %}
+          <small class="helptext">{{ field.help_text }}</small>
+        {% endif %}
+        {% if field.errors %}
+          <div class="text-danger">
+            {% for error in field.errors %}
+              <div>{{ error }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  {% endfor %}
+</div>

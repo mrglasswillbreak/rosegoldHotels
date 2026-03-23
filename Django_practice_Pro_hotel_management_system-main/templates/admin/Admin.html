@@ -1,420 +1,379 @@
-{%extends 'admin/AdminAllinclude.html'%}
-{% block title %}
- Authority Admin panel
-{% endblock %}
- {% block  pagecontant %}
+{% extends 'admin/AdminAllinclude.html' %}
 
-<!-- page content -->
-        <div class="right_col" role="main">
-          <!-- top tiles -->
-          <div class="row" style="display: inline-block;" >
-          <div class="tile_count">
-            <div class="col-md-2 col-sm-4  tile_stats_count">
-              <span class="count_top"><i class="fa fa-user"></i> Total Booking</span>
-              <div class="count">1500</div>
-              <span class="count_bottom"><i class="green">4% </i> From last Week</span>
-            </div>
-            <div class="col-md-2 col-sm-4  tile_stats_count">
-              <span class="count_top"><i class="fa fa-user"></i>New Customers</span>
-              <div class="count">700</div>
-              <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>3% </i> From last Week</span>
-            </div>
-            <div class="col-md-2 col-sm-4  tile_stats_count">
-              <span class="count_top"><i class="fa fa-user"></i> Total Staff</span>
-              <div class="count green">100</div>
-              <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>34% </i> From last Week</span>
-            </div>
-            <div class="col-md-2 col-sm-4  tile_stats_count">
-              <span class="count_top"><i class="fa fa-user"></i> Rooms Available</span>
-              <div class="count">230</div>
-              <span class="count_bottom"><i class="red"><i class="fa fa-sort-desc"></i>12% </i> From last Week</span>
-            </div>
-            <div class="col-md-2 col-sm-4  tile_stats_count">
-              <span class="count_top"><i class="fa fa-user"></i> Check In</span>
-              <div class="count">200</div>
-              <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>34% </i> From last Week</span>
-            </div>
-            <div class="col-md-2 col-sm-4  tile_stats_count">
-              <span class="count_top"><i class="fa fa-user"></i>Check Out</span>
-              <div class="count">100</div>
-              <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>90% </i> From last Week</span>
-            </div>
+{% block title %}Custom Admin Dashboard{% endblock %}
+
+{% block pagecontant %}
+  <div class="admin-page-header">
+    <h1>Custom Admin Dashboard</h1>
+    <p>Live operational overview of rooms, bookings, users, employees, and revenue across the hotel system.</p>
+  </div>
+
+  <div class="admin-stat-grid">
+    <div class="admin-stat-card">
+      <span class="label">Total Bookings</span>
+      <span class="value">{{ stats.total_bookings }}</span>
+      <span class="meta">{{ stats.online_bookings }} online and {{ stats.offline_bookings }} desk bookings</span>
+    </div>
+    <div class="admin-stat-card">
+      <span class="label">Room Availability</span>
+      <span class="value">{{ stats.rooms_available }}</span>
+      <span class="meta">{{ stats.occupied_rooms }} occupied rooms, {{ stats.occupancy_rate }}% occupancy</span>
+    </div>
+    <div class="admin-stat-card">
+      <span class="label">Users</span>
+      <span class="value">{{ stats.users }}</span>
+      <span class="meta">{{ stats.staff_users }} admins managing {{ stats.employees }} employees</span>
+    </div>
+    <div class="admin-stat-card">
+      <span class="label">Arrivals Today</span>
+      <span class="value">{{ stats.check_ins_today }}</span>
+      <span class="meta">{{ stats.check_outs_today }} departures expected today</span>
+    </div>
+    <div class="admin-stat-card">
+      <span class="label">Booking Revenue</span>
+      <span class="value">${{ stats.estimated_revenue|floatformat:2 }}</span>
+      <span class="meta">Estimated from current recorded bookings</span>
+    </div>
+    <div class="admin-stat-card">
+      <span class="label">Salary Budget</span>
+      <span class="value">${{ stats.monthly_salary_budget|floatformat:2 }}</span>
+      <span class="meta">Current total salary records in the system</span>
+    </div>
+  </div>
+
+  <div class="admin-grid">
+    <div class="admin-column">
+      <div class="admin-panel">
+        <div class="admin-panel-header">
+          <div>
+            <h3>Booking Trend</h3>
+            <p>Combined online and desk bookings added in the last six months.</p>
           </div>
         </div>
-          <!-- /top tiles -->
+        <canvas id="bookingTrendChart" height="110"></canvas>
+      </div>
+    </div>
 
-          <div class="row">
-            <div class="col-md-12 col-sm-12 ">
-              <div class="dashboard_graph">
-
-                <div class="row x_title">
-                  <div class="col-md-6">
-                    <h3>Hotel Survey</h3>
-                  </div>
-                  <div class="col-md-6">
-                    <div id="reportrange" class="pull-right" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
-                      <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
-                      <span>December 30, 2020- January 28, 2020</span> <b class="caret"></b>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="col-md-9 col-sm-9 ">
-                  <div id="chart_plot_01" class="demo-placeholder"></div>
-                </div>
-                <div class="col-md-3 col-sm-3  bg-white">
-                  <div class="x_title">
-                    <h2>Top Campaign Performance</h2>
-                    <div class="clearfix"></div>
-                  </div>
-
-                  <div class="col-md-12 col-sm-12 ">
-                    <div>
-                      <p>Total Booking</p>
-                      <div class="">
-                        <div class="progress progress_sm" style="width: 76%;">
-                          <div class="progress-bar bg-green" role="progressbar" data-transitiongoal="80"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div>
-                      <p>New Customers</p>
-                      <div class="">
-                        <div class="progress progress_sm" style="width: 76%;">
-                          <div class="progress-bar bg-green" role="progressbar" data-transitiongoal="60"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-12 col-sm-12 ">
-                    <div>
-                      <p>Customer Ratings</p>
-                      <div class="">
-                        <div class="progress progress_sm" style="width: 76%;">
-                          <div class="progress-bar bg-green" role="progressbar" data-transitiongoal="40"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div>
-                      <p>Rooms Available</p>
-                      <div class="">
-                        <div class="progress progress_sm" style="width: 76%;">
-                          <div class="progress-bar bg-green" role="progressbar" data-transitiongoal="50"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                </div>
-
-                <div class="clearfix"></div>
-              </div>
-            </div>
-
+    <div class="admin-column">
+      <div class="admin-panel">
+        <div class="admin-panel-header">
+          <div>
+            <h3>Room Status</h3>
+            <p>Current room inventory split across available, occupied, and maintenance.</p>
           </div>
-          <br />
+        </div>
+        <canvas id="roomStatusChart" height="110"></canvas>
+      </div>
+    </div>
+  </div>
 
-          <div class="row">
-
-
-            <div class="col-md-4 col-sm-4 ">
-              <div class="x_panel tile fixed_height_320">
-                <div class="x_title">
-                  <h2>App Versions</h2>
-                  <ul class="nav navbar-right panel_toolbox">
-                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                    </li>
-                    <li class="dropdown">
-                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
-                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                          <a class="dropdown-item" href="#">Settings 1</a>
-                          <a class="dropdown-item" href="#">Settings 2</a>
-                        </div>
-                    </li>
-                    <li><a class="close-link"><i class="fa fa-close"></i></a>
-                    </li>
-                  </ul>
-                  <div class="clearfix"></div>
-                </div>
-                <div class="x_content">
-                  <h4>App Usage across versions</h4>
-                  <div class="widget_summary">
-                    <div class="w_left w_25">
-                      <span>0.1.5.2</span>
-                    </div>
-                    <div class="w_center w_55">
-                      <div class="progress">
-                        <div class="progress-bar bg-green" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 66%;">
-                          <span class="sr-only">60% Complete</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="w_right w_20">
-                      <span>123k</span>
-                    </div>
-                    <div class="clearfix"></div>
-                  </div>
-
-                  <div class="widget_summary">
-                    <div class="w_left w_25">
-                      <span>0.1.5.3</span>
-                    </div>
-                    <div class="w_center w_55">
-                      <div class="progress">
-                        <div class="progress-bar bg-green" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 45%;">
-                          <span class="sr-only">60% Complete</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="w_right w_20">
-                      <span>53k</span>
-                    </div>
-                    <div class="clearfix"></div>
-                  </div>
-                  <div class="widget_summary">
-                    <div class="w_left w_25">
-                      <span>0.1.5.4</span>
-                    </div>
-                    <div class="w_center w_55">
-                      <div class="progress">
-                        <div class="progress-bar bg-green" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 25%;">
-                          <span class="sr-only">60% Complete</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="w_right w_20">
-                      <span>23k</span>
-                    </div>
-                    <div class="clearfix"></div>
-                  </div>
-                  <div class="widget_summary">
-                    <div class="w_left w_25">
-                      <span>0.1.5.5</span>
-                    </div>
-                    <div class="w_center w_55">
-                      <div class="progress">
-                        <div class="progress-bar bg-green" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 5%;">
-                          <span class="sr-only">60% Complete</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="w_right w_20">
-                      <span>3k</span>
-                    </div>
-                    <div class="clearfix"></div>
-                  </div>
-                  <div class="widget_summary">
-                    <div class="w_left w_25">
-                      <span>0.1.5.6</span>
-                    </div>
-                    <div class="w_center w_55">
-                      <div class="progress">
-                        <div class="progress-bar bg-green" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 2%;">
-                          <span class="sr-only">60% Complete</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="w_right w_20">
-                      <span>1k</span>
-                    </div>
-                    <div class="clearfix"></div>
-                  </div>
-
-                </div>
-              </div>
-            </div>
-
-            <div class="col-md-4 col-sm-4 ">
-              <div class="x_panel tile fixed_height_320 overflow_hidden">
-                <div class="x_title">
-                  <h2>Device Usage</h2>
-                  <ul class="nav navbar-right panel_toolbox">
-                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                    </li>
-                    <li class="dropdown">
-                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
-                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                          <a class="dropdown-item" href="#">Settings 1</a>
-                          <a class="dropdown-item" href="#">Settings 2</a>
-                        </div>
-                    </li>
-                    <li><a class="close-link"><i class="fa fa-close"></i></a>
-                    </li>
-                  </ul>
-                  <div class="clearfix"></div>
-                </div>
-                <div class="x_content">
-                  <table class="" style="width:100%">
-                    <tr>
-                      <th style="width:37%;">
-                        <p>Top 5</p>
-                      </th>
-                      <th>
-                        <div class="col-lg-7 col-md-7 col-sm-7 ">
-                          <p class="">Device</p>
-                        </div>
-                        <div class="col-lg-5 col-md-5 col-sm-5 ">
-                          <p class="">Progress</p>
-                        </div>
-                      </th>
-                    </tr>
-                    <tr>
-                      <td>
-                        <canvas class="canvasDoughnut" height="140" width="140" style="margin: 15px 10px 10px 0"></canvas>
-                      </td>
-                      <td>
-                        <table class="tile_info">
-                          <tr>
-                            <td>
-                              <p><i class="fa fa-square blue"></i>IOS </p>
-                            </td>
-                            <td>30%</td>
-                          </tr>
-                          <tr>
-                            <td>
-                              <p><i class="fa fa-square green"></i>Android </p>
-                            </td>
-                            <td>10%</td>
-                          </tr>
-                          <tr>
-                            <td>
-                              <p><i class="fa fa-square purple"></i>Blackberry </p>
-                            </td>
-                            <td>20%</td>
-                          </tr>
-                          <tr>
-                            <td>
-                              <p><i class="fa fa-square aero"></i>Symbian </p>
-                            </td>
-                            <td>15%</td>
-                          </tr>
-                          <tr>
-                            <td>
-                              <p><i class="fa fa-square red"></i>Others </p>
-                            </td>
-                            <td>30%</td>
-                          </tr>
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
-                </div>
-              </div>
-            </div>
-
-
-            <div class="col-md-4 col-sm-4 ">
-              <div class="x_panel tile fixed_height_320">
-                <div class="x_title">
-                  <h2>Quick Settings</h2>
-                  <ul class="nav navbar-right panel_toolbox">
-                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                    </li>
-                    <li class="dropdown">
-                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
-                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                          <a class="dropdown-item" href="#">Settings 1</a>
-                          <a class="dropdown-item" href="#">Settings 2</a>
-                        </div>
-                    </li>
-                    <li><a class="close-link"><i class="fa fa-close"></i></a>
-                    </li>
-                  </ul>
-                  <div class="clearfix"></div>
-                </div>
-                <div class="x_content">
-                  <div class="dashboard-widget-content">
-                    <ul class="quick-list">
-                      <li><i class="fa fa-calendar-o"></i><a href="#">Settings</a>
-                      </li>
-                      <li><i class="fa fa-bars"></i><a href="#">Subscription</a>
-                      </li>
-                      <li><i class="fa fa-bar-chart"></i><a href="#">Auto Renewal</a> </li>
-                      <li><i class="fa fa-line-chart"></i><a href="#">Achievements</a>
-                      </li>
-                      <li><i class="fa fa-bar-chart"></i><a href="#">Auto Renewal</a> </li>
-                      <li><i class="fa fa-line-chart"></i><a href="#">Achievements</a>
-                      </li>
-                      <li><i class="fa fa-area-chart"></i><a href="#">Logout</a>
-                      </li>
-                    </ul>
-
-                    <div class="sidebar-widget">
-                        <h4>Profile Completion</h4>
-                        <canvas width="150" height="80" id="chart_gauge_01" class="" style="width: 160px; height: 100px;"></canvas>
-                        <div class="goal-wrapper">
-                          <span id="gauge-text" class="gauge-value pull-left">0</span>
-                          <span class="gauge-value pull-left">%</span>
-                          <span id="goal-text" class="goal-value pull-right">100%</span>
-                        </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+  <div class="admin-grid">
+    <div class="admin-column">
+      <div class="admin-panel">
+        <div class="admin-panel-header">
+          <div>
+            <h3>Team Distribution</h3>
+            <p>Relative size of admin users, guest users, and employee records.</p>
           </div>
-          <!-- start of recent add Booking list -->
-          <section id="add_Booking">
-            <div class="row">
-              <div class="col-lg-12">
-                <h4>New Online Booking Customers List</h4>
-              </div>
-              <div class="col-lg-12">
-                 <div class="table-wrapper-scroll-y my-custom-scrollbar">
+        </div>
+        <canvas id="accountDistributionChart" height="100"></canvas>
+      </div>
+    </div>
 
-                          <table class="table table-bordered table-striped mb-0" style="width:2000px;">
-                            <thead>
-                               <tr>
-                                  <th>Id</th>
-                                  <th>Check in</th>
-                                  <th>Check out</th>
-                                   <th>Adult</th>
-                                    <th>Children</th>
-                                    <th>Name</th>
-                                    <th>Surname</th>
-                                     <th>Email</th>
-                                     <th>Phone Number</th>
-                                     <th>City</th>
-                                     <th>Country</th>
-                                     <th>Nid No</th>
-                                      <th>img</th>
-                                      <th>Messege</th>
+    <div class="admin-column">
+      <div class="admin-panel">
+        <div class="admin-panel-header">
+          <div>
+            <h3>Quick Actions</h3>
+            <p>Jump straight into the most common custom admin tasks.</p>
+          </div>
+        </div>
+        <div class="admin-quick-links">
+          <a class="admin-quick-link" href="{% url 'add_room' %}"><i class="fa fa-home"></i> Manage Rooms</a>
+          <a class="admin-quick-link" href="{% url 'online_booking_list' %}"><i class="fa fa-globe"></i> Manage Online Bookings</a>
+          <a class="admin-quick-link" href="{% url 'add_customer' %}"><i class="fa fa-bed"></i> Manage Desk Bookings</a>
+          <a class="admin-quick-link" href="{% url 'add_employee' %}"><i class="fa fa-users"></i> Manage Employees</a>
+          <a class="admin-quick-link" href="{% url 'manage_users' %}"><i class="fa fa-user-circle"></i> Manage Users</a>
+          <a class="admin-quick-link" href="{% url 'add_salary' %}"><i class="fa fa-money"></i> Manage Salaries</a>
+        </div>
+      </div>
+    </div>
+  </div>
 
-                               </tr>
+  <div class="admin-grid">
+    <div class="admin-column">
+      <div class="admin-panel">
+        <div class="admin-panel-header">
+          <div>
+            <h3>Recent Online Bookings</h3>
+            <p>Latest bookings created through the public site.</p>
+          </div>
+          <a class="btn btn-default" href="{% url 'online_booking_list' %}">View all</a>
+        </div>
+        {% if recent_online_bookings %}
+          <table class="table table-striped table-hover admin-table">
+            <thead>
+              <tr>
+                <th>Guest</th>
+                <th>Room</th>
+                <th>Stay</th>
+                <th>Created</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for booking in recent_online_bookings %}
+                <tr>
+                  <td>{{ booking.user.email }}</td>
+                  <td>{{ booking.room.room_number }}</td>
+                  <td>{{ booking.check_in }} to {{ booking.check_out }}</td>
+                  <td>{{ booking.created_at|date:"M d, Y" }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <div class="admin-empty-state">No online bookings yet.</div>
+        {% endif %}
+      </div>
+    </div>
 
-                            </thead>
-                            <tbody>
-                                   {%if data %}
+    <div class="admin-column">
+      <div class="admin-panel">
+        <div class="admin-panel-header">
+          <div>
+            <h3>Recent Desk Bookings</h3>
+            <p>Latest offline bookings created by staff.</p>
+          </div>
+          <a class="btn btn-default" href="{% url 'add_customer' %}">View all</a>
+        </div>
+        {% if recent_offline_bookings %}
+          <table class="table table-striped table-hover admin-table">
+            <thead>
+              <tr>
+                <th>Guest</th>
+                <th>Room</th>
+                <th>Stay</th>
+                <th>Created</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for booking in recent_offline_bookings %}
+                <tr>
+                  <td>{{ booking.first_name }} {{ booking.last_name }}</td>
+                  <td>{{ booking.room.room_number }}</td>
+                  <td>{{ booking.check_in }} to {{ booking.check_out }}</td>
+                  <td>{{ booking.created_at|date:"M d, Y" }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <div class="admin-empty-state">No desk bookings yet.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
 
-                                        {% for i in data %}
-                                         <tr>
-                                              <td>{{i.Id}}</td>
-                                              <td>{{i.Check_in}}</td>
-                                              <td>{{i.Check_out}}</td>
-                                              <td>{{i.ADULT}}</td>
-                                              <td>{{i.CHILDREN}}</td>
-                                              <td>{{i.Name}}</td>
-                                              <td>{{i.Surname}}</td>
-                                              <td>{{i.Email}}</td>
-                                              <td>{{i.Phone_Number}}</td>
-                                              <td>{{i.City}}</td>
-                                              <td>{{i.Country}}</td>
-                                              <td>{{i.Nid_No}}</td>
-                                              <td>{{i.Img}}</td>
-                                              <td>{{i.Address}}</td>
+  <div class="admin-grid">
+    <div class="admin-column">
+      <div class="admin-panel">
+        <div class="admin-panel-header">
+          <div>
+            <h3>Newest Users</h3>
+            <p>Recently registered accounts and staff users.</p>
+          </div>
+          <a class="btn btn-default" href="{% url 'manage_users' %}">View all</a>
+        </div>
+        {% if recent_users %}
+          <table class="table table-striped table-hover admin-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Role</th>
+                <th>Joined</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for user in recent_users %}
+                <tr>
+                  <td>{{ user.get_full_name|default:user.email }}</td>
+                  <td>
+                    {% if user.is_staff %}
+                      <span class="badge badge-info">Admin</span>
+                    {% else %}
+                      <span class="badge badge-default">Guest</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <div class="admin-empty-state">No users found.</div>
+        {% endif %}
+      </div>
+    </div>
 
-                                         </tr>
-                                        {%endfor%}
+    <div class="admin-column">
+      <div class="admin-panel">
+        <div class="admin-panel-header">
+          <div>
+            <h3>Newest Employees</h3>
+            <p>Latest staff records entered into the system.</p>
+          </div>
+          <a class="btn btn-default" href="{% url 'add_employee' %}">View all</a>
+        </div>
+        {% if recent_employees %}
+          <table class="table table-striped table-hover admin-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Department</th>
+                <th>Email</th>
+                <th>Added</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for employee in recent_employees %}
+                <tr>
+                  <td>{{ employee.first_name }} {{ employee.last_name }}</td>
+                  <td>{{ employee.department }}</td>
+                  <td>{{ employee.email }}</td>
+                  <td>{{ employee.created_at|date:"M d, Y" }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <div class="admin-empty-state">No employees found.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
 
-                                        {% endif %}
-                            </tbody>
-                          </table>
+  <div class="admin-panel">
+    <div class="admin-panel-header">
+      <div>
+        <h3>Newest Rooms</h3>
+        <p>Rooms recently added or updated in the hotel inventory.</p>
+      </div>
+      <a class="btn btn-default" href="{% url 'add_room' %}">View all</a>
+    </div>
+    {% if recent_rooms %}
+      <table class="table table-striped table-hover admin-table">
+        <thead>
+          <tr>
+            <th>Room</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Price</th>
+            <th>Created</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for room in recent_rooms %}
+            <tr>
+              <td>{{ room.room_number }}</td>
+              <td>{{ room.get_room_type_display }}</td>
+              <td>{{ room.get_status_display }}</td>
+              <td>${{ room.price }}</td>
+              <td>{{ room.created_at|date:"M d, Y" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="admin-empty-state">No rooms available yet.</div>
+    {% endif %}
+  </div>
 
-                        </div>
-              </div>
-            </div>
-          </section>
-            </div>
+  <script>
+    (function () {
+      if (typeof Chart === 'undefined') return;
 
+      var bookingChart = document.getElementById('bookingTrendChart');
+      if (bookingChart) {
+        new Chart(bookingChart, {
+          type: 'line',
+          data: {
+            labels: {{ booking_chart_labels|safe }},
+            datasets: [{
+              label: 'Bookings',
+              data: {{ booking_chart_values|safe }},
+              borderColor: '#1d4ed8',
+              backgroundColor: 'rgba(29, 78, 216, 0.12)',
+              borderWidth: 3,
+              pointBackgroundColor: '#1d4ed8',
+              fill: true,
+              tension: 0.32
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              yAxes: [{
+                ticks: {
+                  beginAtZero: true,
+                  precision: 0
+                }
+              }]
+            }
+          }
+        });
+      }
 
-  {% endblock %}
+      var roomStatusChart = document.getElementById('roomStatusChart');
+      if (roomStatusChart) {
+        new Chart(roomStatusChart, {
+          type: 'doughnut',
+          data: {
+            labels: {{ room_status_labels|safe }},
+            datasets: [{
+              data: {{ room_status_values|safe }},
+              backgroundColor: ['#10b981', '#f59e0b', '#ef4444']
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            legend: {
+              position: 'bottom'
+            }
+          }
+        });
+      }
+
+      var accountDistributionChart = document.getElementById('accountDistributionChart');
+      if (accountDistributionChart) {
+        new Chart(accountDistributionChart, {
+          type: 'bar',
+          data: {
+            labels: {{ account_distribution_labels|safe }},
+            datasets: [{
+              label: 'Records',
+              data: {{ account_distribution_values|safe }},
+              backgroundColor: ['#1d4ed8', '#0f766e', '#7c3aed']
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            legend: {
+              display: false
+            },
+            scales: {
+              yAxes: [{
+                ticks: {
+                  beginAtZero: true,
+                  precision: 0
+                }
+              }]
+            }
+          }
+        });
+      }
+    })();
+  </script>
+{% endblock %}

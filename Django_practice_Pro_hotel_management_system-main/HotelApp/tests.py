@@ -1,5 +1,6 @@
 from unittest.mock import patch
 from pathlib import Path
+from datetime import date
 
 from django.test import TestCase
 from django.urls import reverse
@@ -7,7 +8,7 @@ from django.db.utils import OperationalError, ProgrammingError
 from django.contrib.auth import get_user_model
 from django.conf import settings
 
-from .models import Room, OnlineBooking
+from .models import Room, OnlineBooking, OfflineBooking
 from .room_seed import seed_missing_rooms
 
 
@@ -60,6 +61,200 @@ class HomeViewTests(TestCase):
         mocked_manager.all.assert_called_once()
         mocked_manager.all.return_value.order_by.assert_called_once_with("-id")
         mocked_queryset.__getitem__.assert_called_once_with(slice(None, 6, None))
+
+
+class LoginRoutingTests(TestCase):
+    def test_login_redirects_staff_users_to_custom_admin_dashboard(self):
+        admin_user = get_user_model().objects.create_superuser(
+            email="admin@example.com",
+            password="AdminPass123!",
+        )
+
+        response = self.client.post(reverse("author_login"), data={
+            "username": admin_user.email,
+            "password": "AdminPass123!",
+        })
+
+        self.assertRedirects(response, reverse("dashboard"))
+
+    def test_login_redirects_regular_users_to_user_home(self):
+        user = get_user_model().objects.create_user(
+            email="guest@example.com",
+            password="GuestPass123!",
+        )
+
+        response = self.client.post(reverse("author_login"), data={
+            "username": user.email,
+            "password": "GuestPass123!",
+        })
+
+        self.assertRedirects(response, reverse("user_home"))
+
+    def test_login_preserves_next_url_for_staff_users(self):
+        admin_user = get_user_model().objects.create_superuser(
+            email="manager@example.com",
+            password="AdminPass123!",
+        )
+
+        response = self.client.post(
+            f"{reverse('author_login')}?next={reverse('add_room')}",
+            data={
+                "username": admin_user.email,
+                "password": "AdminPass123!",
+                "next": reverse("add_room"),
+            },
+        )
+
+        self.assertRedirects(response, reverse("add_room"))
+
+
+class AdminAccessControlTests(TestCase):
+    def test_home_redirects_staff_users_to_custom_admin_dashboard(self):
+        admin_user = get_user_model().objects.create_superuser(
+            email="adminhome@example.com",
+            password="AdminPass123!",
+        )
+        self.client.force_login(admin_user)
+
+        response = self.client.get(reverse("home"))
+
+        self.assertRedirects(response, reverse("dashboard"))
+
+    def test_non_staff_users_cannot_access_custom_admin_routes(self):
+        user = get_user_model().objects.create_user(
+            email="member@example.com",
+            password="GuestPass123!",
+        )
+        self.client.force_login(user)
+
+        response = self.client.get(reverse("add_room"))
+
+        self.assertRedirects(response, reverse("user_home"))
+
+
+class CustomAdminDashboardTests(TestCase):
+    def setUp(self):
+        self.admin_user = get_user_model().objects.create_superuser(
+            email="adminpanel@example.com",
+            password="AdminPass123!",
+        )
+        self.client.force_login(self.admin_user)
+
+    def test_dashboard_uses_live_database_metrics(self):
+        guest_user = get_user_model().objects.create_user(
+            email="dashboard-guest@example.com",
+            password="GuestPass123!",
+        )
+        available_room = Room.objects.create(
+            room_number="A500",
+            room_type="single",
+            floor=5,
+            facility="WiFi",
+            price="120.00",
+            status="available",
+        )
+        occupied_room = Room.objects.create(
+            room_number="B600",
+            room_type="suite",
+            floor=6,
+            facility="Spa",
+            price="320.00",
+            status="occupied",
+        )
+        OnlineBooking.objects.create(
+            user=guest_user,
+            room=occupied_room,
+            check_in=date(2026, 4, 1),
+            check_out=date(2026, 4, 4),
+            adults=2,
+            children=1,
+            city="Lagos",
+            country="Nigeria",
+            address="12 Admin Road",
+        )
+        OfflineBooking.objects.create(
+            room=available_room,
+            first_name="Desk",
+            last_name="Guest",
+            email="desk@example.com",
+            mobile_number="08001234567",
+            check_in=date(2026, 4, 10),
+            check_out=date(2026, 4, 12),
+            adults=2,
+            children=0,
+            country="Nigeria",
+            address="Front Desk",
+        )
+
+        response = self.client.get(reverse("dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["stats"]["total_bookings"], 2)
+        self.assertEqual(response.context["stats"]["online_bookings"], 1)
+        self.assertEqual(response.context["stats"]["offline_bookings"], 1)
+        self.assertEqual(response.context["stats"]["rooms_available"], 1)
+        self.assertEqual(response.context["stats"]["users"], 2)
+
+    def test_admin_can_create_room_from_custom_admin(self):
+        response = self.client.post(reverse("add_room"), data={
+            "room_number": "C700",
+            "room_type": "double",
+            "floor": 7,
+            "facility": "WiFi, TV",
+            "price": "180.00",
+            "status": "available",
+        })
+
+        self.assertRedirects(response, reverse("add_room"))
+        self.assertTrue(Room.objects.filter(room_number="C700").exists())
+
+    def test_admin_can_create_user_from_custom_admin(self):
+        response = self.client.post(reverse("manage_users"), data={
+            "email": "newuser@example.com",
+            "first_name": "New",
+            "last_name": "User",
+            "phone_number": "08000000000",
+            "theme": "light",
+            "is_active": "on",
+            "password1": "StrongPass123!",
+            "password2": "StrongPass123!",
+        })
+
+        self.assertRedirects(response, reverse("manage_users"))
+        created_user = get_user_model().objects.get(email="newuser@example.com")
+        self.assertTrue(created_user.check_password("StrongPass123!"))
+        self.assertFalse(created_user.is_staff)
+
+    def test_admin_can_create_online_booking_from_custom_admin(self):
+        guest_user = get_user_model().objects.create_user(
+            email="booking-admin@example.com",
+            password="GuestPass123!",
+        )
+        room = Room.objects.create(
+            room_number="D800",
+            room_type="suite",
+            floor=8,
+            facility="WiFi, Pool",
+            price="400.00",
+            status="available",
+        )
+
+        response = self.client.post(reverse("online_booking_list"), data={
+            "user": guest_user.pk,
+            "room": room.pk,
+            "check_in": "2026-05-01",
+            "check_out": "2026-05-04",
+            "adults": 2,
+            "children": 1,
+            "city": "Abuja",
+            "country": "Nigeria",
+            "address": "Airport Road",
+        })
+
+        self.assertRedirects(response, reverse("online_booking_list"))
+        self.assertTrue(
+            OnlineBooking.objects.filter(user=guest_user, room=room, city="Abuja", country="Nigeria").exists()
+        )
 
 
 class RoomAvailabilityViewTests(TestCase):

@@ -27,9 +27,12 @@ Login - RoseGold Hotel
 
           <form method="post" novalidate>
             {% csrf_token %}
+            {% if request.GET.next or request.POST.next %}
+            <input type="hidden" name="next" value="{{ request.GET.next|default:request.POST.next }}">
+            {% endif %}
 
             <div class="mb-4">
-              <label for="id_username" class="form-label fw-medium">Email / Username</label>
+              <label for="id_username" class="form-label fw-medium">Email</label>
               <div class="input-group input-group-lg">
                 <span class="input-group-text bg-light border-end-0"><i class="fas fa-envelope text-muted"></i></span>
                 <input type="text" name="username" id="id_username" class="form-control" placeholder="Enter your email" required autofocus>

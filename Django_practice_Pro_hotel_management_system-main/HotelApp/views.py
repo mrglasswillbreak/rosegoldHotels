@@ -1,12 +1,20 @@
+from functools import wraps
+from urllib.parse import urlencode
+
+from decimal import Decimal
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
+from django.db.models import Count, Q
+from django.db.models.functions import TruncMonth
 from django.views.decorators.http import require_POST, require_http_methods
 from django.db.utils import OperationalError, ProgrammingError
 from django.utils import timezone
-from datetime import datetime, timedelta
+from django.utils.http import url_has_allowed_host_and_scheme
+from django.urls import reverse
+from datetime import date, datetime, timedelta
 import json
 import logging
 
@@ -20,14 +28,99 @@ from .models import (
 )
 
 from .forms import (
+    AdminUserCreateForm,
+    AdminUserUpdateForm,
     OnlineBookingForm,
     OfflineBookingForm,
     EmployeeForm,
     RoomForm,
-    SalaryForm
+    SalaryForm,
+    booking_window_has_conflict,
 )
 
 logger = logging.getLogger(__name__)
+
+
+def get_post_login_route_name(user):
+    return "dashboard" if user.is_staff else "user_home"
+
+
+def get_post_login_redirect(request, user):
+    next_url = request.POST.get("next") or request.GET.get("next")
+    if next_url and url_has_allowed_host_and_scheme(
+        next_url,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure(),
+    ):
+        return next_url
+    return reverse(get_post_login_route_name(user))
+
+
+def admin_required(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            login_url = reverse("author_login")
+            query = urlencode({"next": request.get_full_path()})
+            return redirect(f"{login_url}?{query}")
+        if not request.user.is_staff:
+            messages.error(request, "You do not have permission to access the admin dashboard.")
+            return redirect("user_home")
+        return view_func(request, *args, **kwargs)
+
+    return _wrapped_view
+
+
+def build_admin_context(active_admin_section, **context):
+    context["active_admin_section"] = active_admin_section
+    return context
+
+
+def apply_admin_search(queryset, query, fields):
+    if not query:
+        return queryset
+
+    search_query = Q()
+    for field in fields:
+        search_query |= Q(**{f"{field}__icontains": query})
+    return queryset.filter(search_query)
+
+
+def shift_month(month_start, delta):
+    total_months = (month_start.year * 12) + (month_start.month - 1) + delta
+    year, month_index = divmod(total_months, 12)
+    return date(year, month_index + 1, 1)
+
+
+def recent_month_starts(count=6):
+    current_month = timezone.localdate().replace(day=1)
+    return [shift_month(current_month, -offset) for offset in range(count - 1, -1, -1)]
+
+
+def monthly_totals(queryset, date_field="created_at", count=6):
+    month_starts = recent_month_starts(count=count)
+    totals = {month_start: 0 for month_start in month_starts}
+
+    for row in queryset.annotate(month=TruncMonth(date_field)).values("month").annotate(total=Count("id")).order_by("month"):
+        month_value = row["month"]
+        if hasattr(month_value, "date"):
+            month_key = month_value.date().replace(day=1)
+        else:
+            month_key = month_value.replace(day=1)
+        if month_key in totals:
+            totals[month_key] = row["total"]
+
+    labels = [month_start.strftime("%b %Y") for month_start in month_starts]
+    values = [totals[month_start] for month_start in month_starts]
+    return labels, values
+
+
+def calculate_booking_revenue(bookings):
+    total = Decimal("0")
+    for booking in bookings:
+        nights = max((booking.check_out - booking.check_in).days, 0)
+        total += booking.room.price * nights
+    return total
 
 
 # =========================
@@ -37,7 +130,7 @@ logger = logging.getLogger(__name__)
 
 def home(request):
     if request.user.is_authenticated:
-        return redirect("user_home")
+        return redirect(get_post_login_route_name(request.user))
     try:
         rooms = list(Room.objects.all().order_by('-id')[:6])
     except (OperationalError, ProgrammingError):
@@ -58,10 +151,84 @@ def home(request):
 # AUTH SYSTEM
 # =========================
 
-@login_required
+@admin_required
 def dashboard(request):
-    rooms = Room.objects.filter(status='available')[:6]
-    return render(request, "dashboard.html", {"rooms": rooms})
+    today = timezone.localdate()
+    rooms = Room.objects.all()
+    users = Authorregis.objects.all()
+    employees = Employee.objects.all()
+    online_bookings = OnlineBooking.objects.select_related("user", "room")
+    offline_bookings = OfflineBooking.objects.select_related("room")
+    salaries = Salary.objects.select_related("employee")
+
+    room_status_counts = {
+        "Available": rooms.filter(status="available").count(),
+        "Occupied": rooms.filter(status="occupied").count(),
+        "Maintenance": rooms.filter(status="maintenance").count(),
+    }
+
+    occupied_room_ids = set(
+        online_bookings.filter(check_in__lte=today, check_out__gt=today).values_list("room_id", flat=True)
+    )
+    occupied_room_ids.update(
+        offline_bookings.filter(check_in__lte=today, check_out__gt=today).values_list("room_id", flat=True)
+    )
+
+    total_rooms = rooms.count()
+    total_online_bookings = online_bookings.count()
+    total_offline_bookings = offline_bookings.count()
+    total_bookings = total_online_bookings + total_offline_bookings
+    total_users = users.count()
+    total_staff_users = users.filter(is_staff=True).count()
+    total_guest_users = users.filter(is_staff=False).count()
+    total_employees = employees.count()
+    available_rooms = rooms.filter(status="available").count()
+    occupancy_rate = round((len(occupied_room_ids) / total_rooms) * 100, 1) if total_rooms else 0
+    check_ins_today = online_bookings.filter(check_in=today).count() + offline_bookings.filter(check_in=today).count()
+    check_outs_today = online_bookings.filter(check_out=today).count() + offline_bookings.filter(check_out=today).count()
+
+    booking_labels, online_booking_series = monthly_totals(online_bookings, "created_at")
+    _, offline_booking_series = monthly_totals(offline_bookings, "created_at")
+    booking_series = [online + offline for online, offline in zip(online_booking_series, offline_booking_series)]
+
+    account_distribution_labels = ["Admins", "Guests", "Employees"]
+    account_distribution_values = [total_staff_users, total_guest_users, total_employees]
+
+    estimated_revenue = calculate_booking_revenue(online_bookings.select_related("room")) + calculate_booking_revenue(
+        offline_bookings.select_related("room")
+    )
+    monthly_salary_budget = sum((salary.salary for salary in salaries), Decimal("0"))
+
+    context = build_admin_context(
+        "dashboard",
+        stats={
+            "total_bookings": total_bookings,
+            "online_bookings": total_online_bookings,
+            "offline_bookings": total_offline_bookings,
+            "rooms_available": available_rooms,
+            "occupied_rooms": len(occupied_room_ids),
+            "occupancy_rate": occupancy_rate,
+            "check_ins_today": check_ins_today,
+            "check_outs_today": check_outs_today,
+            "users": total_users,
+            "staff_users": total_staff_users,
+            "employees": total_employees,
+            "estimated_revenue": float(estimated_revenue),
+            "monthly_salary_budget": float(monthly_salary_budget),
+        },
+        booking_chart_labels=json.dumps(booking_labels),
+        booking_chart_values=json.dumps(booking_series),
+        room_status_labels=json.dumps(list(room_status_counts.keys())),
+        room_status_values=json.dumps(list(room_status_counts.values())),
+        account_distribution_labels=json.dumps(account_distribution_labels),
+        account_distribution_values=json.dumps(account_distribution_values),
+        recent_online_bookings=online_bookings.order_by("-created_at")[:5],
+        recent_offline_bookings=offline_bookings.order_by("-created_at")[:5],
+        recent_users=users.order_by("-date_joined")[:5],
+        recent_employees=employees.order_by("-created_at")[:5],
+        recent_rooms=rooms.order_by("-created_at")[:5],
+    )
+    return render(request, "admin/Admin.html", context)
 @login_required
 def user_home(request):
     rooms = Room.objects.all()
@@ -104,6 +271,9 @@ def author_register(request):
     return render(request, "author_register.html")
 
 def author_login(request):
+    if request.user.is_authenticated:
+        return redirect(get_post_login_redirect(request, request.user))
+
     if request.method == "POST":
         email = request.POST.get("username")  # your form input is named "username"
         password = request.POST.get("password")
@@ -113,7 +283,7 @@ def author_login(request):
         if user:
             login(request, user)
             messages.success(request, "Login successful!")
-            return redirect("user_home")
+            return redirect(get_post_login_redirect(request, user))
         else:
             messages.error(request, "Invalid credentials.")
 
@@ -163,8 +333,6 @@ def user_profile(request):
 
             request.user.set_password(new_pw1)
             request.user.save()
-            # Keep user logged in after password change
-            from django.contrib.auth import update_session_auth_hash
             update_session_auth_hash(request, request.user)
             messages.success(request, "Password changed successfully.")
             return redirect("user_profile")
@@ -200,14 +368,12 @@ def my_bookings(request):
                 messages.error(request, "Check-out must be after check-in.")
                 return redirect("my_bookings")
 
-            # Check overlap excluding this booking
-            overlapping = OnlineBooking.objects.filter(
-                room=booking.room,
-                check_in__lt=check_out,
-                check_out__gt=check_in
-            ).exclude(id=booking.id).exists()
-
-            if overlapping:
+            if booking_window_has_conflict(
+                booking.room,
+                check_in,
+                check_out,
+                online_instance=booking,
+            ):
                 messages.error(request, "Room is not available for the new dates.")
                 return redirect("my_bookings")
 
@@ -262,13 +428,7 @@ def book_room(request, room_id):
 
         check_out = check_in + timedelta(days=stay_duration)
 
-        overlapping = OnlineBooking.objects.filter(
-            room=room,
-            check_in__lt=check_out,
-            check_out__gt=check_in
-        ).exists()
-
-        if overlapping:
+        if booking_window_has_conflict(room, check_in, check_out):
             messages.error(request, "Room is not available for the selected dates.")
             return redirect("book_room", room_id=room.id)
 
@@ -339,13 +499,7 @@ def online_booking(request):
             messages.error(request, "Please enter valid guest counts.")
 
         if selected_room and check_in and check_out and adults is not None:
-            overlapping = OnlineBooking.objects.filter(
-                room=selected_room,
-                check_in__lt=check_out,
-                check_out__gt=check_in
-            ).exists()
-
-            if overlapping:
+            if booking_window_has_conflict(selected_room, check_in, check_out):
                 messages.error(request, "Room is not available for the selected dates.")
             else:
                 OnlineBooking.objects.create(
@@ -402,15 +556,48 @@ def online_booking(request):
     })
 
 
-def online_booking_list(request):
-    bookings = OnlineBooking.objects.all().select_related('user', 'room').order_by("-id")
-    return render(request, "admin/Online_Booking.html", {"data": bookings})
+@admin_required
+def online_booking_list(request, id=None):
+    booking = get_object_or_404(OnlineBooking.objects.select_related("user", "room"), pk=id) if id else None
+
+    if request.method == "POST":
+        form = OnlineBookingForm(request.POST, instance=booking)
+        if form.is_valid():
+            saved_booking = form.save()
+            messages.success(
+                request,
+                f"Online booking for {saved_booking.user.email} saved successfully.",
+            )
+            return redirect("online_booking_list")
+    else:
+        form = OnlineBookingForm(instance=booking)
+
+    search_query = request.GET.get("q", "").strip()
+    bookings = OnlineBooking.objects.select_related("user", "room").order_by("-created_at")
+    bookings = apply_admin_search(
+        bookings,
+        search_query,
+        ["user__email", "user__first_name", "user__last_name", "room__room_number", "city", "country", "address"],
+    )
+
+    context = build_admin_context(
+        "online_bookings",
+        form=form,
+        data=bookings,
+        editing_object=booking,
+        search_query=search_query,
+        form_action_url=reverse("edit_online_booking", args=[booking.pk]) if booking else reverse("online_booking_list"),
+        submit_label="Update Booking" if booking else "Create Booking",
+    )
+    return render(request, "admin/Online_Booking.html", context)
 
 
 @require_POST
+@admin_required
 def delete_online_booking(request, id):
     booking = get_object_or_404(OnlineBooking, pk=id)
     booking.delete()
+    messages.success(request, "Online booking deleted successfully.")
     return redirect("online_booking_list")
 
 
@@ -418,27 +605,48 @@ def delete_online_booking(request, id):
 # OFFLINE BOOKING
 # =========================
 
-def add_customer(request):
+@admin_required
+def add_customer(request, id=None):
+    customer = get_object_or_404(OfflineBooking.objects.select_related("room"), pk=id) if id else None
+
     if request.method == "POST":
-        form = OfflineBookingForm(request.POST)
+        form = OfflineBookingForm(request.POST, instance=customer)
         if form.is_valid():
-            form.save()
-            messages.success(request, "Customer added successfully!")
+            saved_customer = form.save()
+            messages.success(
+                request,
+                f"Offline booking for {saved_customer.first_name} {saved_customer.last_name} saved successfully.",
+            )
             return redirect("add_customer")
     else:
-        form = OfflineBookingForm()
+        form = OfflineBookingForm(instance=customer)
 
-    customers = OfflineBooking.objects.all().select_related('room').order_by("-id")
-    return render(request, "admin/AddCustomer.html", {
-        "form": form,
-        "data": customers
-    })
+    search_query = request.GET.get("q", "").strip()
+    customers = OfflineBooking.objects.select_related("room").order_by("-created_at")
+    customers = apply_admin_search(
+        customers,
+        search_query,
+        ["first_name", "last_name", "email", "mobile_number", "room__room_number", "country", "address"],
+    )
+
+    context = build_admin_context(
+        "offline_bookings",
+        form=form,
+        data=customers,
+        editing_object=customer,
+        search_query=search_query,
+        form_action_url=reverse("edit_customer", args=[customer.pk]) if customer else reverse("add_customer"),
+        submit_label="Update Booking" if customer else "Create Booking",
+    )
+    return render(request, "admin/AddCustomer.html", context)
 
 
 @require_POST
+@admin_required
 def delete_customer(request, id):
     customer = get_object_or_404(OfflineBooking, pk=id)
     customer.delete()
+    messages.success(request, "Offline booking deleted successfully.")
     return redirect("add_customer")
 
 
@@ -446,27 +654,48 @@ def delete_customer(request, id):
 # EMPLOYEE
 # =========================
 
-def add_employee(request):
+@admin_required
+def add_employee(request, id=None):
+    employee = get_object_or_404(Employee, pk=id) if id else None
+
     if request.method == "POST":
-        form = EmployeeForm(request.POST, request.FILES)
+        form = EmployeeForm(request.POST, request.FILES, instance=employee)
         if form.is_valid():
-            form.save()
-            messages.success(request, "Employee added successfully!")
+            saved_employee = form.save()
+            messages.success(
+                request,
+                f"Employee {saved_employee.first_name} {saved_employee.last_name} saved successfully.",
+            )
             return redirect("add_employee")
     else:
-        form = EmployeeForm()
+        form = EmployeeForm(instance=employee)
 
-    employees = Employee.objects.all().order_by("-employee_id")
-    return render(request, "admin/addemployee.html", {
-        "form": form,
-        "data": employees
-    })
+    search_query = request.GET.get("q", "").strip()
+    employees = Employee.objects.order_by("-created_at")
+    employees = apply_admin_search(
+        employees,
+        search_query,
+        ["employee_id", "first_name", "last_name", "email", "mobile_number", "department", "address"],
+    )
+
+    context = build_admin_context(
+        "employees",
+        form=form,
+        data=employees,
+        editing_object=employee,
+        search_query=search_query,
+        form_action_url=reverse("edit_employee", args=[employee.pk]) if employee else reverse("add_employee"),
+        submit_label="Update Employee" if employee else "Add Employee",
+    )
+    return render(request, "admin/addemployee.html", context)
 
 
 @require_POST
+@admin_required
 def delete_employee(request, id):
     employee = get_object_or_404(Employee, pk=id)
     employee.delete()
+    messages.success(request, "Employee deleted successfully.")
     return redirect("add_employee")
 
 # =========================
@@ -511,27 +740,46 @@ def room_list(request):
     rooms = Room.objects.all().order_by("room_number")
     return render(request, "rooms_list.html", {"rooms": rooms})
 
-def add_room(request):
+@admin_required
+def add_room(request, id=None):
+    room = get_object_or_404(Room, pk=id) if id else None
+
     if request.method == "POST":
-        form = RoomForm(request.POST, request.FILES)
+        form = RoomForm(request.POST, request.FILES, instance=room)
         if form.is_valid():
-            form.save()
-            messages.success(request, "Room added successfully!")
+            saved_room = form.save()
+            messages.success(request, f"Room {saved_room.room_number} saved successfully.")
             return redirect("add_room")
     else:
-        form = RoomForm()
+        form = RoomForm(instance=room)
 
-    rooms = Room.objects.all().order_by("-id")
-    return render(request, "admin/AddRoom.html", {
-        "form": form,
-        "data": rooms
-    })
+    search_query = request.GET.get("q", "").strip()
+    status_filter = request.GET.get("status", "").strip()
+    rooms = Room.objects.order_by("-created_at")
+    if status_filter:
+        rooms = rooms.filter(status=status_filter)
+    rooms = apply_admin_search(rooms, search_query, ["room_number", "room_type", "facility", "status"])
+
+    context = build_admin_context(
+        "rooms",
+        form=form,
+        data=rooms,
+        editing_object=room,
+        search_query=search_query,
+        status_filter=status_filter,
+        status_choices=Room.ROOM_STATUS,
+        form_action_url=reverse("edit_room", args=[room.pk]) if room else reverse("add_room"),
+        submit_label="Update Room" if room else "Add Room",
+    )
+    return render(request, "admin/AddRoom.html", context)
 
 
 @require_POST
+@admin_required
 def delete_room(request, id):
     room = get_object_or_404(Room, pk=id)
     room.delete()
+    messages.success(request, "Room deleted successfully.")
     return redirect("add_room")
 
 
@@ -539,18 +787,109 @@ def delete_room(request, id):
 # SALARY
 # =========================
 
-def add_salary(request):
+@admin_required
+def add_salary(request, id=None):
+    salary_record = get_object_or_404(Salary.objects.select_related("employee"), pk=id) if id else None
+
     if request.method == "POST":
-        form = SalaryForm(request.POST)
+        form = SalaryForm(request.POST, instance=salary_record)
         if form.is_valid():
-            form.save()
-            messages.success(request, "Salary added successfully!")
+            saved_salary = form.save()
+            messages.success(
+                request,
+                f"Salary for {saved_salary.employee.first_name} {saved_salary.employee.last_name} saved successfully.",
+            )
             return redirect("add_salary")
     else:
-        form = SalaryForm()
+        form = SalaryForm(instance=salary_record)
 
-    salaries = Salary.objects.all().select_related('employee').order_by("-id")
-    return render(request, "admin/AddEmployeeSalary.html", {
-        "form": form,
-        "data": salaries
-    })
+    search_query = request.GET.get("q", "").strip()
+    salaries = Salary.objects.select_related("employee").order_by("-created_at")
+    salaries = apply_admin_search(
+        salaries,
+        search_query,
+        ["employee__employee_id", "employee__first_name", "employee__last_name", "employee__email"],
+    )
+
+    context = build_admin_context(
+        "salaries",
+        form=form,
+        data=salaries,
+        editing_object=salary_record,
+        search_query=search_query,
+        form_action_url=reverse("edit_salary", args=[salary_record.pk]) if salary_record else reverse("add_salary"),
+        submit_label="Update Salary" if salary_record else "Add Salary",
+    )
+    return render(request, "admin/AddEmployeeSalary.html", context)
+
+
+@require_POST
+@admin_required
+def delete_salary(request, id):
+    salary_record = get_object_or_404(Salary, pk=id)
+    salary_record.delete()
+    messages.success(request, "Salary record deleted successfully.")
+    return redirect("add_salary")
+
+
+# =========================
+# USERS
+# =========================
+
+@admin_required
+def manage_users(request, id=None):
+    managed_user = get_object_or_404(Authorregis, pk=id) if id else None
+    form_class = AdminUserUpdateForm if managed_user else AdminUserCreateForm
+
+    if request.method == "POST":
+        form = form_class(request.POST, instance=managed_user) if managed_user else form_class(request.POST)
+        if form.is_valid():
+            saved_user = form.save()
+            if saved_user.pk == request.user.pk and form.cleaned_data.get("password1"):
+                update_session_auth_hash(request, saved_user)
+            messages.success(request, f"User {saved_user.email} saved successfully.")
+            if saved_user.pk == request.user.pk and not saved_user.is_staff:
+                messages.warning(request, "Your admin privileges were removed. Redirected to your user home.")
+                return redirect("user_home")
+            return redirect("manage_users")
+    else:
+        form = form_class(instance=managed_user) if managed_user else form_class()
+
+    search_query = request.GET.get("q", "").strip()
+    role_filter = request.GET.get("role", "").strip()
+    users = Authorregis.objects.annotate(booking_count=Count("onlinebooking", distinct=True)).order_by("-date_joined")
+    users = apply_admin_search(users, search_query, ["email", "first_name", "last_name", "phone_number"])
+    if role_filter == "staff":
+        users = users.filter(is_staff=True)
+    elif role_filter == "guest":
+        users = users.filter(is_staff=False)
+    elif role_filter == "inactive":
+        users = users.filter(is_active=False)
+
+    context = build_admin_context(
+        "users",
+        form=form,
+        data=users,
+        editing_object=managed_user,
+        search_query=search_query,
+        role_filter=role_filter,
+        form_action_url=reverse("edit_user", args=[managed_user.pk]) if managed_user else reverse("manage_users"),
+        submit_label="Update User" if managed_user else "Add User",
+    )
+    return render(request, "admin/Users.html", context)
+
+
+@require_POST
+@admin_required
+def delete_user(request, id):
+    managed_user = get_object_or_404(Authorregis, pk=id)
+
+    if managed_user.pk == request.user.pk:
+        messages.error(request, "You cannot delete the account you are currently using.")
+    elif managed_user.is_superuser and Authorregis.objects.filter(is_superuser=True).count() <= 1:
+        messages.error(request, "You cannot delete the last superuser account.")
+    else:
+        managed_user.delete()
+        messages.success(request, "User deleted successfully.")
+
+    return redirect("manage_users")
