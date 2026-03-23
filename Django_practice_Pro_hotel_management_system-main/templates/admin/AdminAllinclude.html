@@ -62,6 +62,11 @@
         padding: 24px 24px 40px;
       }
 
+      .admin-modern .right_col {
+        background: #f5f7fb;
+        min-height: calc(100vh - 58px);
+      }
+
       .admin-page-header {
         background: #fff;
         border-radius: 16px;
@@ -370,17 +375,19 @@
           </div>
         </div>
 
-        <div class="admin-page-wrap">
-          {% if messages %}
-            {% for message in messages %}
-              <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade in" role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">x</span></button>
-                {{ message }}
-              </div>
-            {% endfor %}
-          {% endif %}
+        <div class="right_col" role="main">
+          <div class="admin-page-wrap">
+            {% if messages %}
+              {% for message in messages %}
+                <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade in" role="alert">
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">x</span></button>
+                  {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
 
-          {% block pagecontant %}{% endblock %}
+            {% block pagecontant %}{% endblock %}
+          </div>
         </div>
       </div>
     </div>
