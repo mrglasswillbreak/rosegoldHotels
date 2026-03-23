@@ -5,7 +5,7 @@
 {% block pagecontant %}
   <div class="admin-page-header">
     <h1>Manage Users</h1>
-    <p>Create staff accounts, update guest profiles, reset passwords, and control access to the custom admin.</p>
+    <p>Create admin and receptionist accounts, update guest profiles, reset passwords, and control dashboard access.</p>
   </div>
 
   <div class="admin-grid">
@@ -14,7 +14,7 @@
         <div class="admin-panel-header">
           <div>
             <h3>{% if editing_object %}Edit User {{ editing_object.email }}{% else %}Add User{% endif %}</h3>
-            <p>Set admin access with the staff toggle and update passwords directly from this page.</p>
+            <p>Use the role toggles to grant admin or receptionist access and update passwords directly from this page.</p>
           </div>
         </div>
 
@@ -43,6 +43,7 @@
           <select class="form-control" name="role">
             <option value="">All roles</option>
             <option value="staff" {% if role_filter == 'staff' %}selected{% endif %}>Admins</option>
+            <option value="receptionist" {% if role_filter == 'receptionist' %}selected{% endif %}>Receptionists</option>
             <option value="guest" {% if role_filter == 'guest' %}selected{% endif %}>Guests</option>
             <option value="inactive" {% if role_filter == 'inactive' %}selected{% endif %}>Inactive</option>
           </select>
@@ -72,6 +73,8 @@
                   <td>
                     {% if user.is_superuser %}
                       <span class="badge badge-danger">Superuser</span>
+                    {% elif user.is_receptionist %}
+                      <span class="badge badge-warning">Receptionist</span>
                     {% elif user.is_staff %}
                       <span class="badge badge-info">Admin</span>
                     {% else %}

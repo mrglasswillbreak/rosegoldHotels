@@ -1,0 +1,275 @@
+{% extends "admin/AdminAllinclude.html" %}
+{% load static hotel_currency %}
+
+{% block title %}Receptionist Dashboard - Hotel Management{% endblock %}
+
+{% block pagecontant %}
+<div class="admin-page-wrap">
+    <div class="admin-page-header">
+        <h1><i class="fa fa-th-large"></i> Receptionist Dashboard</h1>
+        <p>Front desk command center - {{ today|date:"l, F d, Y" }}</p>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="admin-stat-grid">
+        <div class="admin-stat-card" style="flex: 1; min-width: 200px;">
+            <h3>{{ total_rooms }}</h3>
+            <p>Total Rooms</p>
+            <div class="stat-icon"><i class="fa fa-building"></i></div>
+        </div>
+        <div class="admin-stat-card" style="flex: 1; min-width: 200px; background: #10b981; color: #fff;">
+            <h3>{{ available_rooms }}</h3>
+            <p>Available</p>
+            <div class="stat-icon"><i class="fa fa-check-circle"></i></div>
+        </div>
+        <div class="admin-stat-card" style="flex: 1; min-width: 200px; background: #ef4444; color: #fff;">
+            <h3>{{ occupied_rooms }}</h3>
+            <p>Occupied</p>
+            <div class="stat-icon"><i class="fa fa-user"></i></div>
+        </div>
+        <div class="admin-stat-card" style="flex: 1; min-width: 200px; background: #f59e0b; color: #fff;">
+            <h3>{{ reserved_rooms }}</h3>
+            <p>Reserved</p>
+            <div class="stat-icon"><i class="fa fa-bookmark"></i></div>
+        </div>
+        <div class="admin-stat-card" style="flex: 1; min-width: 200px; background: #6366f1; color: #fff;">
+            <h3>{{ occupancy_rate }}%</h3>
+            <p>Occupancy Rate</p>
+            <div class="stat-icon"><i class="fa fa-chart-pie"></i></div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="admin-content-card" style="margin-bottom: 24px;">
+        <h3><i class="fa fa-bolt"></i> Quick Actions</h3>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px;">
+            <a href="{% url 'room_status_board' %}" class="btn btn-primary">
+                <i class="fa fa-th"></i> Room Status Board
+            </a>
+            <a href="{% url 'add_customer' %}" class="btn btn-success">
+                <i class="fa fa-plus"></i> Walk-in Booking
+            </a>
+            <a href="{% url 'guest_search' %}" class="btn btn-info">
+                <i class="fa fa-search"></i> Search Guest
+            </a>
+            <a href="{% url 'housekeeping_board' %}" class="btn btn-warning">
+                <i class="fa fa-broom"></i> Housekeeping
+            </a>
+        </div>
+    </div>
+
+    <!-- Today's Check-ins and Check-outs -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 24px; margin-bottom: 24px;">
+        <!-- Today's Check-ins -->
+        <div class="admin-content-card">
+            <h3><i class="fa fa-sign-in-alt"></i> Today's Check-ins ({{ todays_checkins_online.count|add:todays_checkins_offline.count }})</h3>
+            <div class="table-responsive" style="margin-top: 16px;">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Guest</th>
+                            <th>Room</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in todays_checkins_online %}
+                        <tr>
+                            <td>{{ booking.user.first_name }} {{ booking.user.last_name }}</td>
+                            <td>Room {{ booking.room.room_number }}</td>
+                            <td><span class="badge badge-warning">{{ booking.status }}</span></td>
+                            <td>
+                                <a href="{% url 'check_in_guest' 'online' booking.id %}" class="btn btn-sm btn-success">
+                                    <i class="fa fa-check"></i> Check In
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% for booking in todays_checkins_offline %}
+                        <tr>
+                            <td>{{ booking.first_name }} {{ booking.last_name }}</td>
+                            <td>Room {{ booking.room.room_number }}</td>
+                            <td><span class="badge badge-warning">{{ booking.status }}</span></td>
+                            <td>
+                                <a href="{% url 'check_in_guest' 'offline' booking.id %}" class="btn btn-sm btn-success">
+                                    <i class="fa fa-check"></i> Check In
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% if not todays_checkins_online and not todays_checkins_offline %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">No check-ins scheduled for today</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Today's Check-outs -->
+        <div class="admin-content-card">
+            <h3><i class="fa fa-sign-out-alt"></i> Today's Check-outs ({{ todays_checkouts_online.count|add:todays_checkouts_offline.count }})</h3>
+            <div class="table-responsive" style="margin-top: 16px;">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Guest</th>
+                            <th>Room</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in todays_checkouts_online %}
+                        <tr>
+                            <td>{{ booking.user.first_name }} {{ booking.user.last_name }}</td>
+                            <td>Room {{ booking.room.room_number }}</td>
+                            <td><span class="badge badge-info">{{ booking.status }}</span></td>
+                            <td>
+                                <a href="{% url 'check_out_guest' 'online' booking.id %}" class="btn btn-sm btn-danger">
+                                    <i class="fa fa-sign-out"></i> Check Out
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% for booking in todays_checkouts_offline %}
+                        <tr>
+                            <td>{{ booking.first_name }} {{ booking.last_name }}</td>
+                            <td>Room {{ booking.room.room_number }}</td>
+                            <td><span class="badge badge-info">{{ booking.status }}</span></td>
+                            <td>
+                                <a href="{% url 'check_out_guest' 'offline' booking.id %}" class="btn btn-sm btn-danger">
+                                    <i class="fa fa-sign-out"></i> Check Out
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% if not todays_checkouts_online and not todays_checkouts_offline %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">No check-outs scheduled for today</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Housekeeping & Activity Section -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px;">
+        <!-- Pending Housekeeping -->
+        <div class="admin-content-card">
+            <h3><i class="fa fa-broom"></i> Pending Housekeeping Tasks</h3>
+            <div style="margin-top: 16px;">
+                {% if pending_housekeeping %}
+                <ul class="list-group">
+                    {% for task in pending_housekeeping %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>
+                            <strong>Room {{ task.room.room_number }}</strong>
+                            {% if task.priority == 'urgent' %}
+                            <span class="badge badge-danger">URGENT</span>
+                            {% elif task.priority == 'high' %}
+                            <span class="badge badge-warning">HIGH</span>
+                            {% endif %}
+                        </span>
+                        <span class="badge badge-secondary">{{ task.status }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <a href="{% url 'housekeeping_board' %}" class="btn btn-sm btn-outline-primary" style="margin-top: 12px;">View All</a>
+                {% else %}
+                <p class="text-muted">No pending housekeeping tasks</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="admin-content-card">
+            <h3><i class="fa fa-history"></i> Recent Activity</h3>
+            <div style="margin-top: 16px;">
+                {% if recent_activities %}
+                <ul class="list-group">
+                    {% for activity in recent_activities %}
+                    <li class="list-group-item">
+                        <small class="text-muted">{{ activity.created_at|timesince }} ago</small><br>
+                        <strong>{{ activity.get_action_type_display }}</strong>
+                        <p class="mb-0">{{ activity.description }}</p>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted">No recent activity</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Stats Row -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; margin-top: 24px;">
+        <div class="admin-content-card text-center">
+            <i class="fa fa-users fa-3x" style="color: #6366f1; margin-bottom: 12px;"></i>
+            <h2>{{ guests_in_house }}</h2>
+            <p class="text-muted">Guests In-House</p>
+        </div>
+        <div class="admin-content-card text-center">
+            <i class="fa fa-naira-sign fa-3x" style="color: #10b981; margin-bottom: 12px;"></i>
+            <h2>{{ revenue_today|naira }}</h2>
+            <p class="text-muted">Revenue Today</p>
+        </div>
+        <div class="admin-content-card text-center">
+            <i class="fa fa-exclamation-triangle fa-3x" style="color: #ef4444; margin-bottom: 12px;"></i>
+            <h2>{{ pending_payments_count }}</h2>
+            <p class="text-muted">Pending Payments</p>
+        </div>
+        <div class="admin-content-card text-center">
+            <i class="fa fa-wrench fa-3x" style="color: #f59e0b; margin-bottom: 12px;"></i>
+            <h2>{{ maintenance_rooms }}</h2>
+            <p class="text-muted">Under Maintenance</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .admin-stat-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        position: relative;
+        overflow: hidden;
+    }
+    .admin-stat-card h3 {
+        margin: 0 0 8px;
+        font-size: 32px;
+        font-weight: 700;
+    }
+    .admin-stat-card p {
+        margin: 0;
+        font-size: 14px;
+        opacity: 0.9;
+    }
+    .stat-icon {
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 48px;
+        opacity: 0.2;
+    }
+    .admin-content-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .admin-content-card h3 {
+        margin: 0 0 16px;
+        font-size: 18px;
+        font-weight: 600;
+        color: #111827;
+    }
+</style>
+{% endblock %}

@@ -1,4 +1,6 @@
-{% extends "allinclude.html" %} {% block content %}
+{% extends "allinclude.html" %}
+{% load hotel_currency %}
+{% block content %}
 
 <link
   href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Jost:wght@300;400;500&display=swap"
@@ -575,7 +577,7 @@
           <span
             >🌙 {{ booking.nights }} night{{ booking.nights|pluralize }}</span
           >
-          <span>₦{{ booking.room.price }}/night</span>
+          <span>{{ booking.room.price|naira }}/night</span>
         </div>
       </div>
 

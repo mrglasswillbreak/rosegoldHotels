@@ -7,3 +7,6 @@ class HotelappConfig(AppConfig):
 
     def ready(self):
         from . import signals  # noqa: F401
+        from .bootstrap import ensure_env_receptionist_account
+
+        ensure_env_receptionist_account()

@@ -178,6 +178,7 @@ class AdminUserCreateForm(StyledFormMixin, forms.ModelForm):
             "theme",
             "is_active",
             "is_staff",
+            "is_receptionist",
             "is_superuser",
         ]
 
@@ -226,6 +227,7 @@ class AdminUserUpdateForm(StyledFormMixin, forms.ModelForm):
             "theme",
             "is_active",
             "is_staff",
+            "is_receptionist",
             "is_superuser",
         ]
 

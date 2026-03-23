@@ -1,4 +1,5 @@
 {% extends 'allinclude.html' %}
+{% load hotel_currency %}
 
 {% block title %}All Rooms - RoseGold Hotel{% endblock %}
 
@@ -12,7 +13,7 @@
             <div class="card shadow-sm">
                 <div class="card-body">
                     <h5>{{ room.room_type }} - {{ room.room_number }}</h5>
-                    <p>Price: ${{ room.price }}</p>
+                    <p>Price: {{ room.price|naira }}</p>
                     <p>Status: {{ room.status }}</p>
                 </div>
             </div>

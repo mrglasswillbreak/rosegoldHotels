@@ -49,4 +49,15 @@ urlpatterns = [
     path('users/', views.manage_users, name='manage_users'),
     path('users/edit/<int:id>/', views.manage_users, name='edit_user'),
     path('users/delete/<int:id>/', views.delete_user, name='delete_user'),
+    
+    # RECEPTIONIST DASHBOARD
+    path('receptionist/dashboard/', views.receptionist_dashboard, name='receptionist_dashboard'),
+    path('receptionist/room-status/', views.room_status_board, name='room_status_board'),
+    path('receptionist/check-in/<str:booking_type>/<int:booking_id>/', views.check_in_guest, name='check_in_guest'),
+    path('receptionist/check-out/<str:booking_type>/<int:booking_id>/', views.check_out_guest, name='check_out_guest'),
+    path('receptionist/room/<int:room_id>/update-status/', views.update_room_status, name='update_room_status'),
+    path('receptionist/housekeeping/', views.housekeeping_board, name='housekeeping_board'),
+    path('receptionist/housekeeping/<int:task_id>/update/', views.update_housekeeping_task, name='update_housekeeping_task'),
+    path('receptionist/search/', views.guest_search, name='guest_search'),
+    path('receptionist/payment/<str:booking_type>/<int:booking_id>/', views.process_payment, name='process_payment'),
 ]

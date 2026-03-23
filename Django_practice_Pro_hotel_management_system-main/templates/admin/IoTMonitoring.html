@@ -1,0 +1,484 @@
+{% extends "admin/AdminAllinclude.html" %}
+
+{% block title %}IoT Monitoring - RoseGold Hotel{% endblock %}
+
+{% block pagecontant %}
+  {{ monitoring_snapshot|json_script:"iot-monitoring-snapshot" }}
+
+  <div class="admin-page-header">
+    <h1>IoT Room Monitoring</h1>
+    <p>Simulated live room intelligence for temperature, gas leakage detection, motion anomalies, and HSE response.</p>
+  </div>
+
+  <div class="admin-stat-grid">
+    <div class="admin-stat-card">
+      <span class="label">Rooms Monitored</span>
+      <span class="value" id="summary-rooms">{{ summary.rooms_monitored }}</span>
+      <span class="meta">Mapped to your current room inventory</span>
+    </div>
+    <div class="admin-stat-card">
+      <span class="label">Critical Rooms</span>
+      <span class="value" id="summary-critical">{{ summary.critical_rooms }}</span>
+      <span class="meta">Require immediate HSE attention</span>
+    </div>
+    <div class="admin-stat-card">
+      <span class="label">Warning Rooms</span>
+      <span class="value" id="summary-warning">{{ summary.warning_rooms }}</span>
+      <span class="meta">Need follow-up before escalation</span>
+    </div>
+    <div class="admin-stat-card">
+      <span class="label">Stable Rooms</span>
+      <span class="value" id="summary-normal">{{ summary.normal_rooms }}</span>
+      <span class="meta">Reading within normal hotel conditions</span>
+    </div>
+    <div class="admin-stat-card">
+      <span class="label">Active Alerts</span>
+      <span class="value" id="summary-alerts">{{ summary.active_alerts }}</span>
+      <span class="meta">Persistent alert records visible to admins</span>
+    </div>
+  </div>
+
+  <div class="admin-panel">
+    <div class="admin-panel-header">
+      <div>
+        <h3>Monitoring Controls</h3>
+        <p>Live feed refreshes automatically. You can also trigger a fresh simulation cycle on demand.</p>
+      </div>
+      <div class="admin-action-row">
+        <button class="btn btn-primary" type="button" id="simulate-now-btn">Run Fresh Simulation</button>
+        <a class="btn btn-default" href="{% url 'iot_alert_center' %}">Open Alert Center</a>
+      </div>
+    </div>
+    <div id="monitoring-generated-at" class="text-muted">Last updated: {{ generated_at }}</div>
+    <div id="critical-banner" style="margin-top: 16px;"></div>
+  </div>
+
+  <div class="admin-grid">
+    <div class="admin-column" style="flex: 1 1 100%;">
+      <div class="admin-panel">
+        <div class="admin-panel-header">
+          <div>
+            <h3>Room Conditions</h3>
+            <p>Each room card tracks current status plus recent sensor history to make the simulation feel like a live feed.</p>
+          </div>
+        </div>
+        <div class="iot-room-grid" id="iot-room-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-panel">
+    <div class="admin-panel-header">
+      <div>
+        <h3>Recent HSE Alerts</h3>
+        <p>Newest safety incidents and abnormal room conditions detected by the simulated devices.</p>
+      </div>
+      <a class="btn btn-default" href="{% url 'iot_alert_center' %}">Manage Alerts</a>
+    </div>
+    <div id="iot-alert-table"></div>
+  </div>
+
+  <style>
+    .iot-room-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 18px;
+    }
+
+    .iot-room-card {
+      border-radius: 18px;
+      border: 1px solid #dbe3f1;
+      padding: 18px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    .iot-room-card.status-critical {
+      border-color: #ef4444;
+      box-shadow: 0 16px 38px rgba(239, 68, 68, 0.18);
+    }
+
+    .iot-room-card.status-warning {
+      border-color: #f59e0b;
+      box-shadow: 0 16px 38px rgba(245, 158, 11, 0.16);
+    }
+
+    .iot-room-card.status-normal {
+      border-color: #86efac;
+    }
+
+    .iot-room-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .iot-room-head h4 {
+      margin: 0 0 6px;
+      font-size: 20px;
+      color: #0f172a;
+    }
+
+    .iot-room-meta {
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    .iot-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .iot-pill.normal {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .iot-pill.warning {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .iot-pill.critical {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .iot-sensor-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .iot-sensor {
+      border-radius: 14px;
+      background: #f8fafc;
+      padding: 12px;
+    }
+
+    .iot-sensor-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #64748b;
+      margin-bottom: 6px;
+    }
+
+    .iot-sensor-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .iot-subtext {
+      color: #64748b;
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .iot-issues {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .iot-issue-chip {
+      background: #eef2ff;
+      color: #3730a3;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .iot-card-footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 12px;
+      color: #64748b;
+      font-size: 12px;
+    }
+
+    .iot-alert-banner {
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-weight: 600;
+    }
+
+    .iot-alert-banner.warning {
+      background: #fff7ed;
+      color: #9a3412;
+      border: 1px solid #fdba74;
+    }
+
+    .iot-alert-banner.critical {
+      background: #fef2f2;
+      color: #991b1b;
+      border: 1px solid #fca5a5;
+    }
+
+    @media (max-width: 640px) {
+      .iot-sensor-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+
+  <script>
+    (function () {
+      const feedUrl = "{% url 'iot_monitoring_feed' %}";
+      const simulateUrl = "{% url 'force_simulation_cycle' %}";
+      const roomGrid = document.getElementById("iot-room-grid");
+      const alertTable = document.getElementById("iot-alert-table");
+      const simulateButton = document.getElementById("simulate-now-btn");
+      const criticalBanner = document.getElementById("critical-banner");
+      const chartRegistry = {};
+      const initialSnapshot = JSON.parse(document.getElementById("iot-monitoring-snapshot").textContent);
+
+      function getCookie(name) {
+        const cookieValue = document.cookie
+          .split(";")
+          .map((part) => part.trim())
+          .find((part) => part.startsWith(name + "="));
+        return cookieValue ? decodeURIComponent(cookieValue.split("=").slice(1).join("=")) : "";
+      }
+
+      function capitalize(value) {
+        return value.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
+      }
+
+      function renderSummary(summary, generatedAt) {
+        document.getElementById("summary-rooms").textContent = summary.rooms_monitored;
+        document.getElementById("summary-critical").textContent = summary.critical_rooms;
+        document.getElementById("summary-warning").textContent = summary.warning_rooms;
+        document.getElementById("summary-normal").textContent = summary.normal_rooms;
+        document.getElementById("summary-alerts").textContent = summary.active_alerts;
+        document.getElementById("monitoring-generated-at").textContent = "Last updated: " + generatedAt;
+
+        if (summary.critical_rooms > 0) {
+          criticalBanner.innerHTML = `<div class="iot-alert-banner critical">${summary.critical_rooms} room(s) are in a critical HSE state. Review the room cards and alert center immediately.</div>`;
+        } else if (summary.warning_rooms > 0) {
+          criticalBanner.innerHTML = `<div class="iot-alert-banner warning">${summary.warning_rooms} room(s) currently have warning-level issues that should be checked before they escalate.</div>`;
+        } else {
+          criticalBanner.innerHTML = `<div class="iot-alert-banner warning" style="background:#ecfdf5;color:#166534;border-color:#86efac;">All monitored rooms are currently within normal operating conditions.</div>`;
+        }
+      }
+
+      function renderRoomCards(rooms) {
+        if (!rooms.length) {
+          roomGrid.innerHTML = `<div class="admin-empty-state">No rooms are available to monitor yet.</div>`;
+          return;
+        }
+
+        roomGrid.innerHTML = rooms.map((room) => {
+          const issues = room.issues.length
+            ? room.issues.map((issue) => `<span class="iot-issue-chip">${capitalize(issue.type)}: ${capitalize(issue.severity)}</span>`).join("")
+            : `<span class="iot-issue-chip" style="background:#dcfce7;color:#166534;">Normal HSE condition</span>`;
+
+          return `
+            <div class="iot-room-card status-${room.status}">
+              <div class="iot-room-head">
+                <div>
+                  <h4>Room ${room.room_number}</h4>
+                  <div class="iot-room-meta">Floor ${room.floor} · ${room.room_type} · Device ${room.device_identifier}</div>
+                  <div class="iot-room-meta">Room status: ${capitalize(room.room_status)} · Housekeeping: ${capitalize(room.housekeeping_status)}</div>
+                </div>
+                <span class="iot-pill ${room.status}">${capitalize(room.status)}</span>
+              </div>
+
+              <div class="iot-sensor-grid">
+                <div class="iot-sensor">
+                  <div class="iot-sensor-label">Temperature</div>
+                  <div class="iot-sensor-value">${room.temperature_c ?? "--"}°C</div>
+                  <div class="iot-subtext">Comfort and HVAC health</div>
+                </div>
+                <div class="iot-sensor">
+                  <div class="iot-sensor-label">Gas Level</div>
+                  <div class="iot-sensor-value">${room.gas_level ?? "--"} ppm</div>
+                  <div class="iot-subtext">Leakage risk indicator</div>
+                </div>
+                <div class="iot-sensor">
+                  <div class="iot-sensor-label">Motion</div>
+                  <div class="iot-sensor-value">${capitalize(room.motion_state)}</div>
+                  <div class="iot-subtext">${room.occupancy_expected ? "Activity expected" : "Unexpected activity watched closely"}</div>
+                </div>
+              </div>
+
+              <div class="iot-issues">${issues}</div>
+              <canvas id="iot-room-chart-${room.room_id}" height="120"></canvas>
+
+              <div class="iot-card-footer">
+                <span>Last seen: ${room.last_seen_at}</span>
+                <span>${room.active_alerts.length} active alert(s)</span>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        rooms.forEach((room) => renderRoomChart(room));
+      }
+
+      function renderRoomChart(room) {
+        const canvas = document.getElementById(`iot-room-chart-${room.room_id}`);
+        if (!canvas || !window.Chart) {
+          return;
+        }
+
+        if (chartRegistry[room.room_id]) {
+          chartRegistry[room.room_id].destroy();
+        }
+
+        const ctx = canvas.getContext("2d");
+        chartRegistry[room.room_id] = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: room.history_labels,
+            datasets: [
+              {
+                label: "Temp °C",
+                data: room.history_temperature,
+                borderColor: "#0ea5e9",
+                backgroundColor: "rgba(14,165,233,0.15)",
+                tension: 0.32,
+                fill: true,
+                borderWidth: 2,
+                pointRadius: 0,
+              },
+              {
+                label: "Gas ppm",
+                data: room.history_gas,
+                borderColor: "#ef4444",
+                backgroundColor: "rgba(239,68,68,0.12)",
+                tension: 0.28,
+                fill: false,
+                borderWidth: 2,
+                pointRadius: 0,
+              },
+            ],
+          },
+          options: {
+            animation: false,
+            responsive: true,
+            plugins: {
+              legend: {
+                display: true,
+                labels: {
+                  boxWidth: 12,
+                  font: { size: 11 },
+                },
+              },
+            },
+            scales: {
+              x: {
+                grid: { display: false },
+                ticks: { maxTicksLimit: 6 },
+              },
+              y: {
+                beginAtZero: true,
+                grid: { color: "rgba(148,163,184,0.14)" },
+              },
+            },
+          },
+        });
+      }
+
+      function renderAlerts(alerts) {
+        if (!alerts.length) {
+          alertTable.innerHTML = `<div class="admin-empty-state">No HSE alerts have been generated yet.</div>`;
+          return;
+        }
+
+        alertTable.innerHTML = `
+          <table class="table table-striped table-hover admin-table">
+            <thead>
+              <tr>
+                <th>Room</th>
+                <th>Severity</th>
+                <th>Alert</th>
+                <th>Message</th>
+                <th>State</th>
+                <th>Triggered</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${alerts.slice(0, 10).map((alert) => `
+                <tr>
+                  <td>${alert.room_number}</td>
+                  <td><span class="badge ${alert.severity === "critical" ? "badge-danger" : "badge-warning"}">${capitalize(alert.severity)}</span></td>
+                  <td>${alert.title}</td>
+                  <td>${alert.message}</td>
+                  <td>
+                    ${alert.is_active ? '<span class="badge badge-danger">Active</span>' : '<span class="badge badge-success">Resolved</span>'}
+                    ${alert.acknowledged ? '<span class="badge badge-info">Acknowledged</span>' : ""}
+                  </td>
+                  <td>${alert.triggered_at}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        `;
+      }
+
+      function renderSnapshot(snapshot) {
+        renderSummary(snapshot.summary, snapshot.generated_at);
+        renderRoomCards(snapshot.rooms);
+        renderAlerts(snapshot.alerts);
+      }
+
+      async function refreshMonitoring(forceRefresh) {
+        const url = forceRefresh ? `${feedUrl}?refresh=1` : feedUrl;
+        const response = await fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } });
+        if (!response.ok) {
+          throw new Error("Unable to load live monitoring data.");
+        }
+        const snapshot = await response.json();
+        renderSnapshot(snapshot);
+      }
+
+      simulateButton.addEventListener("click", async function () {
+        simulateButton.disabled = true;
+        simulateButton.textContent = "Simulating...";
+
+        try {
+          const response = await fetch(simulateUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": getCookie("csrftoken"),
+              "X-Requested-With": "XMLHttpRequest",
+            },
+            body: JSON.stringify({ force: true }),
+          });
+          const payload = await response.json();
+          renderSnapshot(payload.snapshot);
+        } catch (error) {
+          console.error(error);
+        } finally {
+          simulateButton.disabled = false;
+          simulateButton.textContent = "Run Fresh Simulation";
+        }
+      });
+
+      renderSnapshot(initialSnapshot);
+      setInterval(() => {
+        if (document.visibilityState === "visible") {
+          refreshMonitoring(false).catch((error) => console.error(error));
+        }
+      }, 12000);
+    })();
+  </script>
+{% endblock %}

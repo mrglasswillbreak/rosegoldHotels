@@ -41,6 +41,7 @@ sorl-thumbnail==12.8.0
 soupsieve==2.3.2.post1
 sqlparse==0.4.2
 threadpoolctl==3.1.0
+twilio==9.10.3
 tzdata==2024.1
 urllib3==1.26.12
 vine==5.1.0

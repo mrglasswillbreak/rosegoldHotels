@@ -1,4 +1,6 @@
-{% extends "allinclude.html" %} {% block content %}
+{% extends "allinclude.html" %}
+{% load hotel_currency %}
+{% block content %}
 
 {% if not show_form %}
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -177,7 +179,7 @@
             <div><strong>Dates:</strong> {{ booking.check_in }} → {{ booking.check_out }}</div>
             <div><strong>Nights:</strong> {{ booking.nights }}</div>
             <div><strong>Guests:</strong> {{ booking.adults }} adult{{ booking.adults|pluralize }}{% if booking.children %}, {{ booking.children }} child{{ booking.children|pluralize:"ren" }}{% endif %}</div>
-            <div><strong>Price:</strong> ₦{{ booking.room.price }}/night</div>
+            <div><strong>Price:</strong> {{ booking.room.price|naira }}/night</div>
           </div>
         </div>
       </div>
@@ -543,7 +545,7 @@
           </span>
         </div>
         <div class="room-price-big">
-          <div class="amount" id="room-preview-price">{% if room %}₦{{ room.price }}{% else %}₦—{% endif %}</div>
+          <div class="amount" id="room-preview-price">{% if room %}{{ room.price|naira }}{% else %}₦—{% endif %}</div>
           <div class="per">per night</div>
         </div>
         <div class="total-cost" id="total-display"></div>
@@ -572,7 +574,7 @@
             <option value="">Select a room</option>
             {% for r in rooms %}
               <option value="{{ r.id }}" {% if form_data.room_id == r.id|stringformat:'s' %}selected{% endif %}>
-                Room {{ r.room_number }} · {{ r.get_room_type_display }} · ₦{{ r.price }}
+                Room {{ r.room_number }} · {{ r.get_room_type_display }} · {{ r.price|naira }}
               </option>
             {% endfor %}
           </select>

@@ -1,4 +1,6 @@
-{% extends "allinclude.html" %} {% block content %}
+{% extends "allinclude.html" %}
+{% load hotel_currency %}
+{% block content %}
 <style>
   .booking-shell {
     max-width: 1000px;
@@ -94,7 +96,7 @@
         <div class="card-body p-4 p-md-5">
           <div class="booking-hero mb-3">
             <h2 class="h4 mb-0">Book Room {{ room.room_number }}</h2>
-            <div class="booking-price">${{ room.price }} / night</div>
+            <div class="booking-price">{{ room.price|naira }} / night</div>
           </div>
           <p class="text-muted mb-4">{{ room.room_type }}</p>
 

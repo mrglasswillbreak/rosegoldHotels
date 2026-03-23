@@ -1,0 +1,186 @@
+{% extends "admin/AdminAllinclude.html" %}
+{% load static hotel_currency %}
+
+{% block title %}Guest Search - Hotel Management{% endblock %}
+
+{% block pagecontant %}
+<div class="admin-page-wrap">
+    <div class="admin-page-header">
+        <h1><i class="fa fa-search"></i> Guest Search</h1>
+        <p>Search for guests, bookings, and rooms</p>
+    </div>
+
+    <!-- Search Box -->
+    <div class="admin-content-card" style="margin-bottom: 24px;">
+        <form method="get" class="form-inline">
+            <input type="text" name="q" class="form-control" placeholder="Search by name, email, room number..." value="{{ query }}" style="flex: 1; min-width: 300px;" autofocus>
+            <button type="submit" class="btn btn-primary" style="margin-left: 8px;">
+                <i class="fa fa-search"></i> Search
+            </button>
+        </form>
+    </div>
+
+    {% if query %}
+    <!-- Online Bookings Results -->
+    {% if results.online_bookings %}
+    <div class="admin-content-card" style="margin-bottom: 24px;">
+        <h3><i class="fa fa-globe"></i> Online Bookings ({{ results.online_bookings|length }})</h3>
+        <div class="table-responsive" style="margin-top: 16px;">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Guest</th>
+                        <th>Email</th>
+                        <th>Room</th>
+                        <th>Check-in</th>
+                        <th>Check-out</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in results.online_bookings %}
+                    <tr>
+                        <td>{{ booking.user.first_name }} {{ booking.user.last_name }}</td>
+                        <td>{{ booking.user.email }}</td>
+                        <td>Room {{ booking.room.room_number }}</td>
+                        <td>{{ booking.check_in }}</td>
+                        <td>{{ booking.check_out }}</td>
+                        <td><span class="badge badge-info">{{ booking.status }}</span></td>
+                        <td>
+                            {% if booking.status == 'confirmed' %}
+                            <a href="{% url 'check_in_guest' 'online' booking.id %}" class="btn btn-sm btn-success">Check In</a>
+                            {% elif booking.status == 'checked_in' %}
+                            <a href="{% url 'check_out_guest' 'online' booking.id %}" class="btn btn-sm btn-danger">Check Out</a>
+                            {% endif %}
+                            <a href="{% url 'edit_online_booking' booking.id %}" class="btn btn-sm btn-primary">Edit</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Offline Bookings Results -->
+    {% if results.offline_bookings %}
+    <div class="admin-content-card" style="margin-bottom: 24px;">
+        <h3><i class="fa fa-phone"></i> Offline Bookings ({{ results.offline_bookings|length }})</h3>
+        <div class="table-responsive" style="margin-top: 16px;">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Guest</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Room</th>
+                        <th>Check-in</th>
+                        <th>Check-out</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in results.offline_bookings %}
+                    <tr>
+                        <td>{{ booking.first_name }} {{ booking.last_name }}</td>
+                        <td>{{ booking.email }}</td>
+                        <td>{{ booking.mobile_number }}</td>
+                        <td>Room {{ booking.room.room_number }}</td>
+                        <td>{{ booking.check_in }}</td>
+                        <td>{{ booking.check_out }}</td>
+                        <td><span class="badge badge-info">{{ booking.status }}</span></td>
+                        <td>
+                            {% if booking.status == 'confirmed' %}
+                            <a href="{% url 'check_in_guest' 'offline' booking.id %}" class="btn btn-sm btn-success">Check In</a>
+                            {% elif booking.status == 'checked_in' %}
+                            <a href="{% url 'check_out_guest' 'offline' booking.id %}" class="btn btn-sm btn-danger">Check Out</a>
+                            {% endif %}
+                            <a href="{% url 'edit_customer' booking.id %}" class="btn btn-sm btn-primary">Edit</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Rooms Results -->
+    {% if results.rooms %}
+    <div class="admin-content-card" style="margin-bottom: 24px;">
+        <h3><i class="fa fa-bed"></i> Rooms ({{ results.rooms|length }})</h3>
+        <div class="table-responsive" style="margin-top: 16px;">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Room Number</th>
+                        <th>Type</th>
+                        <th>Floor</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th>Housekeeping</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for room in results.rooms %}
+                    <tr>
+                        <td><strong>{{ room.room_number }}</strong></td>
+                        <td>{{ room.get_room_type_display }}</td>
+                        <td>Floor {{ room.floor }}</td>
+                        <td>{{ room.price|naira }}</td>
+                        <td>
+                            {% if room.status == 'available' %}
+                            <span class="badge badge-success">Available</span>
+                            {% elif room.status == 'occupied' %}
+                            <span class="badge badge-danger">Occupied</span>
+                            {% elif room.status == 'reserved' %}
+                            <span class="badge badge-warning">Reserved</span>
+                            {% else %}
+                            <span class="badge badge-secondary">Maintenance</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if room.housekeeping_status == 'clean' %}
+                            <span class="text-success"><i class="fa fa-check-circle"></i> Clean</span>
+                            {% elif room.housekeeping_status == 'dirty' %}
+                            <span class="text-danger"><i class="fa fa-exclamation-circle"></i> Dirty</span>
+                            {% else %}
+                            <span class="text-warning"><i class="fa fa-spinner"></i> In Progress</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'edit_room' room.id %}" class="btn btn-sm btn-primary">Edit</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if not results.online_bookings and not results.offline_bookings and not results.rooms %}
+    <div class="admin-content-card">
+        <p class="text-center text-muted">No results found for "{{ query }}"</p>
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="admin-content-card">
+        <p class="text-center text-muted">Enter a search query to find guests, bookings, or rooms</p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .admin-content-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends "admin/AdminAllinclude.html" %}
+{% load static hotel_currency %}
+
+{% block title %}Check Out - Hotel Management{% endblock %}
+
+{% block pagecontant %}
+<div class="admin-page-wrap">
+    <div class="admin-page-header">
+        <h1><i class="fa fa-sign-out-alt"></i> Check Out Guest</h1>
+        <p>Process guest check-out and payment</p>
+    </div>
+
+    <div class="admin-content-card">
+        <h3>Guest Information & Invoice</h3>
+        <div style="margin-top: 16px;">
+            <table class="table table-bordered">
+                <tr>
+                    <th>Guest Name:</th>
+                    <td>{{ guest_name }}</td>
+                </tr>
+                <tr>
+                    <th>Email:</th>
+                    <td>{{ guest_email }}</td>
+                </tr>
+                <tr>
+                    <th>Room Number:</th>
+                    <td>{{ booking.room.room_number }}</td>
+                </tr>
+                <tr>
+                    <th>Room Type:</th>
+                    <td>{{ booking.room.get_room_type_display }}</td>
+                </tr>
+                <tr>
+                    <th>Check-in Date:</th>
+                    <td>{{ booking.check_in }}</td>
+                </tr>
+                <tr>
+                    <th>Check-out Date:</th>
+                    <td>{{ booking.check_out }}</td>
+                </tr>
+                <tr>
+                    <th>Total Nights:</th>
+                    <td>{{ booking.get_total_nights }}</td>
+                </tr>
+                <tr>
+                    <th>Room Rate:</th>
+                    <td>{{ booking.room.price|naira }}/night</td>
+                </tr>
+                <tr class="table-success">
+                    <th><strong>Total Amount:</strong></th>
+                    <td><strong>{{ total_amount|naira }}</strong></td>
+                </tr>
+            </table>
+
+            {% if existing_payment and existing_payment.payment_status == 'paid' %}
+            <div class="alert alert-success">
+                <i class="fa fa-check-circle"></i> Payment already received on {{ existing_payment.paid_at|date:"M d, Y" }} via {{ existing_payment.get_payment_method_display }}
+                <br>Receipt #: {{ existing_payment.receipt_number }}
+            </div>
+            {% endif %}
+
+            <form method="post" style="margin-top: 24px;">
+                {% csrf_token %}
+                
+                {% if not existing_payment or existing_payment.payment_status != 'paid' %}
+                <div class="form-group">
+                    <label for="payment_method">Payment Method:</label>
+                    <select name="payment_method" id="payment_method" class="form-control" required>
+                        <option value="cash">Cash</option>
+                        <option value="card">Card</option>
+                        <option value="transfer">Bank Transfer</option>
+                        <option value="online">Online Payment</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="payment_amount">Payment Amount:</label>
+                    <input type="number" name="payment_amount" id="payment_amount" class="form-control" value="{{ total_amount }}" step="0.01" required>
+                </div>
+                {% endif %}
+
+                <button type="submit" class="btn btn-danger btn-lg">
+                    <i class="fa fa-sign-out"></i> Confirm Check Out
+                </button>
+                <a href="{% url 'receptionist_dashboard' %}" class="btn btn-secondary btn-lg">
+                    <i class="fa fa-times"></i> Cancel
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .admin-content-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        max-width: 800px;
+        margin: 0 auto;
+    }
+</style>
+{% endblock %}

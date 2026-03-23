@@ -1,4 +1,6 @@
-{% extends "allinclude.html" %} {% block content %}
+{% extends "allinclude.html" %}
+{% load hotel_currency %}
+{% block content %}
 
 <link
   href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap"
@@ -460,7 +462,7 @@
       </select>
     </div>
     <div class="filter-group">
-      <label>Max Price</label>
+      <label>Max Price (₦)</label>
       <input
         type="number"
         id="filter-price"
@@ -540,7 +542,7 @@
       <div class="card-body">
         <div class="card-header-row">
           <div class="room-number">Room {{ room.room_number }}</div>
-          <div class="room-price">₦{{ room.price }}<span>/night</span></div>
+          <div class="room-price">{{ room.price|naira }}<span>/night</span></div>
         </div>
         <div class="room-meta">
           <span>

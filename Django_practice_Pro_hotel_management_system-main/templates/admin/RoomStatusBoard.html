@@ -1,0 +1,124 @@
+{% extends "admin/AdminAllinclude.html" %}
+{% load static hotel_currency %}
+
+{% block title %}Room Status Board - Hotel Management{% endblock %}
+
+{% block pagecontant %}
+<div class="admin-page-wrap">
+    <div class="admin-page-header">
+        <h1><i class="fa fa-th"></i> Room Status Board</h1>
+        <p>Real-time room availability and status</p>
+    </div>
+
+    {% for floor, rooms in rooms_by_floor.items %}
+    <div class="admin-content-card" style="margin-bottom: 24px;">
+        <h3>Floor {{ floor }}</h3>
+        <div class="room-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; margin-top: 16px;">
+            {% for room in rooms %}
+            <div class="room-card room-{{ room.status }}" data-room-id="{{ room.id }}">
+                <div class="room-number">{{ room.room_number }}</div>
+                <div class="room-type">{{ room.get_room_type_display }}</div>
+                <div class="room-status">
+                    {% if room.status == 'available' %}
+                    <span class="badge badge-success">Available</span>
+                    {% elif room.status == 'occupied' %}
+                    <span class="badge badge-danger">Occupied</span>
+                    {% elif room.status == 'reserved' %}
+                    <span class="badge badge-warning">Reserved</span>
+                    {% elif room.status == 'maintenance' %}
+                    <span class="badge badge-secondary">Maintenance</span>
+                    {% endif %}
+                </div>
+                <div class="room-housekeeping">
+                    {% if room.housekeeping_status == 'clean' %}
+                    <i class="fa fa-check-circle text-success"></i> Clean
+                    {% elif room.housekeeping_status == 'dirty' %}
+                    <i class="fa fa-exclamation-circle text-danger"></i> Dirty
+                    {% elif room.housekeeping_status == 'in_progress' %}
+                    <i class="fa fa-spinner text-warning"></i> In Progress
+                    {% endif %}
+                </div>
+                <div class="room-price">{{ room.price|naira }}/night</div>
+                <div class="room-actions" style="margin-top: 12px;">
+                    <a href="{% url 'edit_room' room.id %}" class="btn btn-sm btn-outline-primary">
+                        <i class="fa fa-edit"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+
+    <div style="margin-top: 24px; padding: 16px; background: #fff; border-radius: 12px;">
+        <h4>Legend</h4>
+        <div style="display: flex; gap: 24px; flex-wrap: wrap; margin-top: 12px;">
+            <div><span class="badge badge-success">Available</span> - Ready for booking</div>
+            <div><span class="badge badge-danger">Occupied</span> - Guest checked in</div>
+            <div><span class="badge badge-warning">Reserved</span> - Booking confirmed</div>
+            <div><span class="badge badge-secondary">Maintenance</span> - Under repair</div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .admin-content-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .room-card {
+        background: #fff;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 16px;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+    .room-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .room-card.room-available {
+        border-color: #10b981;
+        background: #f0fdf4;
+    }
+    .room-card.room-occupied {
+        border-color: #ef4444;
+        background: #fef2f2;
+    }
+    .room-card.room-reserved {
+        border-color: #f59e0b;
+        background: #fffbeb;
+    }
+    .room-card.room-maintenance {
+        border-color: #6b7280;
+        background: #f9fafb;
+    }
+    .room-number {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: #111827;
+    }
+    .room-type {
+        font-size: 14px;
+        color: #6b7280;
+        margin-bottom: 8px;
+    }
+    .room-status {
+        margin-bottom: 8px;
+    }
+    .room-housekeeping {
+        font-size: 12px;
+        color: #6b7280;
+        margin-bottom: 8px;
+    }
+    .room-price {
+        font-size: 16px;
+        font-weight: 600;
+        color: #111827;
+    }
+</style>
+{% endblock %}

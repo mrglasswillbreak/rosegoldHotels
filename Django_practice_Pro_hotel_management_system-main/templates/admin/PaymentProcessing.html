@@ -1,0 +1,122 @@
+{% extends "admin/AdminAllinclude.html" %}
+{% load static hotel_currency %}
+
+{% block title %}Process Payment - Hotel Management{% endblock %}
+
+{% block pagecontant %}
+<div class="admin-page-wrap">
+    <div class="admin-page-header">
+        <h1><i class="fa fa-naira-sign"></i> Process Payment</h1>
+        <p>Record payment for booking</p>
+    </div>
+
+    <div class="admin-content-card">
+        <h3>Booking Details</h3>
+        <table class="table table-bordered" style="margin-top: 16px;">
+            <tr>
+                <th>Guest Name:</th>
+                <td>{{ guest_name }}</td>
+            </tr>
+            <tr>
+                <th>Room:</th>
+                <td>Room {{ booking.room.room_number }}</td>
+            </tr>
+            <tr>
+                <th>Check-in:</th>
+                <td>{{ booking.check_in }}</td>
+            </tr>
+            <tr>
+                <th>Check-out:</th>
+                <td>{{ booking.check_out }}</td>
+            </tr>
+            <tr class="table-info">
+                <th>Total Amount:</th>
+                <td><strong>{{ total_amount|naira }}</strong></td>
+            </tr>
+            <tr class="table-success">
+                <th>Amount Paid:</th>
+                <td><strong>{{ total_paid|naira }}</strong></td>
+            </tr>
+            <tr class="{% if balance > 0 %}table-warning{% else %}table-success{% endif %}">
+                <th>Balance:</th>
+                <td><strong>{{ balance|naira }}</strong></td>
+            </tr>
+        </table>
+
+        {% if existing_payments %}
+        <h4 style="margin-top: 24px;">Payment History</h4>
+        <table class="table table-sm" style="margin-top: 8px;">
+            <thead>
+                <tr>
+                    <th>Receipt #</th>
+                    <th>Amount</th>
+                    <th>Method</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in existing_payments %}
+                <tr>
+                    <td>{{ payment.receipt_number }}</td>
+                    <td>{{ payment.amount|naira }}</td>
+                    <td>{{ payment.get_payment_method_display }}</td>
+                    <td>{{ payment.paid_at|date:"M d, Y H:i" }}</td>
+                    <td>
+                        {% if payment.payment_status == 'paid' %}
+                        <span class="badge badge-success">Paid</span>
+                        {% else %}
+                        <span class="badge badge-warning">Pending</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
+        {% if balance > 0 %}
+        <h4 style="margin-top: 32px;">Record New Payment</h4>
+        <form method="post" style="margin-top: 16px;">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="payment_method">Payment Method:</label>
+                <select name="payment_method" id="payment_method" class="form-control" required>
+                    <option value="cash">Cash</option>
+                    <option value="card">Card</option>
+                    <option value="transfer">Bank Transfer</option>
+                    <option value="online">Online Payment</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="amount">Amount:</label>
+                <input type="number" name="amount" id="amount" class="form-control" value="{{ balance }}" step="0.01" min="0.01" max="{{ balance }}" required>
+                <small class="form-text text-muted">Maximum: {{ balance|naira }}</small>
+            </div>
+            <button type="submit" class="btn btn-success btn-lg">
+                <i class="fa fa-check"></i> Process Payment
+            </button>
+            <a href="{% url 'receptionist_dashboard' %}" class="btn btn-secondary btn-lg">
+                <i class="fa fa-times"></i> Cancel
+            </a>
+        </form>
+        {% else %}
+        <div class="alert alert-success" style="margin-top: 24px;">
+            <i class="fa fa-check-circle"></i> This booking has been fully paid.
+        </div>
+        <a href="{% url 'receptionist_dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .admin-content-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        max-width: 800px;
+        margin: 0 auto;
+    }
+</style>
+{% endblock %}

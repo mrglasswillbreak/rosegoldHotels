@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="{% static 'Allfiles/Photo/img.jpg' %}" type="image/ico" />
+    <link rel="icon" href="{% static 'Allfiles/Photo/eniadmin.jpg' %}" type="image/ico" />
     <title>{% block title %}{% endblock %}</title>
 
     <link rel="stylesheet" href="{% static 'Allfiles/vendors/bootstrap/dist/css/bootstrap.min.css' %}">
@@ -282,14 +282,14 @@
         <div class="col-md-3 left_col">
           <div class="left_col scroll-view">
             <div class="navbar nav_title" style="border: 0;">
-              <a href="{% url 'dashboard' %}" class="site_title"><i class="fa fa-building"></i> <span>RoseGold Admin</span></a>
+              <a href="{% if request.user.is_receptionist %}{% url 'receptionist_dashboard' %}{% elif request.user.is_staff %}{% url 'dashboard' %}{% else %}{% url 'home' %}{% endif %}" class="site_title"><i class="fa fa-building"></i> <span>RoseGold Admin</span></a>
             </div>
 
             <div class="clearfix"></div>
 
             <div class="profile clearfix">
               <div class="profile_pic">
-                <img src="{% static 'Allfiles/Photo/img.jpg' %}" alt="..." class="img-circle profile_img">
+                <img src="{% static 'Allfiles/Photo/eniadmin.jpg' %}" alt="..." class="img-circle profile_img">
               </div>
               <div class="profile_info">
                 <span>Signed in as</span>
@@ -300,52 +300,92 @@
             <br />
 
             <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
-              <div class="menu_section">
-                <h3>Operations</h3>
-                <ul class="nav side-menu">
-                  <li class="{% if active_admin_section == 'dashboard' %}current-page{% endif %}">
-                    <a href="{% url 'dashboard' %}"><i class="fa fa-dashboard"></i> Dashboard</a>
-                  </li>
-                  <li class="{% if active_admin_section == 'online_bookings' %}current-page{% endif %}">
-                    <a href="{% url 'online_booking_list' %}"><i class="fa fa-globe"></i> Online Bookings</a>
-                  </li>
-                  <li class="{% if active_admin_section == 'offline_bookings' %}current-page{% endif %}">
-                    <a href="{% url 'add_customer' %}"><i class="fa fa-bed"></i> Desk Bookings</a>
-                  </li>
-                  <li class="{% if active_admin_section == 'rooms' %}current-page{% endif %}">
-                    <a href="{% url 'add_room' %}"><i class="fa fa-home"></i> Rooms</a>
-                  </li>
-                  <li class="{% if active_admin_section == 'employees' %}current-page{% endif %}">
-                    <a href="{% url 'add_employee' %}"><i class="fa fa-users"></i> Employees</a>
-                  </li>
-                  <li class="{% if active_admin_section == 'salaries' %}current-page{% endif %}">
-                    <a href="{% url 'add_salary' %}"><i class="fa fa-money"></i> Salaries</a>
-                  </li>
-                  <li class="{% if active_admin_section == 'users' %}current-page{% endif %}">
-                    <a href="{% url 'manage_users' %}"><i class="fa fa-user-circle"></i> Users</a>
-                  </li>
-                </ul>
-              </div>
+              {% if request.user.is_staff %}
+                <div class="menu_section">
+                  <h3>Admin</h3>
+                  <ul class="nav side-menu">
+                    <li class="{% if active_admin_section == 'dashboard' %}current-page{% endif %}">
+                      <a href="{% url 'dashboard' %}"><i class="fa fa-dashboard"></i> Dashboard</a>
+                    </li>
+                    <li class="{% if active_admin_section == 'online_bookings' %}current-page{% endif %}">
+                      <a href="{% url 'online_booking_list' %}"><i class="fa fa-globe"></i> Online Bookings</a>
+                    </li>
+                    <li class="{% if active_admin_section == 'offline_bookings' %}current-page{% endif %}">
+                      <a href="{% url 'add_customer' %}"><i class="fa fa-bed"></i> Desk Bookings</a>
+                    </li>
+                    <li class="{% if active_admin_section == 'rooms' %}current-page{% endif %}">
+                      <a href="{% url 'add_room' %}"><i class="fa fa-home"></i> Rooms</a>
+                    </li>
+                    <li class="{% if active_admin_section == 'employees' %}current-page{% endif %}">
+                      <a href="{% url 'add_employee' %}"><i class="fa fa-users"></i> Employees</a>
+                    </li>
+                    <li class="{% if active_admin_section == 'salaries' %}current-page{% endif %}">
+                      <a href="{% url 'add_salary' %}"><i class="fa fa-money"></i> Salaries</a>
+                    </li>
+                    <li class="{% if active_admin_section == 'users' %}current-page{% endif %}">
+                      <a href="{% url 'manage_users' %}"><i class="fa fa-user-circle"></i> Users</a>
+                    </li>
+                    <li class="{% if active_admin_section == 'iot_monitoring' %}current-page{% endif %}">
+                      <a href="{% url 'iot_monitoring_dashboard' %}"><i class="fa fa-thermometer-half"></i> IoT Monitoring</a>
+                    </li>
+                    <li class="{% if active_admin_section == 'iot_alert_center' %}current-page{% endif %}">
+                      <a href="{% url 'iot_alert_center' %}"><i class="fa fa-shield"></i> HSE Alerts</a>
+                    </li>
+                  </ul>
+                </div>
+              {% endif %}
+
+              {% if request.user.is_staff or request.user.is_receptionist %}
+                <div class="menu_section">
+                  <h3>Front Desk</h3>
+                  <ul class="nav side-menu">
+                    <li class="{% if active_admin_section == 'receptionist_dashboard' %}current-page{% endif %}">
+                      <a href="{% url 'receptionist_dashboard' %}"><i class="fa fa-th-large"></i> Reception Dashboard</a>
+                    </li>
+                    <li class="{% if active_admin_section == 'room_status_board' %}current-page{% endif %}">
+                      <a href="{% url 'room_status_board' %}"><i class="fa fa-th"></i> Room Status</a>
+                    </li>
+                    <li class="{% if active_admin_section == 'guest_search' %}current-page{% endif %}">
+                      <a href="{% url 'guest_search' %}"><i class="fa fa-search"></i> Guest Search</a>
+                    </li>
+                    <li class="{% if active_admin_section == 'housekeeping_board' %}current-page{% endif %}">
+                      <a href="{% url 'housekeeping_board' %}"><i class="fa fa-broom"></i> Housekeeping</a>
+                    </li>
+                  </ul>
+                </div>
+              {% endif %}
 
               <div class="menu_section">
                 <h3>Shortcuts</h3>
                 <ul class="nav side-menu">
                   <li><a href="{% url 'home' %}"><i class="fa fa-external-link"></i> Public Website</a></li>
-                  <li><a href="/admin/"><i class="fa fa-cogs"></i> Django Admin</a></li>
+                  {% if request.user.is_staff or request.user.is_receptionist %}
+                    <li><a href="{% url 'receptionist_dashboard' %}"><i class="fa fa-th-large"></i> Front Desk</a></li>
+                  {% endif %}
+                  {% if request.user.is_staff %}
+                    <li><a href="/admin/"><i class="fa fa-cogs"></i> Django Admin</a></li>
+                    <li><a href="{% url 'iot_monitoring_dashboard' %}"><i class="fa fa-thermometer-half"></i> IoT Monitoring</a></li>
+                  {% endif %}
                 </ul>
               </div>
             </div>
 
             <div class="sidebar-footer hidden-small">
-              <a data-toggle="tooltip" data-placement="top" title="Dashboard" href="{% url 'dashboard' %}">
+              <a data-toggle="tooltip" data-placement="top" title="Dashboard" href="{% if request.user.is_receptionist %}{% url 'receptionist_dashboard' %}{% elif request.user.is_staff %}{% url 'dashboard' %}{% else %}{% url 'home' %}{% endif %}">
                 <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
               </a>
               <a data-toggle="tooltip" data-placement="top" title="Website" href="{% url 'home' %}">
                 <span class="glyphicon glyphicon-new-window" aria-hidden="true"></span>
               </a>
-              <a data-toggle="tooltip" data-placement="top" title="Users" href="{% url 'manage_users' %}">
-                <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
-              </a>
+              {% if request.user.is_staff %}
+                <a data-toggle="tooltip" data-placement="top" title="Users" href="{% url 'manage_users' %}">
+                  <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                </a>
+              {% elif request.user.is_receptionist %}
+                <a data-toggle="tooltip" data-placement="top" title="Housekeeping" href="{% url 'housekeeping_board' %}">
+                  <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span>
+                </a>
+              {% endif %}
               <a data-toggle="tooltip" data-placement="top" title="Logout" href="{% url 'auth_logout' %}">
                 <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
               </a>
@@ -362,11 +402,13 @@
               <ul class="nav navbar-right">
                 <li class="nav-item dropdown open" style="padding-left: 15px;">
                   <a href="javascript:;" class="user-profile dropdown-toggle" aria-haspopup="true" id="navbarDropdown" data-toggle="dropdown" aria-expanded="false">
-                    <img src="{% static 'Allfiles/Photo/img.jpg' %}" alt="">{{ request.user.get_full_name|default:request.user.email }}
+                    <img src="{% static 'Allfiles/Photo/eniadmin.jpg' %}" alt="">{{ request.user.get_full_name|default:request.user.email }}
                   </a>
                   <div class="dropdown-menu dropdown-usermenu pull-right" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="{% url 'manage_users' %}">Manage Users</a>
-                    <a class="dropdown-item" href="{% url 'dashboard' %}">Dashboard</a>
+                    {% if request.user.is_staff %}
+                      <a class="dropdown-item" href="{% url 'manage_users' %}">Manage Users</a>
+                    {% endif %}
+                    <a class="dropdown-item" href="{% if request.user.is_receptionist %}{% url 'receptionist_dashboard' %}{% elif request.user.is_staff %}{% url 'dashboard' %}{% else %}{% url 'home' %}{% endif %}">Dashboard</a>
                     <a class="dropdown-item" href="{% url 'auth_logout' %}"><i class="fa fa-sign-out pull-right"></i> Log Out</a>
                   </div>
                 </li>

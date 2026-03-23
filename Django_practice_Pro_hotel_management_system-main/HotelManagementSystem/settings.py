@@ -12,10 +12,45 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 import os
+import sys
 import dj_database_url
+
+
+def load_env_files(*paths):
+    for path in paths:
+        if not path or not Path(path).exists():
+            continue
+        for raw_line in Path(path).read_text().splitlines():
+            line = raw_line.strip()
+            if not line or line.startswith('#') or '=' not in line:
+                continue
+            key, value = line.split('=', 1)
+            os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
+
+
+def env_bool(name, default=False):
+    value = os.environ.get(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {'1', 'true', 'yes', 'on'}
+
+
+def env_int(name, default):
+    try:
+        return int(os.environ.get(name, str(default)))
+    except (TypeError, ValueError):
+        return default
+
+
+def env_float(name, default):
+    try:
+        return float(os.environ.get(name, str(default)))
+    except (TypeError, ValueError):
+        return default
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_env_files(BASE_DIR / '.env', BASE_DIR / 'iot_alerts.env')
 
 
 # Quick-start development settings - unsuitable for production
@@ -42,8 +77,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'HotelApp'
-    #'alerts' #would be later implemented
+    'HotelApp',
+    'alerts',
 ]
 
 LOGIN_URL = '/login/'
@@ -109,6 +144,46 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'alerts@rosegoldhotel.local')
+SERVER_EMAIL = os.environ.get('SERVER_EMAIL', DEFAULT_FROM_EMAIL)
+EMAIL_HOST = os.environ.get('EMAIL_HOST', '')
+EMAIL_PORT = env_int('EMAIL_PORT', 587)
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+EMAIL_USE_TLS = env_bool('EMAIL_USE_TLS', True)
+EMAIL_USE_SSL = env_bool('EMAIL_USE_SSL', False)
+
+IOT_MONITOR_AUTOSTART = env_bool('IOT_MONITOR_AUTOSTART', DEBUG)
+IOT_MONITOR_INTERVAL_SECONDS = env_int('IOT_MONITOR_INTERVAL_SECONDS', 30)
+IOT_ALERT_REMINDER_MINUTES = env_int('IOT_ALERT_REMINDER_MINUTES', 10)
+IOT_ALERT_EMAIL_ENABLED = env_bool('IOT_ALERT_EMAIL_ENABLED', True)
+IOT_ALERT_SMS_ENABLED = env_bool('IOT_ALERT_SMS_ENABLED', True)
+IOT_ALERT_SMS_BACKEND = os.environ.get('IOT_ALERT_SMS_BACKEND', 'console')
+IOT_SIM_ABNORMAL_ROOM_RATE = env_float('IOT_SIM_ABNORMAL_ROOM_RATE', 0.20)
+IOT_ALERT_EXTRA_EMAIL_RECIPIENTS = [
+    email.strip()
+    for email in os.environ.get('IOT_ALERT_EXTRA_EMAIL_RECIPIENTS', '').split(',')
+    if email.strip()
+]
+IOT_ALERT_EXTRA_SMS_RECIPIENTS = [
+    number.strip()
+    for number in os.environ.get('IOT_ALERT_EXTRA_SMS_RECIPIENTS', '').split(',')
+    if number.strip()
+]
+TWILIO_ACCOUNT_SID = os.environ.get('TWILIO_ACCOUNT_SID', '')
+TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN', '')
+TWILIO_FROM_NUMBER = os.environ.get('TWILIO_FROM_NUMBER', '')
+
+DEFAULT_RECEPTIONIST_EMAIL = os.environ.get('DEFAULT_RECEPTIONIST_EMAIL', '').strip()
+DEFAULT_RECEPTIONIST_PASSWORD = os.environ.get('DEFAULT_RECEPTIONIST_PASSWORD', '')
+DEFAULT_RECEPTIONIST_FIRST_NAME = os.environ.get('DEFAULT_RECEPTIONIST_FIRST_NAME', 'Reception')
+DEFAULT_RECEPTIONIST_LAST_NAME = os.environ.get('DEFAULT_RECEPTIONIST_LAST_NAME', 'Desk')
+DEFAULT_RECEPTIONIST_PHONE = os.environ.get('DEFAULT_RECEPTIONIST_PHONE', '').strip()
+DEFAULT_RECEPTIONIST_THEME = os.environ.get('DEFAULT_RECEPTIONIST_THEME', 'light').strip() or 'light'
+DEFAULT_RECEPTIONIST_IS_ACTIVE = env_bool('DEFAULT_RECEPTIONIST_IS_ACTIVE', True)
+DEFAULT_RECEPTIONIST_SYNC_PASSWORD = env_bool('DEFAULT_RECEPTIONIST_SYNC_PASSWORD', True)
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
@@ -133,6 +208,8 @@ STATICFILES_DIRS =[
   os.path.join (BASE_DIR / 'static')
 ]
 STATIC_ROOT = os.path.join (BASE_DIR,'assets')
+if 'test' in sys.argv:
+    STATIC_ROOT = os.path.join(BASE_DIR, '.test-static')
 MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = '/media/'
 

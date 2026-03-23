@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
-from django.db.models import Count, Q
+from django.db.models import Count, Q, Sum
 from django.db.models.functions import TruncMonth
 from django.views.decorators.http import require_POST, require_http_methods
 from django.db.utils import OperationalError, ProgrammingError
@@ -24,7 +24,10 @@ from .models import (
     Employee,
     Room,
     Salary,
-    Authorregis
+    Authorregis,
+    Payment,
+    HousekeepingTask,
+    ActivityLog
 )
 
 from .forms import (
@@ -42,7 +45,12 @@ logger = logging.getLogger(__name__)
 
 
 def get_post_login_route_name(user):
-    return "dashboard" if user.is_staff else "user_home"
+    if user.is_receptionist:
+        return "receptionist_dashboard"
+    elif user.is_staff:
+        return "dashboard"
+    else:
+        return "user_home"
 
 
 def get_post_login_redirect(request, user):
@@ -123,6 +131,14 @@ def calculate_booking_revenue(bookings):
     return total
 
 
+def format_naira(amount):
+    value = Decimal(str(amount))
+    rounded = value.quantize(Decimal("0.01"))
+    if rounded == rounded.to_integral():
+        return f"₦{int(rounded):,}"
+    return f"₦{rounded:,.2f}"
+
+
 # =========================
 # BASIC PAGES
 # =========================
@@ -198,6 +214,19 @@ def dashboard(request):
         offline_bookings.select_related("room")
     )
     monthly_salary_budget = sum((salary.salary for salary in salaries), Decimal("0"))
+    iot_summary = None
+    recent_iot_alerts = []
+
+    try:
+        from alerts.services import build_monitoring_snapshot
+        from alerts.runtime import run_monitoring_cycle
+
+        run_monitoring_cycle(force_refresh=False)
+        iot_snapshot = build_monitoring_snapshot(force_refresh=False)
+        iot_summary = iot_snapshot["summary"]
+        recent_iot_alerts = iot_snapshot["alerts"][:5]
+    except (OperationalError, ProgrammingError):
+        logger.warning("IoT monitoring tables are not available yet; skipping dashboard summary.", exc_info=True)
 
     context = build_admin_context(
         "dashboard",
@@ -227,6 +256,8 @@ def dashboard(request):
         recent_users=users.order_by("-date_joined")[:5],
         recent_employees=employees.order_by("-created_at")[:5],
         recent_rooms=rooms.order_by("-created_at")[:5],
+        iot_summary=iot_summary,
+        recent_iot_alerts=recent_iot_alerts,
     )
     return render(request, "admin/Admin.html", context)
 @login_required
@@ -277,8 +308,11 @@ def author_login(request):
     if request.method == "POST":
         email = request.POST.get("username")  # your form input is named "username"
         password = request.POST.get("password")
-
-        user = authenticate(request, email=email, password=password)
+        try:
+            user = authenticate(request, email=email, password=password)
+        except ValueError:
+            logger.exception("Malformed password hash for login attempt: %s", email)
+            user = None
 
         if user:
             login(request, user)
@@ -848,8 +882,8 @@ def manage_users(request, id=None):
             if saved_user.pk == request.user.pk and form.cleaned_data.get("password1"):
                 update_session_auth_hash(request, saved_user)
             messages.success(request, f"User {saved_user.email} saved successfully.")
-            if saved_user.pk == request.user.pk and not saved_user.is_staff:
-                messages.warning(request, "Your admin privileges were removed. Redirected to your user home.")
+            if saved_user.pk == request.user.pk and not saved_user.is_staff and not saved_user.is_receptionist:
+                messages.warning(request, "Your dashboard privileges were removed. Redirected to your user home.")
                 return redirect("user_home")
             return redirect("manage_users")
     else:
@@ -860,9 +894,11 @@ def manage_users(request, id=None):
     users = Authorregis.objects.annotate(booking_count=Count("onlinebooking", distinct=True)).order_by("-date_joined")
     users = apply_admin_search(users, search_query, ["email", "first_name", "last_name", "phone_number"])
     if role_filter == "staff":
-        users = users.filter(is_staff=True)
+        users = users.filter(is_staff=True, is_receptionist=False)
+    elif role_filter == "receptionist":
+        users = users.filter(is_receptionist=True)
     elif role_filter == "guest":
-        users = users.filter(is_staff=False)
+        users = users.filter(is_staff=False, is_receptionist=False)
     elif role_filter == "inactive":
         users = users.filter(is_active=False)
 
@@ -893,3 +929,462 @@ def delete_user(request, id):
         messages.success(request, "User deleted successfully.")
 
     return redirect("manage_users")
+
+
+# =========================
+# RECEPTIONIST DECORATOR
+# =========================
+
+def receptionist_required(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            login_url = reverse("author_login")
+            query = urlencode({"next": request.get_full_path()})
+            return redirect(f"{login_url}?{query}")
+        if not (request.user.is_staff or request.user.is_receptionist):
+            messages.error(request, "You do not have permission to access the receptionist dashboard.")
+            return redirect("user_home")
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view
+
+
+# =========================
+# RECEPTIONIST DASHBOARD
+# =========================
+
+@receptionist_required
+def receptionist_dashboard(request):
+    today = timezone.localdate()
+    now = timezone.now()
+    
+    # Today's check-ins and check-outs
+    todays_checkins_online = OnlineBooking.objects.filter(
+        check_in=today,
+        status__in=['confirmed', 'pending']
+    ).select_related('user', 'room').order_by('created_at')
+    
+    todays_checkins_offline = OfflineBooking.objects.filter(
+        check_in=today,
+        status__in=['confirmed', 'pending']
+    ).select_related('room').order_by('created_at')
+    
+    todays_checkouts_online = OnlineBooking.objects.filter(
+        check_out=today,
+        status='checked_in'
+    ).select_related('user', 'room').order_by('created_at')
+    
+    todays_checkouts_offline = OfflineBooking.objects.filter(
+        check_out=today,
+        status='checked_in'
+    ).select_related('room').order_by('created_at')
+    
+    # Room statistics
+    total_rooms = Room.objects.count()
+    available_rooms = Room.objects.filter(status='available').count()
+    occupied_rooms = Room.objects.filter(status='occupied').count()
+    reserved_rooms = Room.objects.filter(status='reserved').count()
+    maintenance_rooms = Room.objects.filter(status='maintenance').count()
+    
+    # Housekeeping tasks
+    pending_housekeeping = HousekeepingTask.objects.filter(
+        status='pending'
+    ).select_related('room').order_by('-priority', 'created_at')[:5]
+    
+    # Recent activity
+    recent_activities = ActivityLog.objects.select_related('user', 'room').order_by('-created_at')[:10]
+    
+    # Revenue today
+    today_payments = Payment.objects.filter(
+        paid_at__date=today,
+        payment_status='paid'
+    ).aggregate(total=Sum('amount'))
+    revenue_today = today_payments['total'] or Decimal('0.00')
+    
+    # Guests in house
+    guests_in_house = OnlineBooking.objects.filter(status='checked_in').count() + \
+                     OfflineBooking.objects.filter(status='checked_in').count()
+    
+    # Pending payments
+    pending_payments_count = Payment.objects.filter(payment_status='pending').count()
+    
+    context = build_admin_context(
+        "receptionist_dashboard",
+        todays_checkins_online=todays_checkins_online,
+        todays_checkins_offline=todays_checkins_offline,
+        todays_checkouts_online=todays_checkouts_online,
+        todays_checkouts_offline=todays_checkouts_offline,
+        total_rooms=total_rooms,
+        available_rooms=available_rooms,
+        occupied_rooms=occupied_rooms,
+        reserved_rooms=reserved_rooms,
+        maintenance_rooms=maintenance_rooms,
+        occupancy_rate=round((occupied_rooms / total_rooms * 100), 1) if total_rooms > 0 else 0,
+        pending_housekeeping=pending_housekeeping,
+        recent_activities=recent_activities,
+        revenue_today=revenue_today,
+        guests_in_house=guests_in_house,
+        pending_payments_count=pending_payments_count,
+        today=today,
+    )
+    
+    return render(request, "admin/ReceptionistDashboard.html", context)
+
+
+# =========================
+# ROOM STATUS BOARD
+# =========================
+
+@receptionist_required
+def room_status_board(request):
+    rooms = Room.objects.all().order_by('floor', 'room_number')
+    
+    # Group rooms by floor
+    rooms_by_floor = {}
+    for room in rooms:
+        if room.floor not in rooms_by_floor:
+            rooms_by_floor[room.floor] = []
+        rooms_by_floor[room.floor].append(room)
+    
+    context = build_admin_context(
+        "room_status_board",
+        rooms_by_floor=dict(sorted(rooms_by_floor.items())),
+    )
+    
+    return render(request, "admin/RoomStatusBoard.html", context)
+
+
+# =========================
+# CHECK-IN VIEW
+# =========================
+
+@receptionist_required
+def check_in_guest(request, booking_type, booking_id):
+    if booking_type == 'online':
+        booking = get_object_or_404(OnlineBooking, pk=booking_id)
+        guest_name = f"{booking.user.first_name} {booking.user.last_name}"
+    else:
+        booking = get_object_or_404(OfflineBooking, pk=booking_id)
+        guest_name = f"{booking.first_name} {booking.last_name}"
+    
+    if request.method == 'POST':
+        # Update booking status
+        booking.status = 'checked_in'
+        booking.checked_in_at = timezone.now()
+        booking.save()
+        
+        # Update room status
+        room = booking.room
+        room.status = 'occupied'
+        room.save()
+        
+        # Log activity
+        ActivityLog.objects.create(
+            user=request.user,
+            action_type='check_in',
+            description=f"Checked in {guest_name} to Room {room.room_number}",
+            booking_type=booking_type,
+            booking_id=booking_id,
+            room=room
+        )
+        
+        messages.success(request, f"{guest_name} checked in successfully to Room {room.room_number}!")
+        return redirect('receptionist_dashboard')
+    
+    context = build_admin_context(
+        "check_in",
+        booking=booking,
+        booking_type=booking_type,
+        guest_name=guest_name,
+    )
+    
+    return render(request, "admin/CheckIn.html", context)
+
+
+# =========================
+# CHECK-OUT VIEW
+# =========================
+
+@receptionist_required
+def check_out_guest(request, booking_type, booking_id):
+    if booking_type == 'online':
+        booking = get_object_or_404(OnlineBooking, pk=booking_id, status='checked_in')
+        guest_name = f"{booking.user.first_name} {booking.user.last_name}"
+        guest_email = booking.user.email
+    else:
+        booking = get_object_or_404(OfflineBooking, pk=booking_id, status='checked_in')
+        guest_name = f"{booking.first_name} {booking.last_name}"
+        guest_email = booking.email
+    
+    # Calculate total amount
+    total_amount = booking.get_total_amount()
+    
+    # Check for existing payment
+    existing_payment = Payment.objects.filter(
+        booking_type=booking_type,
+        booking_id=booking_id
+    ).first()
+    
+    if request.method == 'POST':
+        payment_method = request.POST.get('payment_method')
+        payment_amount = request.POST.get('payment_amount')
+        
+        # Update booking status
+        booking.status = 'checked_out'
+        booking.checked_out_at = timezone.now()
+        booking.save()
+        
+        # Update room status
+        room = booking.room
+        room.status = 'available'
+        room.housekeeping_status = 'dirty'
+        room.save()
+        
+        # Create housekeeping task
+        HousekeepingTask.objects.create(
+            room=room,
+            status='pending',
+            priority='high',
+            notes=f'Room vacated by {guest_name}',
+            created_by=request.user
+        )
+        
+        # Record payment if not already paid
+        if not existing_payment or existing_payment.payment_status != 'paid':
+            import random
+            receipt_number = f"RCP{timezone.now().strftime('%Y%m%d')}{random.randint(1000, 9999)}"
+            
+            Payment.objects.create(
+                booking_type=booking_type,
+                booking_id=booking_id,
+                amount=payment_amount or total_amount,
+                payment_method=payment_method,
+                payment_status='paid',
+                receipt_number=receipt_number,
+                paid_at=timezone.now(),
+                created_by=request.user
+            )
+        
+        # Log activity
+        ActivityLog.objects.create(
+            user=request.user,
+            action_type='check_out',
+            description=f"Checked out {guest_name} from Room {room.room_number}",
+            booking_type=booking_type,
+            booking_id=booking_id,
+            room=room
+        )
+        
+        messages.success(request, f"{guest_name} checked out successfully from Room {room.room_number}!")
+        return redirect('receptionist_dashboard')
+    
+    context = build_admin_context(
+        "check_out",
+        booking=booking,
+        booking_type=booking_type,
+        guest_name=guest_name,
+        guest_email=guest_email,
+        total_amount=total_amount,
+        existing_payment=existing_payment,
+    )
+    
+    return render(request, "admin/CheckOut.html", context)
+
+
+# =========================
+# QUICK ROOM STATUS UPDATE (AJAX)
+# =========================
+
+@require_POST
+@receptionist_required
+def update_room_status(request, room_id):
+    room = get_object_or_404(Room, pk=room_id)
+    new_status = request.POST.get('status')
+    
+    if new_status in dict(Room.ROOM_STATUS):
+        room.status = new_status
+        room.save()
+        
+        # Log activity
+        ActivityLog.objects.create(
+            user=request.user,
+            action_type='room_status_changed',
+            description=f"Changed Room {room.room_number} status to {new_status}",
+            room=room
+        )
+        
+        return JsonResponse({'success': True, 'message': f'Room {room.room_number} status updated to {new_status}'})
+    
+    return JsonResponse({'success': False, 'message': 'Invalid status'}, status=400)
+
+
+# =========================
+# HOUSEKEEPING MANAGEMENT
+# =========================
+
+@receptionist_required
+def housekeeping_board(request):
+    tasks = HousekeepingTask.objects.select_related('room', 'assigned_to', 'created_by').order_by('-priority', 'created_at')
+    
+    # Filter options
+    status_filter = request.GET.get('status', 'all')
+    if status_filter and status_filter != 'all':
+        tasks = tasks.filter(status=status_filter)
+    
+    context = build_admin_context(
+        "housekeeping_board",
+        tasks=tasks,
+        status_filter=status_filter,
+    )
+    
+    return render(request, "admin/HousekeepingBoard.html", context)
+
+
+@require_POST
+@receptionist_required
+def update_housekeeping_task(request, task_id):
+    task = get_object_or_404(HousekeepingTask, pk=task_id)
+    new_status = request.POST.get('status')
+    
+    if new_status in dict(HousekeepingTask.TASK_STATUS):
+        task.status = new_status
+        
+        if new_status == 'in_progress' and not task.started_at:
+            task.started_at = timezone.now()
+        elif new_status == 'completed':
+            task.completed_at = timezone.now()
+            
+            # Update room status
+            room = task.room
+            room.housekeeping_status = 'clean'
+            room.last_cleaned = timezone.now()
+            room.save()
+            
+            # Log activity
+            ActivityLog.objects.create(
+                user=request.user,
+                action_type='housekeeping_completed',
+                description=f"Completed housekeeping for Room {room.room_number}",
+                room=room
+            )
+        
+        task.save()
+        messages.success(request, f"Housekeeping task for Room {task.room.room_number} updated to {new_status}")
+    
+    return redirect('housekeeping_board')
+
+
+# =========================
+# GUEST SEARCH
+# =========================
+
+@receptionist_required
+def guest_search(request):
+    query = request.GET.get('q', '').strip()
+    results = {
+        'online_bookings': [],
+        'offline_bookings': [],
+        'rooms': []
+    }
+    
+    if query:
+        # Search online bookings
+        results['online_bookings'] = OnlineBooking.objects.filter(
+            Q(user__email__icontains=query) |
+            Q(user__first_name__icontains=query) |
+            Q(user__last_name__icontains=query) |
+            Q(room__room_number__icontains=query)
+        ).select_related('user', 'room')[:20]
+        
+        # Search offline bookings
+        results['offline_bookings'] = OfflineBooking.objects.filter(
+            Q(first_name__icontains=query) |
+            Q(last_name__icontains=query) |
+            Q(email__icontains=query) |
+            Q(mobile_number__icontains=query) |
+            Q(room__room_number__icontains=query)
+        ).select_related('room')[:20]
+        
+        # Search rooms
+        results['rooms'] = Room.objects.filter(
+            Q(room_number__icontains=query) |
+            Q(room_type__icontains=query) |
+            Q(floor__icontains=query)
+        )[:20]
+    
+    context = build_admin_context(
+        "guest_search",
+        query=query,
+        results=results,
+    )
+    
+    return render(request, "admin/GuestSearch.html", context)
+
+
+# =========================
+# PAYMENT PROCESSING
+# =========================
+
+@receptionist_required
+def process_payment(request, booking_type, booking_id):
+    if booking_type == 'online':
+        booking = get_object_or_404(OnlineBooking, pk=booking_id)
+        guest_name = f"{booking.user.first_name} {booking.user.last_name}"
+    else:
+        booking = get_object_or_404(OfflineBooking, pk=booking_id)
+        guest_name = f"{booking.first_name} {booking.last_name}"
+    
+    total_amount = booking.get_total_amount()
+    
+    # Get existing payments
+    existing_payments = Payment.objects.filter(
+        booking_type=booking_type,
+        booking_id=booking_id
+    ).order_by('-created_at')
+    
+    total_paid = sum(p.amount for p in existing_payments if p.payment_status == 'paid')
+    balance = total_amount - total_paid
+    
+    if request.method == 'POST':
+        payment_method = request.POST.get('payment_method')
+        payment_amount = Decimal(request.POST.get('amount', '0'))
+        
+        import random
+        receipt_number = f"RCP{timezone.now().strftime('%Y%m%d')}{random.randint(1000, 9999)}"
+        
+        Payment.objects.create(
+            booking_type=booking_type,
+            booking_id=booking_id,
+            amount=payment_amount,
+            payment_method=payment_method,
+            payment_status='paid',
+            receipt_number=receipt_number,
+            paid_at=timezone.now(),
+            created_by=request.user
+        )
+        
+        # Log activity
+        ActivityLog.objects.create(
+            user=request.user,
+            action_type='payment_received',
+            description=f"Received payment of {format_naira(payment_amount)} from {guest_name} via {payment_method}",
+            booking_type=booking_type,
+            booking_id=booking_id,
+            room=booking.room
+        )
+        
+        messages.success(request, f"Payment of {format_naira(payment_amount)} received successfully!")
+        return redirect('receptionist_dashboard')
+    
+    context = build_admin_context(
+        "process_payment",
+        booking=booking,
+        booking_type=booking_type,
+        guest_name=guest_name,
+        total_amount=total_amount,
+        total_paid=total_paid,
+        balance=balance,
+        existing_payments=existing_payments,
+    )
+    
+    return render(request, "admin/PaymentProcessing.html", context)
