@@ -1,0 +1,12 @@
+/*------------------------------------------------------------------------------
+ *
+ *  Alias stylesheet for case compatibility.
+ *
+ *  This file intentionally does not contain its own CSS rules. It simply
+ *  imports the canonical "Responsive.css" so that both "responsive.css" and
+ *  "Responsive.css" can be referenced by templates without maintaining
+ *  duplicate content.
+ *
+ *----------------------------------------------------------------------------*/
+
+@import url("Responsive.css");
