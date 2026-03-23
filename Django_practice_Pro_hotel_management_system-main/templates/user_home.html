@@ -548,7 +548,8 @@ Hotel & Resort
   }
 
   #Staff .Staff_info:hover .Staff_overly,
-  #Staff .Staff_info.active .Staff_overly {
+  #Staff .Staff_info.active .Staff_overly,
+  #Staff .Staff_info:focus-within .Staff_overly {
     transform: translateY(0);
   }
 
@@ -571,13 +572,19 @@ Hotel & Resort
   /* Social links: hidden initially, fade in after overlay arrives */
   #Staff .Staff_part2 {
     opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
     padding: 6px 0 12px;
-    transition: opacity 0.3s ease 0.12s;
+    transition: opacity 0.3s ease 0.12s, visibility 0s linear 0.42s;
   }
 
   #Staff .Staff_info:hover .Staff_part2,
-  #Staff .Staff_info.active .Staff_part2 {
+  #Staff .Staff_info.active .Staff_part2,
+  #Staff .Staff_info:focus-within .Staff_part2 {
     opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 0.3s ease 0.12s, visibility 0s linear 0s;
   }
 
   /* Social link icons layout and hover */
@@ -743,10 +750,6 @@ Hotel & Resort
     background: #101a25;
     border-color: var(--outline);
     color: var(--text-main);
-  }
-
-    html.dark #Staff .Staff_part1 {
-    border-top-color: var(--outline);
   }
 
   html.dark #Staff .Staff_overly {

@@ -143,14 +143,61 @@ $(function () {
         ]
     });
 
+    // Initialize accessibility attributes for Staff cards
+    $('#Staff .Staff_info').each(function () {
+        var $card = $(this);
+        var isActive = $card.hasClass('active');
+        $card.attr({
+            tabindex: '0',
+            role: 'button',
+            'aria-expanded': isActive ? 'true' : 'false'
+        });
+        var $links = $card.find('.Staff_part2');
+        if ($links.length) {
+            $links.attr('aria-hidden', isActive ? 'false' : 'true');
+        }
+    });
+
+    // Helper to toggle Staff card social links and keep ARIA in sync
+    function toggleStaffCard($card) {
+        if (!$card || !$card.length) return;
+
+        var wasActive = $card.hasClass('active');
+
+        // Deactivate all cards and hide their social links
+        $('#Staff .Staff_info').each(function () {
+            var $c = $(this);
+            $c.removeClass('active').attr('aria-expanded', 'false');
+            var $links = $c.find('.Staff_part2');
+            if ($links.length) {
+                $links.attr('aria-hidden', 'true');
+            }
+        });
+
+        // If the card was not active, activate it and show its social links
+        if (!wasActive) {
+            $card.addClass('active').attr('aria-expanded', 'true');
+            var $cardLinks = $card.find('.Staff_part2');
+            if ($cardLinks.length) {
+                $cardLinks.attr('aria-hidden', 'false');
+            }
+        }
+    }
+
     // Staff card social links: toggle on click/tap for touch devices
     $(document).on('click', '#Staff .Staff_info', function(e) {
         // Allow clicks on the social links themselves to pass through
         if ($(e.target).closest('.Staff_part2').length) return;
-        var $card = $(this);
-        var wasActive = $card.hasClass('active');
-        $('#Staff .Staff_info').removeClass('active');
-        if (!wasActive) $card.addClass('active');
+        toggleStaffCard($(this));
+    });
+
+    // Keyboard support for Staff cards (Enter/Space)
+    $(document).on('keydown', '#Staff .Staff_info', function (e) {
+        var key = e.key || e.keyCode;
+        if (key === 'Enter' || key === 13 || key === ' ' || key === 32) {
+            e.preventDefault();
+            toggleStaffCard($(this));
+        }
     });
    
    //counter part js
