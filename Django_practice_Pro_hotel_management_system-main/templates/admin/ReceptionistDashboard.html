@@ -10,34 +10,34 @@
             <h1><i class="fa fa-th-large"></i> Receptionist Dashboard</h1>
             <p>Front desk command center - {{ today|date:"l, F d, Y" }}</p>
         </div>
-        <a href="{% url 'home' %}" class="btn btn-default" target="_blank">
+        <a href="{% url 'home' %}" class="btn btn-default" target="_blank" rel="noopener noreferrer">
             <i class="fa fa-external-link"></i> View Public Website
         </a>
     </div>
 
     <!-- Statistics Cards -->
     <div class="admin-stat-grid">
-        <div class="admin-stat-card" style="flex: 1; min-width: 200px;">
+        <div class="admin-stat-card">
             <h3>{{ total_rooms }}</h3>
             <p>Total Rooms</p>
             <div class="stat-icon"><i class="fa fa-building"></i></div>
         </div>
-        <div class="admin-stat-card" style="flex: 1; min-width: 200px; background: #10b981; color: #fff;">
+        <div class="admin-stat-card" style="background: #10b981; color: #fff;">
             <h3>{{ available_rooms }}</h3>
             <p>Available</p>
             <div class="stat-icon"><i class="fa fa-check-circle"></i></div>
         </div>
-        <div class="admin-stat-card" style="flex: 1; min-width: 200px; background: #ef4444; color: #fff;">
+        <div class="admin-stat-card" style="background: #ef4444; color: #fff;">
             <h3>{{ occupied_rooms }}</h3>
             <p>Occupied</p>
             <div class="stat-icon"><i class="fa fa-user"></i></div>
         </div>
-        <div class="admin-stat-card" style="flex: 1; min-width: 200px; background: #f59e0b; color: #fff;">
+        <div class="admin-stat-card" style="background: #f59e0b; color: #fff;">
             <h3>{{ reserved_rooms }}</h3>
             <p>Reserved</p>
             <div class="stat-icon"><i class="fa fa-bookmark"></i></div>
         </div>
-        <div class="admin-stat-card" style="flex: 1; min-width: 200px; background: #6366f1; color: #fff;">
+        <div class="admin-stat-card" style="background: #6366f1; color: #fff;">
             <h3>{{ occupancy_rate }}%</h3>
             <p>Occupancy Rate</p>
             <div class="stat-icon"><i class="fa fa-chart-pie"></i></div>
