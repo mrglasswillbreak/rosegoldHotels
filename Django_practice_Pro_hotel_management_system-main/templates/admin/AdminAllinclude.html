@@ -73,6 +73,12 @@
         padding: 24px 28px;
         margin-bottom: 24px;
         box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        overflow-x: auto;
       }
 
       .admin-page-header h1,
@@ -98,9 +104,10 @@
         background: #fff;
         border-radius: 16px;
         padding: 20px 22px;
-        min-width: 180px;
+        min-width: 120px;
         flex: 1 1 180px;
         box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+        overflow-x: auto;
       }
 
       .admin-stat-card .label {
@@ -133,6 +140,7 @@
         padding: 22px 24px;
         margin-bottom: 24px;
         box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+        overflow-x: auto;
       }
 
       .admin-panel-header {
@@ -162,7 +170,7 @@
       }
 
       .admin-grid > .admin-column {
-        flex: 1 1 420px;
+        flex: 1 1 min(420px, 100%);
       }
 
       .admin-searchbar {
@@ -264,13 +272,70 @@
 
       @media (max-width: 767px) {
         .admin-page-wrap {
-          padding: 16px 16px 32px;
+          padding: 12px 12px 24px;
         }
 
         .admin-page-header,
         .admin-panel,
         .admin-stat-card {
-          padding: 18px;
+          padding: 14px 16px;
+        }
+
+        .admin-page-header h1,
+        .admin-page-header h2 {
+          font-size: 20px;
+        }
+
+        .admin-stat-grid {
+          gap: 10px;
+        }
+
+        .admin-stat-card {
+          flex: 1 1 calc(50% - 5px);
+        }
+
+        .admin-grid {
+          gap: 16px;
+        }
+
+        .admin-grid > .admin-column {
+          flex: 1 1 100%;
+        }
+
+        .admin-panel-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 8px;
+        }
+
+        .admin-panel-header .btn {
+          align-self: flex-start;
+        }
+
+        .admin-quick-links {
+          gap: 8px;
+        }
+
+        .admin-quick-link {
+          padding: 10px 12px;
+          font-size: 13px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .admin-stat-card {
+          flex: 1 1 100%;
+        }
+
+        .admin-page-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .admin-page-header .btn {
+          align-self: flex-start;
+          width: 100%;
+          text-align: center;
         }
       }
     </style>

@@ -6,8 +6,13 @@
 {% block pagecontant %}
 <div class="admin-page-wrap">
     <div class="admin-page-header">
-        <h1><i class="fa fa-th-large"></i> Receptionist Dashboard</h1>
-        <p>Front desk command center - {{ today|date:"l, F d, Y" }}</p>
+        <div>
+            <h1><i class="fa fa-th-large"></i> Receptionist Dashboard</h1>
+            <p>Front desk command center - {{ today|date:"l, F d, Y" }}</p>
+        </div>
+        <a href="{% url 'home' %}" class="btn btn-default" target="_blank">
+            <i class="fa fa-external-link"></i> View Public Website
+        </a>
     </div>
 
     <!-- Statistics Cards -->
@@ -59,7 +64,7 @@
     </div>
 
     <!-- Today's Check-ins and Check-outs -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 24px; margin-bottom: 24px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(500px, 100%), 1fr)); gap: 24px; margin-bottom: 24px;">
         <!-- Today's Check-ins -->
         <div class="admin-content-card">
             <h3><i class="fa fa-sign-in-alt"></i> Today's Check-ins ({{ todays_checkins_online.count|add:todays_checkins_offline.count }})</h3>
@@ -158,7 +163,7 @@
     </div>
 
     <!-- Housekeeping & Activity Section -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(400px, 100%), 1fr)); gap: 24px;">
         <!-- Pending Housekeeping -->
         <div class="admin-content-card">
             <h3><i class="fa fa-broom"></i> Pending Housekeeping Tasks</h3>
@@ -239,7 +244,8 @@
         padding: 24px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         position: relative;
-        overflow: hidden;
+        overflow-x: auto;
+        min-width: 0;
     }
     .admin-stat-card h3 {
         margin: 0 0 8px;
@@ -264,12 +270,24 @@
         border-radius: 12px;
         padding: 24px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        overflow-x: auto;
     }
     .admin-content-card h3 {
         margin: 0 0 16px;
         font-size: 18px;
         font-weight: 600;
         color: #111827;
+    }
+    @media (max-width: 767px) {
+        .admin-stat-card {
+            padding: 16px;
+        }
+        .admin-stat-card h3 {
+            font-size: 24px;
+        }
+        .admin-content-card {
+            padding: 16px;
+        }
     }
 </style>
 {% endblock %}
