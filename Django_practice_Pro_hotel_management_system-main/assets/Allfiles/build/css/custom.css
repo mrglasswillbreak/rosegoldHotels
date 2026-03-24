@@ -1048,7 +1048,7 @@ body .container.body .right_col {
   .right_col {
     padding: 10px !important; }
   body.admin-modern .right_col {
-    padding-top: 68px !important; }
+    padding-top: calc(var(--admin-nav-h) + 10px) !important; }
   .item {
     display: block; } }
 
@@ -1094,7 +1094,7 @@ body.admin-modern .admin-page-wrap .right_col [class*="col-"] {
 
 @media (max-width: 767px) {
   body.admin-modern .right_col {
-    padding: 68px 10px 10px !important;
+    padding: calc(var(--admin-nav-h) + 10px) 10px 10px !important;
   }
 
   body.admin-modern .nav.toggle {
