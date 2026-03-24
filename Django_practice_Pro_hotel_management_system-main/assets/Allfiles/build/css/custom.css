@@ -1047,6 +1047,8 @@ body .container.body .right_col {
     padding-right: 0; }
   .right_col {
     padding: 10px !important; }
+  body.admin-modern .right_col {
+    padding-top: calc(var(--admin-nav-h) + 10px) !important; }
   .item {
     display: block; } }
 
@@ -1092,13 +1094,7 @@ body.admin-modern .admin-page-wrap .right_col [class*="col-"] {
 
 @media (max-width: 767px) {
   body.admin-modern .right_col {
-    padding: 10px !important;
-  }
-
-  body.admin-modern .top_nav .nav_menu {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
+    padding: calc(var(--admin-nav-h) + 10px) 10px 10px !important;
   }
 
   body.admin-modern .nav.toggle {

@@ -273,10 +273,15 @@
         display: inline;
       }
 
+      /* Single source of truth for navbar height offsets */
+      :root {
+        --admin-nav-h: 58px;
+      }
+
       body.nav-md.admin-modern .container.body .col-md-3.left_col {
         position: fixed;
-        height: 100vh;
-        top: 0;
+        height: calc(100vh - var(--admin-nav-h));
+        top: var(--admin-nav-h);
         overflow-y: scroll;
         overflow-x: hidden;
         z-index: 100;
@@ -284,10 +289,42 @@
 
       body.nav-sm.admin-modern .container.body .col-md-3.left_col {
         position: absolute;
-        height: 100%;
+        height: calc(100vh - var(--admin-nav-h));
+        top: var(--admin-nav-h);
         overflow-y: auto;
         overflow-x: hidden;
         z-index: 9999;
+      }
+
+      /* Fixed full-width admin top navbar */
+      body.admin-modern .main_container .top_nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 101;
+        margin-left: 0;
+        transition: transform 0.3s ease;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        body.admin-modern .main_container .top_nav {
+          transition: none;
+        }
+      }
+
+      body.admin-modern .top_nav .nav_menu {
+        margin-bottom: 0;
+      }
+
+      /* Class toggled by scroll JS to hide the navbar */
+      body.admin-modern .main_container .top_nav.nav-hidden {
+        transform: translateY(-100%);
+      }
+
+      /* Offset right column content below fixed navbar */
+      body.admin-modern .container.body .right_col {
+        padding-top: calc(var(--admin-nav-h) + 10px);
       }
 
       @media (max-width: 767px) {
@@ -560,5 +597,29 @@
     </script>
 
     <script src="{% static 'Allfiles/build/js/custom.min.js' %}"></script>
+
+    <script>
+      (function () {
+        var topNav = document.querySelector('.top_nav');
+        var lastScrollTop = 0;
+        var delta = 5;
+
+        function onScroll() {
+          if (!topNav) return;
+          var currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+          if (Math.abs(lastScrollTop - currentScrollTop) <= delta) return;
+
+          if (currentScrollTop > lastScrollTop && currentScrollTop > topNav.offsetHeight) {
+            topNav.classList.add('nav-hidden');
+          } else {
+            topNav.classList.remove('nav-hidden');
+          }
+
+          lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop;
+        }
+
+        window.addEventListener('scroll', onScroll, { passive: true });
+      })();
+    </script>
   </body>
 </html>
