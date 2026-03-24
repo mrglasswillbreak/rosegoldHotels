@@ -345,12 +345,12 @@
       /* Offset right column below fixed navbar and to the right of the fixed sidebar */
       body.nav-md.admin-modern .container.body .right_col {
         margin-left: var(--sidebar-w);
-        padding-top: calc(var(--admin-nav-h) + 10px);
+        padding-top: calc(var(--admin-nav-h) + 10px) !important;
       }
 
       body.nav-sm.admin-modern .container.body .right_col {
         margin-left: var(--sidebar-w-sm);
-        padding-top: calc(var(--admin-nav-h) + 10px);
+        padding-top: calc(var(--admin-nav-h) + 10px) !important;
       }
 
       /* When the sidebar is hidden on smaller screens, remove the left offset */
@@ -433,6 +433,16 @@
   </head>
 
   <body class="nav-md admin-modern">
+    <script>
+      /* Restore persisted sidebar state before content renders to avoid flash */
+      (function () {
+        var SIDEBAR_KEY = 'adminSidebarState';
+        if (typeof localStorage !== 'undefined' && localStorage.getItem(SIDEBAR_KEY) === 'nav-sm') {
+          document.body.classList.remove('nav-md');
+          document.body.classList.add('nav-sm');
+        }
+      })();
+    </script>
     <div class="container body">
       <div class="main_container">
         <div class="col-md-3 left_col">
@@ -631,6 +641,28 @@
     </script>
 
     <script src="{% static 'Allfiles/build/js/custom.min.js' %}"></script>
+
+    <script>
+      /* Persist sidebar toggle state so it survives page navigation (same key as above) */
+      (function () {
+        var SIDEBAR_KEY = 'adminSidebarState';
+        var menuToggle = document.getElementById('menu_toggle');
+        if (menuToggle && typeof localStorage !== 'undefined' && typeof MutationObserver !== 'undefined') {
+          menuToggle.addEventListener('click', function () {
+            var observer = new MutationObserver(function (mutations) {
+              mutations.forEach(function (mutation) {
+                if (mutation.attributeName === 'class') {
+                  localStorage.setItem(SIDEBAR_KEY,
+                    document.body.classList.contains('nav-sm') ? 'nav-sm' : 'nav-md');
+                  observer.disconnect();
+                }
+              });
+            });
+            observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+          });
+        }
+      })();
+    </script>
 
   </body>
 </html>
