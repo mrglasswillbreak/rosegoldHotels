@@ -5245,6 +5245,11 @@ ul.notifications {
 /*************************
  All Employee Css part
 *************************/
+.table_menu {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .table_menu ul li {
   margin: 0px 10px !important;
   width: 150px;
