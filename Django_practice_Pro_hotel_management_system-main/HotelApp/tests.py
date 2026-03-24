@@ -107,6 +107,31 @@ class LoginRoutingTests(TestCase):
 
         self.assertRedirects(response, reverse("add_room"))
 
+    def test_login_page_renders_200_with_next_query_param(self):
+        """Regression test: GET /login/?next=... must not raise VariableDoesNotExist."""
+        response = self.client.get(
+            f"{reverse('author_login')}?next={reverse('user_home')}"
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            f'<input type="hidden" name="next" value="{reverse("user_home")}">',
+        )
+
+    def test_login_page_renders_200_without_next_query_param(self):
+        """Regression test: GET /login/ (no next) must also render cleanly."""
+        response = self.client.get(reverse("author_login"))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'name="next"')
+
+    def test_login_page_strips_unsafe_next_url(self):
+        """An external ?next= value must not appear in the rendered form."""
+        response = self.client.get(
+            f"{reverse('author_login')}?next=https://evil.com"
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "evil.com")
+
 
 class AdminAccessControlTests(TestCase):
     def test_home_redirects_staff_users_to_custom_admin_dashboard(self):

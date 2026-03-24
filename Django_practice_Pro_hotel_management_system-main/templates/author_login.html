@@ -27,8 +27,8 @@ Login - RoseGold Hotel
 
           <form method="post" novalidate>
             {% csrf_token %}
-            {% if request.GET.next or request.POST.next %}
-            <input type="hidden" name="next" value="{{ request.GET.next|default:request.POST.next }}">
+            {% if next %}
+            <input type="hidden" name="next" value="{{ next }}">
             {% endif %}
 
             <div class="mb-4">
