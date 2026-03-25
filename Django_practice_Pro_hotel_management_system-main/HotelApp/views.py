@@ -1401,7 +1401,7 @@ def process_payment(request, booking_type, booking_id):
 # PAYSTACK PAYMENT INTEGRATION
 # =========================
 
-from pypaystack2 import Paystack
+from pypaystack2 import PaystackClient
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 import uuid
@@ -1436,15 +1436,15 @@ def initiate_payment(request):
         reference = generate_payment_reference()
         
         # Initialize Paystack transaction
-        paystack = Paystack(secret_key=settings.PAYSTACK_SECRET_KEY)
-        response = paystack.transaction.initialize(
+        paystack = PaystackClient(secret_key=settings.PAYSTACK_SECRET_KEY)
+        response = paystack.transactions.initialize(
             email=request.user.email,
             amount=amount,
             reference=reference,
             callback_url=request.build_absolute_uri(reverse('payment_callback'))
         )
         
-        if response['status']:
+        if response.status:
             # Store payment reference in session
             request.session['payment_reference'] = reference
             request.session['payment_amount'] = float(room.price * nights)
@@ -1458,12 +1458,12 @@ def initiate_payment(request):
                 payment_status='pending',
                 receipt_number=reference,
                 paystack_reference=reference,
-                paystack_access_code=response['data']['access_code'],
+                paystack_access_code=response.data.access_code,
                 created_by=request.user
             )
             
             # Redirect to Paystack checkout
-            return redirect(response['data']['authorization_url'])
+            return redirect(response.data.authorization_url)
         else:
             messages.error(request, "Failed to initialize payment. Please try again.")
             return redirect('online_booking')
@@ -1485,10 +1485,10 @@ def payment_callback(request):
     
     try:
         # Verify payment with Paystack
-        paystack = Paystack(secret_key=settings.PAYSTACK_SECRET_KEY)
-        response = paystack.transaction.verify(reference=reference)
+        paystack = PaystackClient(secret_key=settings.PAYSTACK_SECRET_KEY)
+        response = paystack.transactions.verify(reference=reference)
         
-        if response['status'] and response['data']['status'] == 'success':
+        if response.status and response.data.status == 'success':
             # Get pending booking data
             booking_data = request.session.get('pending_booking')
             if not booking_data:
@@ -1515,7 +1515,7 @@ def payment_callback(request):
             payment.booking_id = booking.id
             payment.payment_status = 'paid'
             payment.paid_at = timezone.now()
-            payment.paystack_response = response['data']
+            payment.paystack_response = response.raw
             payment.save()
             
             # Update room status
@@ -1556,7 +1556,7 @@ def payment_callback(request):
             payment = Payment.objects.filter(paystack_reference=reference).first()
             if payment:
                 payment.payment_status = 'failed'
-                payment.paystack_response = response['data']
+                payment.paystack_response = response.raw
                 payment.save()
             
             messages.error(request, "Payment verification failed. Please try again.")
