@@ -882,7 +882,7 @@
                         <h1>welcome <span class="late">to RoseGold Hotel and suites</span></h1>
                         <p>Welcome to Hotel rose Booking Management, your one-stop solution for hassle-free hotel reservations. Quickly find the perfect hotel for your next stay. Use our search tool to browse and book hotels in the area.</p>
                         <div class="slider-btn">
-                            <a class="default-btn" href="#OUR_ROOMS">explore</a>
+                            <a class="room_btn" href="#OUR_ROOMS">explore</a>
                         </div>
                     </div>
                 </div>
@@ -897,7 +897,7 @@
                         <h2>Enjoy a luxury experience</h2>
                         <h4>Hotel &amp; Resort</h4>
                         <div class="slider-btn">
-                            <a class="default-btn" href="#OUR_ROOMS">explore</a>
+                            <a class="room_btn" href="#OUR_ROOMS">explore</a>
                         </div>
                     </div>
                 </div>
@@ -912,7 +912,7 @@
                         <h2>Spend quality holidays with us</h2>
                         <p>The best way to spend your precious time and cherish every moment with your loved ones. Join today.</p>
                         <div class="slider-btn">
-                            <a class="default-btn" href="#OUR_ROOMS">explore</a>
+                            <a class="room_btn" href="#OUR_ROOMS">explore</a>
                         </div>
                     </div>
                 </div>
@@ -1092,14 +1092,14 @@
               <div class="row">
                  <div class="col-lg-7">
                      <div id="newDom">
-                           <div class="Service_img tab-contx" id="swim" >
-                              <img src=" {%static 'Allfiles/Photo/service-1.png'%}" alt="img">
+                           <div class="Service_img tab-contx hide" id="swim" >
+                              <img src=" {%static 'Allfiles/Photo/swim.jpg'%}" alt="img">
                            </div>
                            <div class="Service_img tab-contx hide" id="spa">
-                              <img src=" {%static 'Allfiles/Photo/service-2.png'%}" alt="img">
+                              <img src=" {%static 'Allfiles/Photo/spa.jpg'%}" alt="img">
                             </div>
                             <div class="Service_img tab-contx hide" id="Restaurant">
-                              <img src=" {%static 'Allfiles/Photo/service-3.png'%}" alt="img">
+                              <img src=" {%static 'Allfiles/Photo/restaurant.jpg'%}" alt="img">
                             </div>
                             <div class="Service_img tab-contx hide" id="Conference">
                               <img src=" {%static 'Allfiles/Photo/service-4.png'%}" alt="img">
@@ -1173,7 +1173,7 @@
              <div class="col-lg-3">
                  <div class="GALLERY_info" >
                     <div class="GALLERY_pic">
-                       <img src="{%static 'Allfiles/Photo/gallery-1.jpg'%}" alt="img">
+                       <img src="{%static 'Allfiles/Photo/gallery8.jpg'%}" alt="img">
                      </div>
                      <div class="gallary_overly text-center justify-content-center"  href="{%static 'Allfiles/photo/gallery-1-pop.jpg'%}">
                        <i class="fas fa-search-plus"></i>
@@ -1183,7 +1183,7 @@
              <div class="col-lg-3">
                  <div class="GALLERY_info">
                     <div class="GALLERY_pic">
-                       <img src=" {%static 'Allfiles/Photo/gallery-2.jpg'%}" alt="img">
+                       <img src=" {%static 'Allfiles/Photo/gallery2.jpg'%}" alt="img">
                      </div>
                       <div class="gallary_overly text-center justify-content-center"  href="{%static 'Allfiles/photo/gallery-2-pop.jpg'%}">
                        <i class="fas fa-search-plus"></i>
@@ -1193,7 +1193,7 @@
              <div class="col-lg-3">
                  <div class="GALLERY_info">
                     <div class="GALLERY_pic">
-                       <img src=" {%static 'Allfiles/Photo/gallery-3.jpg'%}" alt="img">
+                       <img src=" {%static 'Allfiles/Photo/gallery3.jpg'%}" alt="img">
                      </div>
                       <div class="gallary_overly text-center justify-content-center"  href="{%static 'Allfiles/photo/gallery-3-pop.jpg'%}">
                        <i class="fas fa-search-plus"></i>
@@ -1203,7 +1203,7 @@
              <div class="col-lg-3">
                  <div class="GALLERY_info">
                     <div class="GALLERY_pic">
-                       <img src=" {%static 'Allfiles/Photo/gallery-3.jpg'%}" alt="img">
+                       <img src=" {%static 'Allfiles/Photo/gallery9.jpg'%}" alt="img">
                      </div>
                       <div class="gallary_overly text-center justify-content-center" href="{%static 'Allfiles/photo/gallery-3-pop.jpg'%}">
                        <i class="fas fa-search-plus"></i>
@@ -1211,9 +1211,9 @@
                   </div>
              </div>
              <div class="col-lg-3">
-                 <div class="GALLERY_info" href="{%static 'Allfiles/photo/gallery-1-pop.jpg'%}">
+                 <div class="GALLERY_info" href="{%static 'Allfiles/photo/gallery10.jpg'%}">
                     <div class="GALLERY_pic">
-                       <img src=" {%static 'Allfiles/Photo/gallery-1.jpg'%}" alt="img">
+                       <img src=" {%static 'Allfiles/Photo/gallery5.jpg'%}" alt="img">
                      </div>
                       <div class="gallary_overly text-center justify-content-center">
                        <i class="fas fa-search-plus"></i>
@@ -1221,9 +1221,9 @@
                   </div>
              </div>
              <div class="col-lg-3">
-                 <div class="GALLERY_info" href="{%static 'Allfiles/photo/gallery-2-pop.jpg'%}">
+                 <div class="GALLERY_info" href="{%static 'Allfiles/photo/gallery10.jpg'%}">
                     <div class="GALLERY_pic">
-                       <img src=" {%static 'Allfiles/Photo/gallery-2.jpg'%}" alt="img">
+                       <img src=" {%static 'Allfiles/Photo/gallery10.jpg'%}" alt="img">
                      </div>
                       <div class="gallary_overly text-center justify-content-center">
                        <i class="fas fa-search-plus"></i>
@@ -1231,9 +1231,19 @@
                   </div>
              </div>
              <div class="col-lg-3">
-                 <div class="GALLERY_info" href="{%static 'Allfiles/photo/gallery-3-pop.jpg'%}">
+                 <div class="GALLERY_info" href="{%static 'Allfiles/photo/gallery11.jpg'%}">
                     <div class="GALLERY_pic">
-                       <img src="{%static 'Allfiles/Photo/gallery-3.jpg'%}" alt="img">
+                       <img src="{%static 'Allfiles/Photo/gallery11.jpg'%}" alt="img">
+                     </div>
+                      <div class="gallary_overly text-center justify-content-center">
+                       <i class="fas fa-search-plus"></i>
+                     </div>
+                  </div>
+             </div>
+                  <div class="col-lg-3">
+                 <div class="GALLERY_info" href="{%static 'Allfiles/photo/gallery11.jpg'%}">
+                    <div class="GALLERY_pic">
+                       <img src="{%static 'Allfiles/Photo/gallery12.jpg'%}" alt="img">
                      </div>
                       <div class="gallary_overly text-center justify-content-center">
                        <i class="fas fa-search-plus"></i>

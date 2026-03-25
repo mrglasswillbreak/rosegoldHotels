@@ -24,6 +24,7 @@ urlpatterns = [
     path('online-booking/list/', views.online_booking_list, name='online_booking_list'),
     path('online-booking/edit/<int:id>/', views.online_booking_list, name='edit_online_booking'),
     path('online-booking/delete/<int:id>/', views.delete_online_booking, name='delete_online_booking'),
+    path('booking/payment/', views.booking_payment_page, name='booking_payment_page'),
 
     # OFFLINE BOOKING
     path('offline-booking/', views.add_customer, name='add_customer'),
@@ -60,4 +61,11 @@ urlpatterns = [
     path('receptionist/housekeeping/<int:task_id>/update/', views.update_housekeeping_task, name='update_housekeeping_task'),
     path('receptionist/search/', views.guest_search, name='guest_search'),
     path('receptionist/payment/<str:booking_type>/<int:booking_id>/', views.process_payment, name='process_payment'),
+    
+    # PAYSTACK PAYMENT
+    path('payment/initiate/', views.initiate_payment, name='initiate_payment'),
+    path('payment/callback/', views.payment_callback, name='payment_callback'),
+    path('payment/webhook/', views.paystack_webhook, name='paystack_webhook'),
+    path('payment/success/<int:booking_id>/', views.payment_success, name='payment_success'),
+    path('payment/failed/', views.payment_failed, name='payment_failed'),
 ]

@@ -228,3 +228,14 @@ if not DEBUG:
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# =========================
+# PAYSTACK CONFIGURATION
+# =========================
+
+PAYSTACK_PUBLIC_KEY = os.environ.get('PAYSTACK_PUBLIC_KEY', 'pk_test_a700481bc678feea5a6536833b1fd690de1b4b55')
+PAYSTACK_SECRET_KEY = os.environ.get('PAYSTACK_SECRET_KEY', 'sk_test_5bbd44fc446c4a7407d7b2b40d66c09a96d93d54')
+
+# Use test keys for development, live keys for production
+# Get your keys from: https://dashboard.paystack.com/#/settings/developer
+# Test Cards: 4084084084084081 (success), 4084080000000408 (decline)

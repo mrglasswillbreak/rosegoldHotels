@@ -1,0 +1,88 @@
+{% extends "allinclude.html" %}
+{% load static %}
+
+{% block title %}Payment Successful - Hotel Management{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 100px; margin-bottom: 60px;">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg text-center">
+                <div class="card-body py-5">
+                    <div class="success-icon mb-4">
+                        <i class="fa fa-check-circle fa-5x text-success"></i>
+                    </div>
+                    <h1 class="text-success mb-3">Payment Successful!</h1>
+                    <p class="lead">Your booking has been confirmed.</p>
+                    
+                    <div class="alert alert-success text-left mt-4">
+                        <h5><i class="fa fa-receipt"></i> Booking Details</h5>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>Booking ID:</strong> #{{ booking.id }}<br>
+                                <strong>Room:</strong> {{ booking.room.room_number }}<br>
+                                <strong>Check-in:</strong> {{ booking.check_in|date:"M d, Y" }}<br>
+                                <strong>Check-out:</strong> {{ booking.check_out|date:"M d, Y" }}
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Nights:</strong> {{ booking.get_total_nights }}<br>
+                                <strong>Amount Paid:</strong> ₦{{ booking.get_total_amount|floatformat:2 }}<br>
+                                {% if payment %}
+                                <strong>Receipt:</strong> {{ payment.receipt_number }}<br>
+                                <strong>Payment Method:</strong> {{ payment.get_payment_method_display }}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <p><i class="fa fa-envelope"></i> A confirmation email has been sent to <strong>{{ user.email }}</strong></p>
+                    </div>
+
+                    <div class="mt-5">
+                        <a href="{% url 'my_bookings' %}" class="btn btn-primary btn-lg mr-2">
+                            <i class="fa fa-list"></i> View My Bookings
+                        </a>
+                        <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-lg">
+                            <i class="fa fa-home"></i> Go to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5><i class="fa fa-info-circle text-info"></i> What's Next?</h5>
+                    <ul class="list-unstyled mt-3">
+                        <li class="mb-2"><i class="fa fa-check text-success"></i> You can view and manage your booking from "My Bookings" page</li>
+                        <li class="mb-2"><i class="fa fa-check text-success"></i> Present your booking ID at reception during check-in</li>
+                        <li class="mb-2"><i class="fa fa-check text-success"></i> Check-in time: 2:00 PM | Check-out time: 12:00 PM</li>
+                        <li class="mb-2"><i class="fa fa-check text-success"></i> For any queries, contact us at support@hotel.com</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .success-icon {
+        animation: scaleIn 0.5s ease-in-out;
+    }
+    
+    @keyframes scaleIn {
+        from {
+            transform: scale(0);
+        }
+        to {
+            transform: scale(1);
+        }
+    }
+    
+    .card {
+        border-radius: 15px;
+        border: none;
+    }
+</style>
+{% endblock %}

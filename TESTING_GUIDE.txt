@@ -1,0 +1,57 @@
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                  PAYSTACK TESTING QUICK GUIDE                ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+🌐 SERVER: http://127.0.0.1:8000
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💳 TEST CARD (SUCCESS):
+
+Card:   4084 0840 8408 4081
+CVV:    408
+Expiry: 12/30
+PIN:    0000
+OTP:    123456
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔐 LOGIN ACCOUNTS:
+
+Receptionist:
+  Email: receptionist@hotel.com
+  Pass:  Hotel@2024
+
+Admin:
+  Email: superuseruser@rosegold.com
+  Pass:  [your existing password]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📱 TESTING FLOW:
+
+1. Login/Register → http://127.0.0.1:8000/login/
+2. Browse Rooms   → http://127.0.0.1:8000/rooms/
+3. Book a Room    → Click "Book Now"
+4. Fill Details   → Select dates & guest info
+5. Payment Page   → Review booking summary
+6. Pay Now        → Use test card above
+7. Success!       → View confirmed booking
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ WHAT WORKS NOW:
+
+• Payment required before booking
+• Paystack checkout integration
+• Server-side payment verification
+• Automatic booking creation
+• Receipt generation
+• Activity logging
+• Payment tracking
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 SAVE THIS FILE FOR QUICK REFERENCE!
+

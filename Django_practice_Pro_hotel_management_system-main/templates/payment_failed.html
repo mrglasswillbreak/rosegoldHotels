@@ -1,0 +1,91 @@
+{% extends "allinclude.html" %}
+{% load static %}
+
+{% block title %}Payment Failed - Hotel Management{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 100px; margin-bottom: 60px;">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg text-center">
+                <div class="card-body py-5">
+                    <div class="error-icon mb-4">
+                        <i class="fa fa-times-circle fa-5x text-danger"></i>
+                    </div>
+                    <h1 class="text-danger mb-3">Payment Failed</h1>
+                    <p class="lead">Unfortunately, your payment could not be processed.</p>
+                    
+                    <div class="alert alert-danger text-left mt-4">
+                        <h5><i class="fa fa-exclamation-triangle"></i> What Happened?</h5>
+                        <hr>
+                        <p class="mb-0">
+                            Your payment was not successful. This could be due to:
+                        </p>
+                        <ul class="mt-3">
+                            <li>Insufficient funds in your account</li>
+                            <li>Incorrect card details</li>
+                            <li>Payment declined by your bank</li>
+                            <li>Network connectivity issues</li>
+                        </ul>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fa fa-info-circle"></i> <strong>Don't worry!</strong> Your booking has not been created and no charges were made to your account.
+                    </div>
+
+                    <div class="mt-5">
+                        <a href="{% url 'online_booking' %}" class="btn btn-primary btn-lg mr-2">
+                            <i class="fa fa-redo"></i> Try Again
+                        </a>
+                        <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-lg">
+                            <i class="fa fa-home"></i> Go to Home
+                        </a>
+                    </div>
+
+                    <div class="mt-4">
+                        <p class="text-muted">
+                            <i class="fa fa-question-circle"></i> Need help? Contact us at <strong>support@hotel.com</strong> or call <strong>+234 800 123 4567</strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5><i class="fa fa-lightbulb text-warning"></i> Tips for Successful Payment</h5>
+                    <ul class="list-unstyled mt-3">
+                        <li class="mb-2"><i class="fa fa-check text-success"></i> Ensure you have sufficient funds in your account</li>
+                        <li class="mb-2"><i class="fa fa-check text-success"></i> Double-check your card details before submitting</li>
+                        <li class="mb-2"><i class="fa fa-check text-success"></i> Make sure your card is enabled for online transactions</li>
+                        <li class="mb-2"><i class="fa fa-check text-success"></i> Try using a different payment method if the issue persists</li>
+                        <li class="mb-2"><i class="fa fa-check text-success"></i> Contact your bank if you continue to experience issues</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .error-icon {
+        animation: shake 0.5s ease-in-out;
+    }
+    
+    @keyframes shake {
+        0%, 100% {
+            transform: translateX(0);
+        }
+        10%, 30%, 50%, 70%, 90% {
+            transform: translateX(-10px);
+        }
+        20%, 40%, 60%, 80% {
+            transform: translateX(10px);
+        }
+    }
+    
+    .card {
+        border-radius: 15px;
+        border: none;
+    }
+</style>
+{% endblock %}

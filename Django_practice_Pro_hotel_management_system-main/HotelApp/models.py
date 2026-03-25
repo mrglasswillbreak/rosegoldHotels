@@ -235,12 +235,14 @@ class Payment(models.Model):
         ('card', 'Card'),
         ('transfer', 'Bank Transfer'),
         ('online', 'Online Payment'),
+        ('paystack', 'Paystack'),
     ]
 
     PAYMENT_STATUS = [
         ('pending', 'Pending'),
         ('paid', 'Paid'),
         ('refunded', 'Refunded'),
+        ('failed', 'Failed'),
     ]
 
     booking_type = models.CharField(max_length=20, choices=[('online', 'Online'), ('offline', 'Offline')])
@@ -250,8 +252,13 @@ class Payment(models.Model):
     payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS, default='pending', db_index=True)
     receipt_number = models.CharField(max_length=50, unique=True)
     paid_at = models.DateTimeField(blank=True, null=True)
-    created_by = models.ForeignKey(Authorregis, on_delete=models.SET_NULL, null=True, related_name='payments_created')
+    created_by = models.ForeignKey(Authorregis, on_delete=models.SET_NULL, null=True, blank=True, related_name='payments_created')
     notes = models.TextField(blank=True, null=True)
+    
+    # Paystack specific fields
+    paystack_reference = models.CharField(max_length=100, blank=True, null=True, unique=True)
+    paystack_access_code = models.CharField(max_length=100, blank=True, null=True)
+    paystack_response = models.JSONField(blank=True, null=True)
     
     created_at = models.DateTimeField(auto_now_add=True)
 
