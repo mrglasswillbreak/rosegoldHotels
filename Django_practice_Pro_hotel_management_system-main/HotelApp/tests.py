@@ -432,6 +432,167 @@ class SeedInitialRoomsTests(TestCase):
         self.assertEqual(Room.objects.count(), 10)
 
 
+class PaystackPaymentTests(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            email="payer@example.com",
+            password="PayTest123!",
+        )
+        self.client.force_login(self.user)
+        self.room = Room.objects.create(
+            room_number="P101",
+            room_type="single",
+            floor=1,
+            facility="WiFi",
+            price="200.00",
+            status="available",
+        )
+
+    def _pending_booking_session(self):
+        return {
+            "room_id": self.room.id,
+            "check_in": "2026-06-01",
+            "check_out": "2026-06-03",
+            "adults": 2,
+            "children": 0,
+            "city": "Lagos",
+            "country": "Nigeria",
+            "address": "5 Hotel Lane",
+        }
+
+    def _make_init_response(self, status=True, access_code="acc_test", authorization_url="https://checkout.paystack.com/test"):
+        from unittest.mock import MagicMock
+        resp = MagicMock()
+        resp.status = status
+        resp.data.access_code = access_code
+        resp.data.authorization_url = authorization_url
+        return resp
+
+    def _make_verify_response(self, status=True, tx_status="success", raw=None):
+        from unittest.mock import MagicMock
+        resp = MagicMock()
+        resp.status = status
+        resp.data.status = tx_status
+        resp.raw = raw or {"status": True, "data": {"status": tx_status}}
+        return resp
+
+    # --- initiate_payment ---
+
+    def test_initiate_payment_redirects_to_paystack_checkout_on_success(self):
+        session = self.client.session
+        session["pending_booking"] = self._pending_booking_session()
+        session.save()
+
+        init_resp = self._make_init_response()
+        with patch("HotelApp.views.PaystackClient") as MockClient:
+            MockClient.return_value.transactions.initialize.return_value = init_resp
+            response = self.client.post(reverse("initiate_payment"))
+
+        self.assertRedirects(
+            response, "https://checkout.paystack.com/test", fetch_redirect_response=False
+        )
+
+    def test_initiate_payment_creates_pending_payment_record(self):
+        from HotelApp.models import Payment
+        session = self.client.session
+        session["pending_booking"] = self._pending_booking_session()
+        session.save()
+
+        init_resp = self._make_init_response(access_code="acc_xyz")
+        with patch("HotelApp.views.PaystackClient") as MockClient:
+            MockClient.return_value.transactions.initialize.return_value = init_resp
+            self.client.post(reverse("initiate_payment"))
+
+        payment = Payment.objects.filter(payment_status="pending", payment_method="paystack").first()
+        self.assertIsNotNone(payment)
+        self.assertEqual(payment.paystack_access_code, "acc_xyz")
+
+    def test_initiate_payment_redirects_to_online_booking_when_paystack_returns_failure(self):
+        session = self.client.session
+        session["pending_booking"] = self._pending_booking_session()
+        session.save()
+
+        init_resp = self._make_init_response(status=False)
+        with patch("HotelApp.views.PaystackClient") as MockClient:
+            MockClient.return_value.transactions.initialize.return_value = init_resp
+            response = self.client.post(reverse("initiate_payment"))
+
+        self.assertRedirects(response, reverse("online_booking"))
+
+    def test_initiate_payment_redirects_to_online_booking_when_no_pending_booking_in_session(self):
+        response = self.client.post(reverse("initiate_payment"))
+        self.assertRedirects(response, reverse("online_booking"))
+
+    def test_initiate_payment_get_request_redirects_to_online_booking(self):
+        response = self.client.get(reverse("initiate_payment"))
+        self.assertRedirects(response, reverse("online_booking"))
+
+    # --- payment_callback ---
+
+    def test_payment_callback_creates_booking_and_marks_payment_paid_on_success(self):
+        from HotelApp.models import Payment
+        reference = "HMS-TESTREF123"
+        Payment.objects.create(
+            booking_type="online",
+            booking_id=0,
+            amount="400.00",
+            payment_method="paystack",
+            payment_status="pending",
+            receipt_number=reference,
+            paystack_reference=reference,
+            created_by=self.user,
+        )
+        session = self.client.session
+        session["pending_booking"] = self._pending_booking_session()
+        session.save()
+
+        verify_resp = self._make_verify_response()
+        with patch("HotelApp.views.PaystackClient") as MockClient:
+            MockClient.return_value.transactions.verify.return_value = verify_resp
+            response = self.client.get(
+                reverse("payment_callback"), {"reference": reference}
+            )
+
+        payment = Payment.objects.get(paystack_reference=reference)
+        self.assertEqual(payment.payment_status, "paid")
+        self.assertIsNotNone(payment.paid_at)
+        from HotelApp.models import OnlineBooking
+        self.assertTrue(OnlineBooking.objects.filter(user=self.user, room=self.room).exists())
+        self.assertRedirects(
+            response, reverse("payment_success", kwargs={"booking_id": payment.booking_id}),
+            fetch_redirect_response=False,
+        )
+
+    def test_payment_callback_marks_payment_failed_when_verification_not_success(self):
+        from HotelApp.models import Payment
+        reference = "HMS-FAILREF456"
+        Payment.objects.create(
+            booking_type="online",
+            booking_id=0,
+            amount="400.00",
+            payment_method="paystack",
+            payment_status="pending",
+            receipt_number=reference,
+            paystack_reference=reference,
+            created_by=self.user,
+        )
+
+        verify_resp = self._make_verify_response(tx_status="failed")
+        with patch("HotelApp.views.PaystackClient") as MockClient:
+            MockClient.return_value.transactions.verify.return_value = verify_resp
+            response = self.client.get(
+                reverse("payment_callback"), {"reference": reference}
+            )
+
+        payment = Payment.objects.get(paystack_reference=reference)
+        self.assertEqual(payment.payment_status, "failed")
+        self.assertRedirects(response, reverse("payment_failed"))
+
+    def test_payment_callback_redirects_to_user_home_when_no_reference(self):
+        response = self.client.get(reverse("payment_callback"))
+        self.assertRedirects(response, reverse("user_home"))
+
+
 class SharedLayoutResponsiveTests(TestCase):
     def test_public_layout_includes_mobile_friendly_navigation(self):
         response = self.client.get(reverse("home"))
