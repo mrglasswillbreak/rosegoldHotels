@@ -146,6 +146,22 @@
         scrollbar-gutter: stable;
       }
 
+      .admin-panel-scroll {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+
+      .admin-panel-scroll-body {
+        max-height: 420px;
+        overflow: auto;
+        scrollbar-gutter: stable;
+      }
+
+      .admin-panel-scroll-body .admin-table {
+        margin-bottom: 0;
+      }
+
       .admin-panel-header {
         display: flex;
         align-items: center;

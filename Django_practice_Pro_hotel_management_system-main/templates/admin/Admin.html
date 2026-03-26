@@ -174,7 +174,7 @@
 
   <div class="admin-grid">
     <div class="admin-column">
-      <div class="admin-panel">
+      <div class="admin-panel admin-panel-scroll">
         <div class="admin-panel-header">
           <div>
             <h3>Recent Online Bookings</h3>
@@ -182,6 +182,7 @@
           </div>
           <a class="btn btn-default" href="{% url 'online_booking_list' %}">View all</a>
         </div>
+        <div class="admin-panel-scroll-body">
         {% if recent_online_bookings %}
           <table class="table table-striped table-hover admin-table">
             <thead>
@@ -206,6 +207,7 @@
         {% else %}
           <div class="admin-empty-state">No online bookings yet.</div>
         {% endif %}
+        </div>
       </div>
     </div>
 
@@ -248,7 +250,7 @@
 
   <div class="admin-grid">
     <div class="admin-column">
-      <div class="admin-panel">
+      <div class="admin-panel admin-panel-scroll">
         <div class="admin-panel-header">
           <div>
             <h3>Newest Users</h3>
@@ -256,6 +258,7 @@
           </div>
           <a class="btn btn-default" href="{% url 'manage_users' %}">View all</a>
         </div>
+        <div class="admin-panel-scroll-body">
         {% if recent_users %}
           <table class="table table-striped table-hover admin-table">
             <thead>
@@ -284,6 +287,7 @@
         {% else %}
           <div class="admin-empty-state">No users found.</div>
         {% endif %}
+        </div>
       </div>
     </div>
 
