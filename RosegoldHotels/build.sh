@@ -8,17 +8,26 @@ cd "$(dirname "$0")"
 pip install --upgrade pip
 pip install -r requirements.txt
 
-# Build the React frontend
-cd frontend
-npm ci
-npm run build
-cd ..
+# Build the frontend only when a standalone app exists in this repo.
+if [ -f "frontend/package.json" ]; then
+  cd frontend
+  npm ci
+  npm run build
+  cd ..
+else
+  echo "No frontend app found; skipping frontend build."
+fi
 
-# Ensure lowercase symlinks exist so Django templates can reference
-# Allfiles/css/... and Allfiles/js/... (assets/ uses capital Css/Js/)
+# Ensure lowercase aliases exist when the filesystem treats them as distinct
+# names. On case-insensitive filesystems, `css`/`Css` resolve to the same path,
+# so forcing the symlink would create a loop like `Css/Css -> Css`.
 mkdir -p "assets/Allfiles/Css" "assets/Allfiles/Js"
-ln -sfn "Css" "assets/Allfiles/css"
-ln -sfn "Js" "assets/Allfiles/js"
+if [ ! -e "assets/Allfiles/css" ]; then
+  ln -s "Css" "assets/Allfiles/css"
+fi
+if [ ! -e "assets/Allfiles/js" ]; then
+  ln -s "Js" "assets/Allfiles/js"
+fi
 
 python manage.py collectstatic --no-input
 
