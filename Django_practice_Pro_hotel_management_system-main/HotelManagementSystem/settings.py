@@ -235,6 +235,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 PAYSTACK_PUBLIC_KEY = os.environ.get('PAYSTACK_PUBLIC_KEY', 'pk_test_a700481bc678feea5a6536833b1fd690de1b4b55')
 PAYSTACK_SECRET_KEY = os.environ.get('PAYSTACK_SECRET_KEY', 'sk_test_5bbd44fc446c4a7407d7b2b40d66c09a96d93d54')
+PAYSTACK_API_BASE_URL = os.environ.get('PAYSTACK_API_BASE_URL', 'https://api.paystack.co')
+PAYSTACK_CURRENCY = os.environ.get('PAYSTACK_CURRENCY', 'NGN')
 
 # Use test keys for development, live keys for production
 # Get your keys from: https://dashboard.paystack.com/#/settings/developer

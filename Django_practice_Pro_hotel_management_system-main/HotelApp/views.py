@@ -24,8 +24,6 @@ from django.utils.http import url_has_allowed_host_and_scheme, urlsafe_base64_de
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST, require_http_methods
 
-from pypaystack2 import Paystack
-
 from .models import (
     OnlineBooking,
     OfflineBooking,
@@ -49,6 +47,7 @@ from .forms import (
     SalaryForm,
     booking_window_has_conflict,
 )
+from .paystack import PaystackClient
 from .tokens import account_activation_token
 
 logger = logging.getLogger(__name__)
@@ -1605,7 +1604,7 @@ def initiate_payment(request):
         reference = generate_payment_reference()
         
         # Initialize Paystack transaction
-        paystack = Paystack(secret_key=settings.PAYSTACK_SECRET_KEY)
+        paystack = PaystackClient(secret_key=settings.PAYSTACK_SECRET_KEY)
         response = paystack.transactions.initialize(
             email=request.user.email,
             amount=amount,
@@ -1654,7 +1653,7 @@ def payment_callback(request):
     
     try:
         # Verify payment with Paystack
-        paystack = Paystack(secret_key=settings.PAYSTACK_SECRET_KEY)
+        paystack = PaystackClient(secret_key=settings.PAYSTACK_SECRET_KEY)
         response = paystack.transactions.verify(reference=reference)
         
         if response.status and response.data.status == 'success':
@@ -1768,7 +1767,7 @@ def payment_callback(request):
                     del request.session['payment_amount']
                 
                 messages.success(request, f"Payment successful! Your booking for Room {room.room_number} has been confirmed.")
-                return redirect('my_bookings')
+                return redirect('payment_success', booking_id=booking.id)
         else:
             # Payment failed
             payment = Payment.objects.filter(paystack_reference=reference).first()
