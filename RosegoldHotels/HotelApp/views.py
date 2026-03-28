@@ -219,17 +219,31 @@ def home(request):
 @admin_required
 def dashboard(request):
     today = timezone.localdate()
-    rooms = Room.objects.all()
-    users = Authorregis.objects.all()
-    employees = Employee.objects.all()
+    
+    # PERFORMANCE: Use aggregated count queries instead of multiple filter().count()
+    room_counts = Room.objects.aggregate(
+        total=Count('id'),
+        available=Count('id', filter=Q(status='available')),
+        occupied=Count('id', filter=Q(status='occupied')),
+        maintenance=Count('id', filter=Q(status='maintenance')),
+    )
+    
+    user_counts = Authorregis.objects.aggregate(
+        total=Count('id'),
+        staff=Count('id', filter=Q(is_staff=True)),
+        guests=Count('id', filter=Q(is_staff=False)),
+    )
+    
+    total_employees = Employee.objects.count()
+    
     online_bookings = OnlineBooking.objects.select_related("user", "room")
     offline_bookings = OfflineBooking.objects.select_related("room")
     salaries = Salary.objects.select_related("employee")
 
     room_status_counts = {
-        "Available": rooms.filter(status="available").count(),
-        "Occupied": rooms.filter(status="occupied").count(),
-        "Maintenance": rooms.filter(status="maintenance").count(),
+        "Available": room_counts['available'],
+        "Occupied": room_counts['occupied'],
+        "Maintenance": room_counts['maintenance'],
     }
 
     occupied_room_ids = set(
@@ -239,15 +253,14 @@ def dashboard(request):
         offline_bookings.filter(check_in__lte=today, check_out__gt=today).values_list("room_id", flat=True)
     )
 
-    total_rooms = rooms.count()
+    total_rooms = room_counts['total']
     total_online_bookings = online_bookings.count()
     total_offline_bookings = offline_bookings.count()
     total_bookings = total_online_bookings + total_offline_bookings
-    total_users = users.count()
-    total_staff_users = users.filter(is_staff=True).count()
-    total_guest_users = users.filter(is_staff=False).count()
-    total_employees = employees.count()
-    available_rooms = rooms.filter(status="available").count()
+    total_users = user_counts['total']
+    total_staff_users = user_counts['staff']
+    total_guest_users = user_counts['guests']
+    available_rooms = room_counts['available']
     occupancy_rate = round((len(occupied_room_ids) / total_rooms) * 100, 1) if total_rooms else 0
     check_ins_today = online_bookings.filter(check_in=today).count() + offline_bookings.filter(check_in=today).count()
     check_outs_today = online_bookings.filter(check_out=today).count() + offline_bookings.filter(check_out=today).count()
@@ -646,14 +659,11 @@ def book_room(request, room_id):
 # ----------------------------
 # MY BOOKINGS — with cancel & modify
 
+@login_required
 def online_booking(request):
-    show_form = (not request.user.is_authenticated) or request.GET.get("new") == "1"
+    show_form = request.GET.get("new") == "1"
 
     if request.method == "POST":
-        if not request.user.is_authenticated:
-            messages.error(request, "Please log in to complete a booking.")
-            return redirect("author_login")
-
         form_data = {
             "room_id": request.POST.get("room_id", "").strip(),
             "check_in": request.POST.get("check_in", "").strip(),
@@ -718,7 +728,7 @@ def online_booking(request):
             "show_form": True,
         })
 
-    if not show_form and request.user.is_authenticated:
+    if not show_form:
         today = timezone.now().date()
         bookings = list(
             OnlineBooking.objects.filter(user=request.user, check_out__gte=today)
@@ -1785,15 +1795,40 @@ def payment_callback(request):
         return redirect('user_home')
 
 
+def verify_paystack_signature(request):
+    """Verify Paystack webhook signature using HMAC SHA512."""
+    import hmac
+    import hashlib
+    
+    signature = request.headers.get('x-paystack-signature', '')
+    if not signature:
+        return False
+    
+    secret = settings.PAYSTACK_WEBHOOK_SECRET
+    if not secret:
+        logger.warning("PAYSTACK_WEBHOOK_SECRET not configured - webhook signature verification disabled")
+        return True  # Allow in dev if secret not configured, but log warning
+    
+    expected = hmac.new(
+        secret.encode('utf-8'),
+        request.body,
+        hashlib.sha512
+    ).hexdigest()
+    
+    return hmac.compare_digest(signature, expected)
+
+
 @csrf_exempt
 @require_POST
 def paystack_webhook(request):
-    """Handle Paystack webhook notifications"""
+    """Handle Paystack webhook notifications with signature verification."""
     try:
-        payload = json.loads(request.body)
+        # SECURITY: Verify webhook signature
+        if not verify_paystack_signature(request):
+            logger.warning("Invalid Paystack webhook signature - possible forgery attempt")
+            return JsonResponse({'status': 'error', 'message': 'Invalid signature'}, status=401)
         
-        # Verify webhook signature (recommended for production)
-        # signature = request.headers.get('x-paystack-signature')
+        payload = json.loads(request.body)
         
         if payload['event'] == 'charge.success':
             reference = payload['data']['reference']

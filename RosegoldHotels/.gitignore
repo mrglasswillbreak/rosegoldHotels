@@ -19,7 +19,7 @@ ENV/
 */venv/
 **/venv/
 
-# Environment variables
+# Environment variables (NEVER commit secrets!)
 .env
 *.env
 !*.env.example
@@ -29,6 +29,8 @@ iot_alerts.env
 db.sqlite3
 *.sqlite3
 *.db
+Project_hotel
+Project_hotel.db
 
 # macOS
 .DS_Store
@@ -63,6 +65,7 @@ yarn-error.log*
 
 # Frontend build output
 static/dist/
+frontend/
 
 # Test artifacts
 .coverage
@@ -72,6 +75,7 @@ htmlcov/
 
 # Logs
 *.log
+logs/
 
 # Temporary files
 tmp/
@@ -81,3 +85,6 @@ temp/
 secrets/
 *.pem
 *.key
+
+# Media uploads (user content)
+media/

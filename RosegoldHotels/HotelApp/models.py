@@ -101,8 +101,8 @@ class OnlineBooking(models.Model):
         ('cancelled', 'Cancelled'),
     ]
 
-    user = models.ForeignKey(Authorregis, on_delete=models.CASCADE)
-    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    user = models.ForeignKey(Authorregis, on_delete=models.CASCADE, db_index=True)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, db_index=True)
 
     check_in = models.DateField(db_index=True)
     check_out = models.DateField(db_index=True)
@@ -145,7 +145,7 @@ class OfflineBooking(models.Model):
         ('cancelled', 'Cancelled'),
     ]
 
-    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, db_index=True)
 
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
@@ -216,7 +216,7 @@ class Employee(models.Model):
 # =========================
 
 class Salary(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, db_index=True)
     salary = models.DecimalField(max_digits=10, decimal_places=2)
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -252,11 +252,11 @@ class Payment(models.Model):
     payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS, default='pending', db_index=True)
     receipt_number = models.CharField(max_length=50, unique=True)
     paid_at = models.DateTimeField(blank=True, null=True)
-    created_by = models.ForeignKey(Authorregis, on_delete=models.SET_NULL, null=True, blank=True, related_name='payments_created')
+    created_by = models.ForeignKey(Authorregis, on_delete=models.SET_NULL, null=True, blank=True, related_name='payments_created', db_index=True)
     notes = models.TextField(blank=True, null=True)
     
     # Paystack specific fields
-    paystack_reference = models.CharField(max_length=100, blank=True, null=True, unique=True)
+    paystack_reference = models.CharField(max_length=100, blank=True, null=True, unique=True, db_index=True)
     paystack_access_code = models.CharField(max_length=100, blank=True, null=True)
     paystack_response = models.JSONField(blank=True, null=True)
     
@@ -287,12 +287,12 @@ class HousekeepingTask(models.Model):
         ('urgent', 'Urgent'),
     ]
 
-    room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='housekeeping_tasks')
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='housekeeping_tasks', db_index=True)
     status = models.CharField(max_length=20, choices=TASK_STATUS, default='pending', db_index=True)
-    priority = models.CharField(max_length=20, choices=TASK_PRIORITY, default='medium')
-    assigned_to = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_tasks')
+    priority = models.CharField(max_length=20, choices=TASK_PRIORITY, default='medium', db_index=True)
+    assigned_to = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_tasks', db_index=True)
     notes = models.TextField(blank=True, null=True)
-    created_by = models.ForeignKey(Authorregis, on_delete=models.SET_NULL, null=True, related_name='tasks_created')
+    created_by = models.ForeignKey(Authorregis, on_delete=models.SET_NULL, null=True, related_name='tasks_created', db_index=True)
     
     created_at = models.DateTimeField(auto_now_add=True)
     started_at = models.DateTimeField(blank=True, null=True)
@@ -322,13 +322,13 @@ class ActivityLog(models.Model):
         ('housekeeping_completed', 'Housekeeping Completed'),
     ]
 
-    user = models.ForeignKey(Authorregis, on_delete=models.SET_NULL, null=True, related_name='activities')
+    user = models.ForeignKey(Authorregis, on_delete=models.SET_NULL, null=True, related_name='activities', db_index=True)
     action_type = models.CharField(max_length=30, choices=ACTION_TYPES, db_index=True)
     description = models.TextField()
     
     booking_type = models.CharField(max_length=20, blank=True, null=True)
-    booking_id = models.IntegerField(blank=True, null=True)
-    room = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True, blank=True, related_name='activity_logs')
+    booking_id = models.IntegerField(blank=True, null=True, db_index=True)
+    room = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True, blank=True, related_name='activity_logs', db_index=True)
     
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
 

@@ -252,13 +252,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # SECURITY: Session and cookie settings
 SESSION_COOKIE_SECURE = not DEBUG
 SESSION_COOKIE_HTTPONLY = True
-SESSION_COOKIE_SAMESITE = 'Lax'
-SESSION_COOKIE_AGE = 60 * 60 * 24 * 7  # 1 week
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_COOKIE_SAMESITE = 'Strict'
+SESSION_COOKIE_AGE = 60 * 60 * 8  # 8 hours (reduced from 7 days for better security)
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 CSRF_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_HTTPONLY = True
-CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = 'Strict'
 
 # SECURITY: HTTP Strict Transport Security (HSTS)
 if not DEBUG:
@@ -285,13 +285,28 @@ SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
 # Database connection pooling (already configured via dj-database-url)
 # conn_max_age=60 and conn_health_checks=True are set above
 
-# Caching (use Redis/Memcached in production via CACHE_URL env var)
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'rosegoldhotels-cache',
+# Caching configuration
+REDIS_URL = os.environ.get('REDIS_URL', '')
+
+if REDIS_URL and not DEBUG:
+    # Production: Use Redis for caching
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': REDIS_URL,
+            'KEY_PREFIX': 'rosegold',
+            'TIMEOUT': 300,  # 5 minutes default
+        }
     }
-}
+else:
+    # Development: Use local memory cache
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'LOCATION': 'rosegoldhotels-cache',
+            'TIMEOUT': 300,
+        }
+    }
 
 # Template caching in production
 if not DEBUG:
@@ -357,6 +372,7 @@ LOGGING = {
 # Payment gateway keys - MUST be set via environment in production
 PAYSTACK_PUBLIC_KEY = os.environ.get('PAYSTACK_PUBLIC_KEY', '')
 PAYSTACK_SECRET_KEY = os.environ.get('PAYSTACK_SECRET_KEY', '')
+PAYSTACK_WEBHOOK_SECRET = os.environ.get('PAYSTACK_WEBHOOK_SECRET', '')
 PAYSTACK_API_BASE_URL = os.environ.get('PAYSTACK_API_BASE_URL', 'https://api.paystack.co')
 PAYSTACK_CURRENCY = os.environ.get('PAYSTACK_CURRENCY', 'NGN')
 
@@ -367,4 +383,11 @@ if not PAYSTACK_PUBLIC_KEY and DEBUG:
         "PAYSTACK_PUBLIC_KEY not set. Payment functionality will not work. "
         "Get your keys from: https://dashboard.paystack.com/#/settings/developer"
     )
+
+# =========================
+# FILE UPLOAD SECURITY
+# =========================
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB max upload
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB max file
 

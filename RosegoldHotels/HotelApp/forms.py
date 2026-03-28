@@ -1,9 +1,30 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from django.core.validators import validate_email as django_validate_email
+from django.core.validators import validate_email as django_validate_email, FileExtensionValidator
 
 from . import models
 from .models import Authorregis
+
+
+# =========================
+# FILE UPLOAD VALIDATORS
+# =========================
+
+ALLOWED_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp']
+MAX_IMAGE_SIZE_MB = 5
+
+
+def validate_image_file(image):
+    """Validate image file extension and size."""
+    if image:
+        # Check file extension
+        ext_validator = FileExtensionValidator(allowed_extensions=ALLOWED_IMAGE_EXTENSIONS)
+        ext_validator(image)
+        
+        # Check file size (5MB max)
+        if image.size > MAX_IMAGE_SIZE_MB * 1024 * 1024:
+            raise forms.ValidationError(f"Image file too large. Maximum size is {MAX_IMAGE_SIZE_MB}MB.")
+    return image
 
 
 def booking_window_has_conflict(room, check_in, check_out, online_instance=None, offline_instance=None):
@@ -131,6 +152,9 @@ class EmployeeForm(StyledFormMixin, forms.ModelForm):
             "joining_date": forms.DateInput(attrs={"type": "date"}),
             "date_of_birth": forms.DateInput(attrs={"type": "date"}),
         }
+    
+    def clean_image(self):
+        return validate_image_file(self.cleaned_data.get('image'))
 
 
 class RoomForm(StyledFormMixin, forms.ModelForm):
@@ -142,6 +166,9 @@ class RoomForm(StyledFormMixin, forms.ModelForm):
             "price": forms.NumberInput(attrs={"min": 0, "step": "0.01"}),
             "floor": forms.NumberInput(attrs={"min": 0}),
         }
+    
+    def clean_image(self):
+        return validate_image_file(self.cleaned_data.get('image'))
 
 
 class SalaryForm(StyledFormMixin, forms.ModelForm):
