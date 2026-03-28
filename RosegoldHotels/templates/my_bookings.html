@@ -536,9 +536,9 @@
     {% for booking in bookings %}
     <div class="booking-card">
       <div class="booking-img">
-        {% if booking.room.image %}
+        {% if booking.room.display_image_url %}
         <img
-          src="{{ booking.room.image.url }}"
+          src="{{ booking.room.display_image_url }}"
           alt="Room {{ booking.room.room_number }}"
         />
         {% else %}

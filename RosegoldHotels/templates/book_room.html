@@ -100,9 +100,9 @@
           </div>
           <p class="text-muted mb-4">{{ room.room_type }}</p>
 
-          {% if room.image %}
+          {% if room.display_image_url %}
           <img
-            src="{{ room.image.url }}"
+            src="{{ room.display_image_url }}"
             alt="Room {{ room.room_number }}"
             class="img-fluid booking-room-preview mb-4"
           />

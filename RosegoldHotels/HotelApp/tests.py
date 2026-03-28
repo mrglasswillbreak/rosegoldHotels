@@ -399,9 +399,14 @@ class CustomAdminDashboardTests(TestCase):
         )
 
 
+@override_settings(SECURE_SSL_REDIRECT=False)
 class RoomAvailabilityViewTests(TestCase):
     def setUp(self):
         Room.objects.all().delete()
+        self.user = get_user_model().objects.create_user(
+            email="roomviewer@example.com",
+            password="StrongPass123!",
+        )
 
     def test_room_list_shows_rooms_regardless_of_status(self):
         available_room = Room.objects.create(
@@ -426,7 +431,23 @@ class RoomAvailabilityViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertCountEqual(response.context["rooms"], [available_room, occupied_room])
 
+    def test_room_list_uses_fallback_image_when_room_has_no_uploaded_image(self):
+        Room.objects.create(
+            room_number="101",
+            room_type="single",
+            floor=1,
+            facility="WiFi",
+            price="100.00",
+            status="available",
+        )
+
+        response = self.client.get(reverse("room_list"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'src="/media/rooms/single1.jpg"')
+
     def test_online_booking_page_lists_rooms_regardless_of_status(self):
+        self.client.force_login(self.user)
         available_room = Room.objects.create(
             room_number="A103",
             room_type="single",
@@ -444,10 +465,27 @@ class RoomAvailabilityViewTests(TestCase):
             status="maintenance",
         )
 
-        response = self.client.get(reverse("online_booking"))
+        response = self.client.get(f"{reverse('online_booking')}?new=1")
 
         self.assertEqual(response.status_code, 200)
         self.assertCountEqual(response.context["rooms"], [available_room, maintenance_room])
+
+    def test_online_booking_form_uses_fallback_image_for_selected_room(self):
+        self.client.force_login(self.user)
+        room = Room.objects.create(
+            room_number="202",
+            room_type="double",
+            floor=2,
+            facility="Balcony",
+            price="250.00",
+            status="available",
+        )
+
+        response = self.client.get(f"{reverse('online_booking')}?new=1&room={room.id}")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'src="/media/rooms/double2.jpg"')
+        self.assertContains(response, 'image: "/media/rooms/double2.jpg"')
 
     def test_online_booking_post_error_keeps_rooms_across_statuses(self):
         user = get_user_model().objects.create_user(
@@ -477,6 +515,22 @@ class RoomAvailabilityViewTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertCountEqual(response.context["rooms"], [available_room, occupied_room])
+
+    def test_book_room_page_uses_fallback_image_when_room_has_no_uploaded_image(self):
+        self.client.force_login(self.user)
+        room = Room.objects.create(
+            room_number="301",
+            room_type="suite",
+            floor=3,
+            facility="Jacuzzi",
+            price="500.00",
+            status="available",
+        )
+
+        response = self.client.get(reverse("book_room", args=[room.id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'src="/media/rooms/suite1.jpg"')
 
     def test_online_booking_shows_bookings_list_for_authenticated_user(self):
         user = get_user_model().objects.create_user(
@@ -547,6 +601,11 @@ class SeedInitialRoomsTests(TestCase):
 
         seed_missing_rooms(Room)
         self.assertEqual(Room.objects.count(), 10)
+
+    def test_seed_function_assigns_default_room_images(self):
+        image_names = list(Room.objects.order_by("room_number").values_list("image", flat=True))
+
+        self.assertTrue(all(image_names))
 
 
 class PaystackPaymentTests(TestCase):

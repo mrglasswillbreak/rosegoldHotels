@@ -167,8 +167,8 @@
     <div class="booking-grid">
       {% for booking in bookings %}
       <div class="booking-card">
-        {% if booking.room.image %}
-          <img src="{{ booking.room.image.url }}" alt="Room {{ booking.room.room_number }}">
+        {% if booking.room.display_image_url %}
+          <img src="{{ booking.room.display_image_url }}" alt="Room {{ booking.room.room_number }}">
         {% else %}
           <div class="no-image">No image</div>
         {% endif %}
@@ -517,11 +517,11 @@
   <div class="booking-layout">
     <div class="room-summary">
       <div class="room-summary-img">
-        <img id="room-preview-img" src="{% if room and room.image %}{{ room.image.url }}{% endif %}" alt="" style="{% if not room or not room.image %}display:none;{% endif %}">
+        <img id="room-preview-img" src="{% if room and room.display_image_url %}{{ room.display_image_url }}{% endif %}" alt="" style="{% if not room or not room.display_image_url %}display:none;{% endif %}">
         <button type="button" id="preview-expand" class="preview-expand-btn" aria-label="View full image">
           <svg viewBox="0 0 24 24" fill="none" stroke="#1a1410" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
         </button>
-        <div id="room-preview-empty" class="no-img" {% if room and room.image %}style="display:none;"{% endif %}>
+        <div id="room-preview-empty" class="no-img" {% if room and room.display_image_url %}style="display:none;"{% endif %}>
           {% if room %}No image available{% else %}Select a room to preview{% endif %}
         </div>
       </div>
@@ -627,7 +627,7 @@
       status: "{{ r.get_status_display|escapejs }}",
       facility: "{{ r.facility|escapejs }}",
       price: "{{ r.price }}",
-      image: "{% if r.image %}{{ r.image.url }}{% endif %}"
+      image: "{{ r.display_image_url|escapejs }}"
     }{% if not forloop.last %},{% endif %}
     {% endfor %}
   };

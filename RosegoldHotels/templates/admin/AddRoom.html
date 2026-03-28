@@ -70,8 +70,8 @@
               {% for room in data %}
                 <tr>
                   <td>
-                    {% if room.image %}
-                      <img class="admin-thumbnail" src="{{ room.image.url }}" alt="{{ room.room_number }}">
+                    {% if room.display_image_url %}
+                      <img class="admin-thumbnail" src="{{ room.display_image_url }}" alt="{{ room.room_number }}">
                     {% else %}
                       <div class="admin-thumbnail"></div>
                     {% endif %}

@@ -499,10 +499,10 @@
       <!-- IMAGE -->
       <div
         class="card-image"
-        onclick="openLightbox('{% if room.image %}{{ room.image.url }}{% endif %}', 'Room {{ room.room_number }}')"
+        onclick="openLightbox('{{ room.display_image_url|escapejs }}', 'Room {{ room.room_number }}')"
       >
-        {% if room.image %}
-        <img src="{{ room.image.url }}" alt="Room {{ room.room_number }}" />
+        {% if room.display_image_url %}
+        <img src="{{ room.display_image_url }}" alt="Room {{ room.room_number }}" />
         <button class="img-expand-btn" title="View full image">
           <svg
             width="14"

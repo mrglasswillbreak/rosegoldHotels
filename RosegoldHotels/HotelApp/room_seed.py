@@ -1,3 +1,6 @@
+from .room_images import get_default_room_image_path
+
+
 DEFAULT_ROOMS = [
     {
         "room_number": "101",
@@ -87,7 +90,16 @@ def seed_missing_rooms(RoomModel):
         RoomModel.objects.values_list("room_number", flat=True)
     )
     missing_rooms = [
-        RoomModel(**room_data)
+        RoomModel(
+            **{
+                **room_data,
+                "image": room_data.get("image")
+                or get_default_room_image_path(
+                    room_data.get("room_number"),
+                    room_data.get("room_type"),
+                ),
+            }
+        )
         for room_data in DEFAULT_ROOMS
         if room_data["room_number"] not in existing_room_numbers
     ]

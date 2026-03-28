@@ -1,5 +1,9 @@
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
+from django.utils.functional import cached_property
+
+from .room_images import get_default_room_image_path
 
 
 # =========================
@@ -87,6 +91,32 @@ class Room(models.Model):
 
     def __str__(self):
         return f"Room {self.room_number} ({self.room_type})"
+
+    @cached_property
+    def display_image_name(self):
+        if self.image and getattr(self.image, "name", ""):
+            image_name = self.image.name
+            try:
+                if self.image.storage.exists(image_name):
+                    return image_name
+            except Exception:
+                pass
+
+        return get_default_room_image_path(self.room_number, self.room_type)
+
+    @cached_property
+    def display_image_url(self):
+        if not self.display_image_name:
+            return ""
+
+        if self.image and self.display_image_name == getattr(self.image, "name", ""):
+            try:
+                return self.image.url
+            except ValueError:
+                pass
+
+        media_url = str(getattr(settings, "MEDIA_URL", "/media/") or "/media/")
+        return f"{media_url.rstrip('/')}/{self.display_image_name.lstrip('/')}"
 
 # =========================
 # ONLINE BOOKING
