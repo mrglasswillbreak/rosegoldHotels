@@ -6,7 +6,6 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="{% static 'Allfiles/Photo/eniadmin.jpg' %}" type="image/ico" />
     <title>{% block title %}{% endblock %}</title>
 
     <link rel="stylesheet" href="{% static 'Allfiles/vendors/bootstrap/dist/css/bootstrap.min.css' %}">
@@ -38,11 +37,58 @@
         color: #fff !important;
       }
 
-      .admin-modern .profile {
-        padding: 16px 18px 0;
+      .admin-user-card {
+        padding: 18px;
+        margin: 14px 18px 8px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.08);
       }
 
-      .admin-modern .profile_info h2,
+      .admin-user-eyebrow {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgba(248, 250, 252, 0.7);
+      }
+
+      .admin-user-name {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 1.4;
+        color: #f8fafc;
+        word-break: break-word;
+      }
+
+      .admin-user-role {
+        margin: 6px 0 0;
+        color: rgba(248, 250, 252, 0.75);
+        font-size: 13px;
+      }
+
+      .admin-modern .user-profile {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        max-width: min(60vw, 360px);
+      }
+
+      .admin-modern .user-profile i {
+        font-size: 18px;
+      }
+
+      .admin-modern .user-profile .admin-user-label {
+        display: inline-block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        vertical-align: middle;
+      }
+
+      .admin-modern .user-profile,
       .admin-modern .user-profile,
       .admin-modern .menu_section h3,
       .admin-modern .side-menu > li > a,
@@ -289,93 +335,8 @@
         display: inline;
       }
 
-      /* Single source of truth for navbar height and sidebar widths */
-      :root {
-        --admin-nav-h: 58px;
-        --sidebar-w: 230px;
-        --sidebar-w-sm: 70px;
-        --sidebar-mobile-open-w: min(86vw, 320px);
-      }
-
-      /* Full-height fixed sidebar - always anchored to viewport top, never scrolls away */
-      body.nav-md.admin-modern .container.body .col-md-3.left_col {
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 100vh;
-        width: var(--sidebar-w);
-        overflow: hidden;
-        z-index: 200;
-      }
-
-      /* Inner scroll wrapper fills the fixed container and handles its own scrolling */
-      body.nav-md.admin-modern .left_col.scroll-view {
-        height: 100%;
-        overflow-y: auto;
-        overflow-x: hidden;
-      }
-
-      /* Collapsed sidebar - also fully fixed, visible unless toggled away */
-      body.nav-sm.admin-modern .container.body .col-md-3.left_col {
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 100vh;
-        width: var(--sidebar-w-sm);
-        overflow: hidden;
-        z-index: 200;
-      }
-
-      body.nav-sm.admin-modern .left_col.scroll-view {
-        height: 100%;
-        overflow-y: auto;
-        overflow-x: hidden;
-      }
-
-      /* Fixed top navbar always anchored at the top */
-      body.admin-modern .main_container .top_nav {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        z-index: 100;
-        margin-left: 0;
-      }
-
       body.admin-modern .top_nav .nav_menu {
         margin-bottom: 0;
-      }
-
-      /* On desktop the navbar sits to the right of the sidebar */
-      @media (min-width: 992px) {
-        body.nav-md.admin-modern .main_container .top_nav {
-          left: var(--sidebar-w);
-          width: calc(100% - var(--sidebar-w));
-        }
-
-        body.nav-sm.admin-modern .main_container .top_nav {
-          left: var(--sidebar-w-sm);
-          width: calc(100% - var(--sidebar-w-sm));
-        }
-      }
-
-      /* Offset right column below fixed navbar and to the right of the fixed sidebar */
-      body.nav-md.admin-modern .container.body .right_col {
-        margin-left: var(--sidebar-w);
-        padding-top: calc(var(--admin-nav-h) + 10px);
-      }
-
-      body.nav-sm.admin-modern .container.body .right_col {
-        margin-left: var(--sidebar-w-sm);
-        padding-top: calc(var(--admin-nav-h) + 10px);
-      }
-
-      /* When the sidebar is hidden on smaller screens, remove the left offset */
-      @media (max-width: 991px) {
-        body.nav-md.admin-modern .container.body .right_col,
-        body.nav-sm.admin-modern .container.body .right_col {
-          margin-left: 0;
-        }
       }
 
       @media (max-width: 767px) {
@@ -458,44 +419,6 @@
           text-align: center;
         }
       }
-
-      @media (max-width: 991px) {
-        body.admin-modern .main_container .top_nav {
-          left: 0;
-          width: 100%;
-          z-index: 300;
-        }
-
-        body.admin-modern .container.body .col-md-3.left_col,
-        body.nav-sm.admin-modern .container.body .col-md-3.left_col,
-        body.nav-md.admin-modern .container.body .col-md-3.left_col {
-          display: block;
-          width: var(--sidebar-mobile-open-w);
-          top: var(--admin-nav-h);
-          height: calc(100vh - var(--admin-nav-h));
-          transform: translateX(-100%);
-          transition: transform 0.25s ease;
-          z-index: 220;
-          box-shadow: none;
-        }
-
-        body.admin-modern.mobile-sidebar-open .container.body .col-md-3.left_col {
-          transform: translateX(0);
-          box-shadow: 16px 0 30px rgba(15, 23, 42, 0.2);
-        }
-
-        body.nav-md.admin-modern .container.body .right_col,
-        body.nav-sm.admin-modern .container.body .right_col {
-          margin-left: 0;
-          width: 100%;
-          transition: margin-left 0.25s ease, width 0.25s ease;
-        }
-
-        body.admin-modern.mobile-sidebar-open .container.body .right_col {
-          margin-left: var(--sidebar-mobile-open-w);
-          width: calc(100% - var(--sidebar-mobile-open-w));
-        }
-      }
     </style>
   </head>
 
@@ -510,14 +433,18 @@
 
             <div class="clearfix"></div>
 
-            <div class="profile clearfix">
-              <div class="profile_pic">
-                <img src="{% static 'Allfiles/Photo/eniadmin.jpg' %}" alt="..." class="img-circle profile_img">
-              </div>
-              <div class="profile_info">
-                <span>Signed in as</span>
-                <h2>{{ request.user.get_full_name|default:request.user.email }}</h2>
-              </div>
+            <div class="admin-user-card">
+              <span class="admin-user-eyebrow">Signed in as</span>
+              <h2 class="admin-user-name">{{ request.user.get_full_name|default:request.user.email }}</h2>
+              <p class="admin-user-role">
+                {% if request.user.is_receptionist %}
+                  Front Desk Receptionist
+                {% elif request.user.is_staff %}
+                  Hotel Administrator
+                {% else %}
+                  Hotel Staff
+                {% endif %}
+              </p>
             </div>
 
             <br />
@@ -621,7 +548,8 @@
               <ul class="nav navbar-right">
                 <li class="nav-item dropdown open" style="padding-left: 15px;">
                   <a href="javascript:;" class="user-profile dropdown-toggle" aria-haspopup="true" id="navbarDropdown" data-toggle="dropdown" aria-expanded="false">
-                    <img src="{% static 'Allfiles/Photo/eniadmin.jpg' %}" alt="">{{ request.user.get_full_name|default:request.user.email }}
+                    <i class="fa fa-user-circle" aria-hidden="true"></i>
+                    <span class="admin-user-label">{{ request.user.get_full_name|default:request.user.email }}</span>
                   </a>
                   <div class="dropdown-menu dropdown-usermenu pull-right" aria-labelledby="navbarDropdown">
                     {% if request.user.is_staff %}
@@ -698,49 +626,6 @@
     </script>
 
     <script src="{% static 'Allfiles/build/js/custom.min.js' %}"></script>
-    <script>
-      (function () {
-        var menuToggle = document.getElementById('menu_toggle');
-
-        function isMobileWidth() {
-          return window.matchMedia('(max-width: 991px)').matches;
-        }
-
-        function closeMobileSidebar() {
-          document.body.classList.remove('mobile-sidebar-open');
-        }
-
-        if (menuToggle) {
-          menuToggle.addEventListener('click', function (event) {
-            if (!isMobileWidth()) return;
-            // Prevent the legacy #menu_toggle handler in custom.min.js from running on mobile
-            event.stopPropagation();
-            event.stopImmediatePropagation();
-            document.body.classList.toggle('mobile-sidebar-open');
-          }, true);
-        }
-
-        window.addEventListener('resize', function () {
-          if (!isMobileWidth()) {
-            // When leaving mobile width, just close the mobile sidebar overlay
-            // and preserve whichever desktop nav state (nav-md or nav-sm) is active.
-            closeMobileSidebar();
-          }
-        });
-
-        document.addEventListener('click', function (event) {
-          if (!isMobileWidth()) return;
-          if (!document.body.classList.contains('mobile-sidebar-open')) return;
-          var target = event.target;
-          if (target && target.nodeType === Node.TEXT_NODE && target.parentElement) {
-            target = target.parentElement;
-          }
-          if (!target || !(target instanceof Element)) return;
-          if (target.closest('.left_col') || target.closest('#menu_toggle')) return;
-          closeMobileSidebar();
-        });
-      })();
-    </script>
 
   </body>
 </html>

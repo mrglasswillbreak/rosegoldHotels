@@ -416,6 +416,37 @@ class AdminDashboardRegressionTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Custom Admin Dashboard")
 
+    def test_admin_dashboard_uses_text_user_card_without_images(self):
+        admin_user = get_user_model().objects.create_superuser(
+            email="avatar-admin@example.com",
+            password="AdminPass123!",
+        )
+
+        self.client.force_login(admin_user)
+        response = self.client.get(reverse("dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'class="admin-user-card"')
+        self.assertContains(response, 'class="fa fa-user-circle"')
+        self.assertNotContains(response, "<img")
+        self.assertNotContains(response, "eniadmin.jpg")
+
+    def test_receptionist_dashboard_uses_text_user_card_without_images(self):
+        receptionist_user = get_user_model().objects.create_user(
+            email="avatar-reception@example.com",
+            password="ReceptionPass123!",
+            is_receptionist=True,
+        )
+
+        self.client.force_login(receptionist_user)
+        response = self.client.get(reverse("receptionist_dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'class="admin-user-card"')
+        self.assertContains(response, 'class="fa fa-user-circle"')
+        self.assertNotContains(response, "<img")
+        self.assertNotContains(response, "eniadmin.jpg")
+
 
 @override_settings(SECURE_SSL_REDIRECT=False)
 class RoomAvailabilityViewTests(TestCase):
