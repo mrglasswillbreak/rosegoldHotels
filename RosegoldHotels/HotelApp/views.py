@@ -1617,6 +1617,22 @@ def clear_pending_payment_session(request):
         request.session.pop(key, None)
 
 
+def get_paystack_initialization_error_message(response=None):
+    if not settings.PAYSTACK_SECRET_KEY:
+        return (
+            "Payment gateway is not configured on this deployment. "
+            "Add PAYSTACK_SECRET_KEY and the matching PAYSTACK_PUBLIC_KEY in your environment."
+        )
+
+    raw = getattr(response, "raw", None)
+    if isinstance(raw, dict):
+        message = raw.get("message")
+        if message:
+            return f"Paystack could not start this payment: {message}"
+
+    return "We could not start the payment gateway. Please try again."
+
+
 def ensure_pending_payment_record(request, *, reference, amount, access_code="", notes=""):
     payment, created = Payment.objects.get_or_create(
         paystack_reference=reference,
@@ -1829,12 +1845,12 @@ def initiate_payment(request):
             return redirect(response.data.authorization_url)
 
         logger.warning("Paystack initialization failed for %s: %s", request.user.email, response.raw)
-        messages.error(request, "We could not start the payment gateway. Please try again.")
+        messages.error(request, get_paystack_initialization_error_message(response))
         return redirect('booking_payment_page')
 
     except Exception as e:
         logger.error(f"Payment initialization error: {str(e)}")
-        messages.error(request, "An error occurred while processing your payment.")
+        messages.error(request, get_paystack_initialization_error_message())
         return redirect('booking_payment_page')
 
 

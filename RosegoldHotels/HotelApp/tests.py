@@ -726,6 +726,17 @@ class PaystackPaymentTests(TestCase):
             fetch_redirect_response=False,
         )
 
+    @override_settings(PAYSTACK_MOCK_MODE=False, PAYSTACK_SECRET_KEY="", PAYSTACK_PUBLIC_KEY="")
+    def test_initiate_payment_shows_configuration_error_when_secret_key_is_missing(self):
+        session = self.client.session
+        session["pending_booking"] = self._pending_booking_session()
+        session.save()
+
+        response = self.client.post(reverse("initiate_payment"), follow=True)
+
+        self.assertRedirects(response, reverse("booking_payment_page"))
+        self.assertContains(response, "Payment gateway is not configured on this deployment.")
+
     # --- payment_callback ---
 
     def test_payment_callback_creates_booking_and_marks_payment_paid_on_success(self):
