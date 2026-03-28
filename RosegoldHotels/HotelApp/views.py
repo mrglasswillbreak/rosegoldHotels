@@ -236,6 +236,9 @@ def dashboard(request):
     
     total_employees = Employee.objects.count()
     
+    users = Authorregis.objects.order_by("-date_joined")
+    employees = Employee.objects.order_by("-created_at")
+    rooms = Room.objects.order_by("-created_at")
     online_bookings = OnlineBooking.objects.select_related("user", "room")
     offline_bookings = OfflineBooking.objects.select_related("room")
     salaries = Salary.objects.select_related("employee")
@@ -315,9 +318,9 @@ def dashboard(request):
         account_distribution_values=json.dumps(account_distribution_values),
         recent_online_bookings=online_bookings.order_by("-created_at")[:5],
         recent_offline_bookings=offline_bookings.order_by("-created_at")[:5],
-        recent_users=users.order_by("-date_joined")[:5],
-        recent_employees=employees.order_by("-created_at")[:5],
-        recent_rooms=rooms.order_by("-created_at")[:5],
+        recent_users=users[:5],
+        recent_employees=employees[:5],
+        recent_rooms=rooms[:5],
         iot_summary=iot_summary,
         recent_iot_alerts=recent_iot_alerts,
     )

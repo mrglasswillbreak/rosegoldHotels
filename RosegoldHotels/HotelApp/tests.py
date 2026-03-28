@@ -276,6 +276,7 @@ class AdminAccessControlTests(TestCase):
         self.assertRedirects(response, reverse("user_home"))
 
 
+@override_settings(SECURE_SSL_REDIRECT=False)
 class CustomAdminDashboardTests(TestCase):
     def setUp(self):
         self.admin_user = get_user_model().objects.create_superuser(
@@ -399,6 +400,21 @@ class CustomAdminDashboardTests(TestCase):
         self.assertTrue(
             OnlineBooking.objects.filter(user=guest_user, room=room, city="Abuja", country="Nigeria").exists()
         )
+
+
+@override_settings(SECURE_SSL_REDIRECT=False)
+class AdminDashboardRegressionTests(TestCase):
+    def test_superuser_can_open_dashboard_without_server_error(self):
+        admin_user = get_user_model().objects.create_superuser(
+            email="dashboard-admin@example.com",
+            password="AdminPass123!",
+        )
+
+        self.client.force_login(admin_user)
+        response = self.client.get(reverse("dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Custom Admin Dashboard")
 
 
 @override_settings(SECURE_SSL_REDIRECT=False)
