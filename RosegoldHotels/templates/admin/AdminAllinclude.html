@@ -594,19 +594,19 @@
 
             <div class="sidebar-footer hidden-small">
               <a data-toggle="tooltip" data-placement="top" title="Dashboard" href="{% if request.user.is_receptionist %}{% url 'receptionist_dashboard' %}{% elif request.user.is_staff %}{% url 'dashboard' %}{% else %}{% url 'home' %}{% endif %}">
-                <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
+                <i class="fa fa-home" aria-hidden="true"></i>
               </a>
               {% if request.user.is_staff %}
                 <a data-toggle="tooltip" data-placement="top" title="Users" href="{% url 'manage_users' %}">
-                  <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                  <i class="fa fa-user" aria-hidden="true"></i>
                 </a>
               {% elif request.user.is_receptionist %}
                 <a data-toggle="tooltip" data-placement="top" title="Housekeeping" href="{% url 'housekeeping_board' %}">
-                  <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span>
+                  <i class="fa fa-tasks" aria-hidden="true"></i>
                 </a>
               {% endif %}
               <a data-toggle="tooltip" data-placement="top" title="Logout" href="{% url 'auth_logout' %}">
-                <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
+                <i class="fa fa-power-off" aria-hidden="true"></i>
               </a>
             </div>
           </div>
